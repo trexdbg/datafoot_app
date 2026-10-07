@@ -1,0 +1,57 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import stats from '../data/stats.json';
+
+const updated = new Date(stats.generated_at);
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const siteOrigin = Astro.site ?? new URL('https://trexdbg.github.io');
+const pageUrl = new URL(`${base}/methodologie/`, siteOrigin).toString();
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'AboutPage',
+  name: 'Méthodologie et transparence DataFoot',
+  description: 'Comment DataFoot collecte, normalise, sélectionne et publie ses analyses football.',
+  url: pageUrl,
+  inLanguage: 'fr-FR',
+  about: { '@type': 'Organization', name: 'DataFoot' },
+};
+---
+<BaseLayout
+  title="Méthodologie, sources et transparence | DataFoot"
+  description="Découvrez comment DataFoot collecte les statistiques football, sélectionne ses sujets et encadre la rédaction assistée par IA."
+  jsonLd={schema}
+>
+  <section class="shell page-head page-head-grid methodology-head">
+    <div>
+      <p class="eyebrow">MÉTHODOLOGIE & TRANSPARENCE</p>
+      <h1>Comment DataFoot transforme des données en analyses.</h1>
+    </div>
+    <p>DataFoot est une publication automatisée expérimentale. L’objectif est simple : conserver une chaîne traçable entre la donnée source, le signal statistique et le texte publié.</p>
+  </section>
+
+  <section class="shell trust-grid">
+    <article><span>01</span><h2>Collecte</h2><p>Les données sont récupérées via des connecteurs indépendants. Une source indisponible n’interrompt pas les autres collectes.</p></article>
+    <article><span>02</span><h2>Normalisation</h2><p>Python convertit les métriques dans un format commun et ajoute la provenance ainsi que l’horodatage.</p></article>
+    <article><span>03</span><h2>Détection</h2><p>Des règles statistiques construisent un vivier de sujets possibles : écarts buts/xG, xG par 90, création xA, volume de tirs et implication offensive.</p></article>
+    <article><span>04</span><h2>Sélection</h2><p>Gemini compare les candidats et peut choisir de ne publier aucun sujet. En cas d’indisponibilité IA, un fallback déterministe garantit la continuité.</p></article>
+    <article><span>05</span><h2>Rédaction</h2><p>Le modèle reçoit uniquement des faits structurés. Il lui est interdit d’inventer blessures, transferts, citations, résultats ou contexte absent.</p></article>
+    <article><span>06</span><h2>Publication</h2><p>Chaque article conserve sa source statistique et le dataset public est publié en JSON pour permettre une vérification indépendante.</p></article>
+  </section>
+
+  <section class="shell section principles-section">
+    <div class="section-heading"><div><p class="eyebrow">RÈGLES ÉDITORIALES</p><h2>Ce que nous faisons — et ce que nous ne faisons pas.</h2></div></div>
+    <div class="principles-grid">
+      <div><strong>Faits explicites</strong><p>Les chiffres affichés doivent exister dans les données fournies au modèle.</p></div>
+      <div><strong>Source visible</strong><p>Chaque article affiche la source statistique primaire utilisée.</p></div>
+      <div><strong>Pas de certitude xG</strong><p>Les expected goals décrivent des probabilités, pas des prédictions certaines.</p></div>
+      <div><strong>Pas de faux contexte</strong><p>Une information d’actualité non présente dans le dataset ne doit pas être ajoutée.</p></div>
+      <div><strong>Automatisation déclarée</strong><p>La sélection et la rédaction peuvent être assistées par IA ; ce fonctionnement est exposé publiquement.</p></div>
+      <div><strong>Accès aux données</strong><p>Le JSON public permet de contrôler les données utilisées par le site.</p></div>
+    </div>
+  </section>
+
+  <section class="shell dataset-callout">
+    <div><p class="eyebrow">ÉTAT DU DATASET</p><h2>{stats.player_count.toLocaleString('fr-FR')} joueurs · {stats.match_count} matchs</h2><p>Dernière génération : {updated.toLocaleString('fr-FR')}.</p></div>
+    <a class="button primary" href={`${base}/data/stats.json`}>Ouvrir le JSON public ↗</a>
+  </section>
+</BaseLayout>
