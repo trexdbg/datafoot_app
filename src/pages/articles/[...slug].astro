@@ -1,0 +1,44 @@
+---
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+export async function getStaticPaths() {
+  const articles = await getCollection('articles');
+  return articles.map((article) => ({
+    params: { slug: article.id },
+    props: { article },
+  }));
+}
+
+interface Props {
+  article: CollectionEntry<'articles'>;
+}
+
+const { article } = Astro.props;
+const { Content } = await render(article);
+const { data } = article;
+---
+<BaseLayout title={`${data.title} — DataFoot`} description={data.description}>
+  <article class="article shell">
+    <header class="article-header">
+      <div class="card-meta">
+        <span>{data.league}</span>
+        <time datetime={data.publishedAt.toISOString()}>
+          {data.publishedAt.toLocaleDateString('fr-FR', { dateStyle: 'long' })}
+        </time>
+      </div>
+      <h1>{data.title}</h1>
+      <p class="lede">{data.description}</p>
+      <div class="article-facts">
+        <span>Joueur <b>{data.player}</b></span>
+        <span>Équipe <b>{data.team}</b></span>
+        <span>Signal <b>{data.storyScore.toFixed(2)}</b></span>
+      </div>
+    </header>
+    <div class="prose"><Content /></div>
+    <aside class="source-box">
+      <span>Source statistique</span>
+      <a href={data.sourceUrl} rel="nofollow noreferrer">{data.source} ↗</a>
+    </aside>
+  </article>
+</BaseLayout>
