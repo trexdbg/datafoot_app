@@ -13,6 +13,18 @@ Site public statique de DataFoot, construit avec Astro et déployé sur GitHub P
 
 Aucun backend n'est nécessaire pour le MVP.
 
+## Données affichées
+
+Le site est déjà prévu pour afficher :
+
+- articles Markdown générés par le pipeline ;
+- statistiques joueurs / xG provenant d'Understat ;
+- résultats et fixtures provenant d'OpenLigaDB ;
+- provenance et liens vers les sources ;
+- dataset JSON brut dans `public/data/stats.json`.
+
+Sorare sera ajouté au dataset public lorsque les requêtes GraphQL métier seront configurées avec les identifiants/API du dépôt privé.
+
 ## Développement local
 
 ```bash
@@ -71,4 +83,4 @@ src/
 └── styles/
 ```
 
-Le fichier `public/data/stats.json` fournit aussi une version publique brute du dataset pour des usages futurs côté client.
+Le site et son build sont entièrement statiques : aucun serveur applicatif n'est nécessaire.
