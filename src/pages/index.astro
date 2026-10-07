@@ -1,0 +1,78 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import stats from '../data/stats.json';
+
+const articles = (await getCollection('articles'))
+  .sort((a, b) => b.data.publishedAt.valueOf() - a.data.publishedAt.valueOf())
+  .slice(0, 6);
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const url = (path: string) => `${base}${path}`;
+const updated = new Date(stats.generated_at);
+---
+<BaseLayout>
+  <section class="hero shell">
+    <div>
+      <p class="eyebrow">FOOTBALL · DATA · ANALYSE</p>
+      <h1>Comprendre le match<br />au-delà du score.</h1>
+      <p class="hero-copy">
+        DataFoot transforme des données football traçables en analyses courtes,
+        lisibles et vérifiables. Les chiffres sont calculés avant que l’IA n’écrive.
+      </p>
+      <div class="actions">
+        <a class="button primary" href={url('/articles/')}>Lire les analyses</a>
+        <a class="button" href={url('/stats/')}>Explorer les données</a>
+      </div>
+    </div>
+    <div class="hero-panel">
+      <span class="live-dot"></span>
+      <p class="muted">Dernière génération</p>
+      <strong>{updated.toLocaleString('fr-FR')}</strong>
+      <div class="hero-kpis">
+        <div><b>{stats.player_count}</b><span>joueurs</span></div>
+        <div><b>{stats.leagues.length}</b><span>ligues</span></div>
+        <div><b>{articles.length}</b><span>articles visibles</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="shell section">
+    <div class="section-heading">
+      <div>
+        <p class="eyebrow">RÉDACTION AUTOMATISÉE</p>
+        <h2>Dernières analyses</h2>
+      </div>
+      <a href={url('/articles/')}>Tout voir →</a>
+    </div>
+    <div class="article-grid">
+      {articles.map((article) => (
+        <article class="card">
+          <div class="card-meta">
+            <span>{article.data.league}</span>
+            <time datetime={article.data.publishedAt.toISOString()}>
+              {article.data.publishedAt.toLocaleDateString('fr-FR')}
+            </time>
+          </div>
+          <h3><a href={url(`/articles/${article.id}/`)}>{article.data.title}</a></h3>
+          <p>{article.data.description}</p>
+          <div class="card-footer">
+            <span>{article.data.player}</span>
+            <span>score {article.data.storyScore.toFixed(2)}</span>
+          </div>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="shell methodology">
+    <p class="eyebrow">MÉTHODE</p>
+    <h2>La donnée d’abord, le texte ensuite.</h2>
+    <div class="steps">
+      <div><span>01</span><h3>Collecter</h3><p>Understat, Sorare et autres sources sont isolées dans des connecteurs.</p></div>
+      <div><span>02</span><h3>Normaliser</h3><p>Les métriques et leur provenance sont transformées dans un format commun.</p></div>
+      <div><span>03</span><h3>Détecter</h3><p>Le moteur repère les écarts et performances statistiquement intéressants.</p></div>
+      <div><span>04</span><h3>Rédiger</h3><p>Gemini reçoit uniquement les faits sélectionnés et ne calcule aucune statistique.</p></div>
+    </div>
+  </section>
+</BaseLayout>
