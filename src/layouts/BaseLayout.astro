@@ -1,0 +1,47 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = 'DataFoot — Football, statistiques et analyses',
+  description = 'Articles football construits à partir de données traçables.',
+} = Astro.props;
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const url = (path: string) => `${base}${path}`;
+---
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content={description} />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="shell nav">
+        <a class="brand" href={url('/')}>
+          <span class="brand-mark">DF</span>
+          <span>DataFoot</span>
+        </a>
+        <nav aria-label="Navigation principale">
+          <a href={url('/articles/')}>Articles</a>
+          <a href={url('/stats/')}>Data</a>
+        </nav>
+      </div>
+    </header>
+    <main><slot /></main>
+    <footer>
+      <div class="shell footer-inner">
+        <p>DataFoot — articles générés à partir de données sourcées.</p>
+        <p>Les xG sont des indicateurs statistiques, pas des certitudes.</p>
+      </div>
+    </footer>
+  </body>
+</html>
