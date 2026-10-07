@@ -3,33 +3,11 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import PlayerTable from '../components/PlayerTable.astro';
 import stats from '../data/stats.json';
 
-interface MatchRow {
-  match_id: number | null;
-  league: string;
-  season: number;
-  kickoff: string | null;
-  home: string;
-  away: string;
-  home_goals: number | null;
-  away_goals: number | null;
-  finished: boolean;
-  source: string;
-  source_url: string;
-  fetched_at: string;
-}
-
-interface SorareCard {
-  card_name: string;
-  age: number | null;
-  player: string;
-  player_slug: string;
-  source: string;
-  source_url: string;
-  fetched_at: string;
-}
+interface MatchRow { match_id:number|null; league:string; season:number; kickoff:string|null; home:string; away:string; home_goals:number|null; away_goals:number|null; finished:boolean; source:string; source_url:string; fetched_at:string; }
+interface SorareCard { card_name:string; age:number|null; player:string; player_slug:string; source:string; source_url:string; fetched_at:string; }
 
 const updated = new Date(stats.generated_at);
-const players = stats.top_players.slice(0, 30);
+const players = stats.top_players.slice(0, 30).filter((player) => player.minutes >= 90);
 const matches = (stats.recent_matches as MatchRow[]).slice(0, 12);
 const sorareCards = ((stats as any).sorare_cards ?? []) as SorareCard[];
 const sourceStatus = (stats as any).source_status ?? {};
@@ -40,130 +18,60 @@ const statusLabel = (name: string) => {
   if (status === 'not_configured') return 'Non configuré';
   return 'En attente';
 };
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const siteOrigin = Astro.site ?? new URL('https://trexdbg.github.io');
+const dataUrl = new URL(`${base}/data/stats.json`, siteOrigin).toString();
+const datasetSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Dataset',
+  name: `DataFoot — dataset football saison ${stats.season}`,
+  description: 'Statistiques joueurs football normalisées, signaux éditoriaux et matchs récents utilisés par DataFoot.',
+  url: new URL(`${base}/stats/`, siteOrigin).toString(),
+  dateModified: stats.generated_at,
+  inLanguage: 'fr-FR',
+  creator: { '@type': 'Organization', name: 'DataFoot' },
+  variableMeasured: ['buts', 'passes décisives', 'xG', 'xA', 'tirs', 'xG par 90 minutes'],
+  distribution: [{ '@type': 'DataDownload', encodingFormat: 'application/json', contentUrl: dataUrl }],
+};
 ---
-<BaseLayout title="Data — DataFoot" description="Statistiques football normalisées et sourcées.">
-  <section class="shell page-head">
-    <p class="eyebrow">DATASET</p>
-    <h1>Les données derrière les articles</h1>
-    <p>
-      Saison {stats.season} · {stats.player_count} joueurs · {stats.match_count} matchs ·
-      mise à jour {updated.toLocaleString('fr-FR')}.
-    </p>
+<BaseLayout
+  title="Données football : xG, joueurs et matchs | DataFoot"
+  description={`Dataset DataFoot saison ${stats.season} : ${stats.player_count} joueurs, xG, xA, tirs et ${stats.match_count} matchs avec sources et provenance.`}
+  jsonLd={datasetSchema}
+>
+  <section class="shell page-head page-head-grid">
+    <div><p class="eyebrow">DATASET FOOTBALL</p><h1>Les données derrière chaque analyse.</h1></div>
+    <p>Saison {stats.season} · {stats.player_count.toLocaleString('fr-FR')} joueurs · {stats.match_count} matchs · mise à jour {updated.toLocaleString('fr-FR')}.</p>
   </section>
 
-  <section class="shell section">
+  <section class="shell section data-dashboard">
     <div class="stat-strip">
-      <div><span>Sources actives</span><strong>{stats.sources.length}</strong></div>
-      <div><span>Joueurs</span><strong>{stats.player_count}</strong></div>
-      <div><span>Matchs</span><strong>{stats.match_count}</strong></div>
+      <div><span>Sources</span><strong>{stats.sources.length}</strong><small>actives dans le dataset</small></div>
+      <div><span>Joueurs</span><strong>{stats.player_count.toLocaleString('fr-FR')}</strong><small>observations normalisées</small></div>
+      <div><span>Candidats</span><strong>{(stats as any).candidate_count ?? '—'}</strong><small>signaux éditoriaux détectés</small></div>
     </div>
 
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr><th>Source</th><th>État</th><th>Éléments</th></tr>
-        </thead>
-        <tbody>
-          {['Understat', 'OpenLigaDB', 'Sorare'].map((name) => (
-            <tr>
-              <td><strong>{name}</strong></td>
-              <td>{statusLabel(name)}</td>
-              <td>{sourceStatus[name]?.items ?? 0}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <div class="source-status-grid">
+      {['Understat', 'OpenLigaDB', 'Sorare'].map((name) => (
+        <div class="source-status-card"><span class:list={['status-dot', sourceStatus[name]?.status === 'active' && 'ok']}></span><div><strong>{name}</strong><p>{statusLabel(name)} · {sourceStatus[name]?.items ?? 0} éléments</p></div></div>
+      ))}
     </div>
 
-    <div class="section-heading data-heading">
-      <div>
-        <p class="eyebrow">UNDERSTAT</p>
-        <h2>xG par 90 minutes</h2>
-      </div>
-      <p>Top joueurs du dataset normalisé.</p>
-    </div>
+    <div class="section-heading data-heading"><div><p class="eyebrow">UNDERSTAT</p><h2>xG par 90 — échantillon ≥ 90 min</h2></div><p>Filtre minimal pour éviter que quelques minutes de jeu dominent artificiellement le classement.</p></div>
+    {players.length > 0 ? <PlayerTable players={players} /> : <div class="empty-state"><h3>Pas encore assez de minutes</h3><p>Les joueurs apparaîtront lorsque l’échantillon sera suffisant.</p></div>}
 
-    {players.length > 0 ? (
-      <PlayerTable players={players} />
-    ) : (
-      <div class="empty-state">
-        <h3>En attente de la première collecte Understat</h3>
-        <p>Le workflow DataFoot remplacera automatiquement ce dataset initial.</p>
-      </div>
-    )}
-
-    <div class="section-heading data-heading">
-      <div>
-        <p class="eyebrow">OPENLIGADB</p>
-        <h2>Matchs Bundesliga</h2>
-      </div>
-      <p>Résultats et fixtures issus de la seconde source du pipeline.</p>
-    </div>
-
+    <div class="section-heading data-heading"><div><p class="eyebrow">OPENLIGADB</p><h2>Matchs Bundesliga</h2></div><p>Fixtures et résultats présents dans le dataset courant.</p></div>
     {matches.length > 0 ? (
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr><th>Date</th><th>Match</th><th>Score</th><th>État</th><th>Source</th></tr>
-          </thead>
-          <tbody>
-            {matches.map((match) => (
-              <tr>
-                <td>{match.kickoff ? new Date(match.kickoff).toLocaleDateString('fr-FR') : '—'}</td>
-                <td><strong>{match.home}</strong> — {match.away}</td>
-                <td>
-                  {match.home_goals === null || match.away_goals === null
-                    ? '—'
-                    : `${match.home_goals} - ${match.away_goals}`}
-                </td>
-                <td>{match.finished ? 'Terminé' : 'À venir'}</td>
-                <td><a href={match.source_url} rel="nofollow noreferrer">{match.source} ↗</a></td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    ) : (
-      <div class="empty-state">
-        <h3>En attente de la première collecte OpenLigaDB</h3>
-        <p>Les fixtures et résultats apparaîtront ici après le prochain pipeline.</p>
-      </div>
-    )}
+      <div class="table-wrap"><table><thead><tr><th>Date</th><th>Match</th><th>Score</th><th>État</th><th>Source</th></tr></thead><tbody>
+      {matches.map((match) => (<tr><td>{match.kickoff ? new Date(match.kickoff).toLocaleDateString('fr-FR') : '—'}</td><td><strong>{match.home}</strong> — {match.away}</td><td>{match.home_goals === null || match.away_goals === null ? '—' : `${match.home_goals} - ${match.away_goals}`}</td><td>{match.finished ? 'Terminé' : 'À venir'}</td><td><a href={match.source_url} rel="nofollow noreferrer">{match.source} ↗</a></td></tr>))}
+      </tbody></table></div>
+    ) : <div class="empty-state"><h3>En attente d’OpenLigaDB</h3><p>Les fixtures apparaîtront après la prochaine collecte disponible.</p></div>}
 
-    <div class="section-heading data-heading">
-      <div>
-        <p class="eyebrow">SORARE</p>
-        <h2>Enrichissement public</h2>
-      </div>
-      <p>Échantillon public récupéré avec la clé API Sorare, sans authentification utilisateur.</p>
-    </div>
-
+    <div class="section-heading data-heading"><div><p class="eyebrow">SORARE</p><h2>Enrichissement Sorare</h2></div><p>Source optionnelle : son indisponibilité ne bloque jamais le reste du pipeline.</p></div>
     {sorareCards.length > 0 ? (
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr><th>Joueur</th><th>Carte</th><th>Âge</th><th>Source</th></tr>
-          </thead>
-          <tbody>
-            {sorareCards.slice(0, 12).map((card) => (
-              <tr>
-                <td><strong>{card.player || '—'}</strong></td>
-                <td>{card.card_name || '—'}</td>
-                <td>{card.age ?? '—'}</td>
-                <td><a href={card.source_url} rel="nofollow noreferrer">Sorare ↗</a></td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    ) : (
-      <div class="empty-state">
-        <h3>Sorare : {statusLabel('Sorare')}</h3>
-        <p>
-          Si Sorare exige un JWT pour la requête publique testée, la source reste optionnelle et
-          n'empêche jamais Understat, OpenLigaDB ou la génération des articles de fonctionner.
-        </p>
-      </div>
-    )}
+      <div class="table-wrap"><table><thead><tr><th>Joueur</th><th>Carte</th><th>Âge</th><th>Source</th></tr></thead><tbody>{sorareCards.slice(0, 12).map((card) => (<tr><td><strong>{card.player || '—'}</strong></td><td>{card.card_name || '—'}</td><td>{card.age ?? '—'}</td><td><a href={card.source_url} rel="nofollow noreferrer">Sorare ↗</a></td></tr>))}</tbody></table></div>
+    ) : <div class="empty-state"><h3>Sorare : {statusLabel('Sorare')}</h3><p>La source est actuellement facultative. Understat et OpenLigaDB continuent à alimenter le site.</p></div>}
+
+    <div class="raw-data-link"><span>Besoin de vérifier ou réutiliser les données ?</span><a href={`${base}/data/stats.json`}>Télécharger le JSON public →</a></div>
   </section>
 </BaseLayout>
