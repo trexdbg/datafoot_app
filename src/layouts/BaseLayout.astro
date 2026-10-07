@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import { SORARE_REFERRAL_URL } from '../lib/referrals';
 
 interface Props {
   title?: string;
@@ -113,6 +114,7 @@ const schemaBlocks = [baseSchema, ...(Array.isArray(jsonLd) ? jsonLd : jsonLd ? 
           <a href={url('/data/stats.json')}>JSON public</a>
           <a href={url('/sitemap.xml')}>Sitemap XML</a>
           <a href={url('/llms.txt')}>llms.txt</a>
+          <a href={SORARE_REFERRAL_URL} rel="sponsored nofollow noreferrer">Sorare · parrainage ↗</a>
         </div>
       </div>
       <div class="shell footer-bottom">

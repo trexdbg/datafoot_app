@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PlayerTable from '../components/PlayerTable.astro';
 import stats from '../data/stats.json';
+import { SORARE_REFERRAL_URL } from '../lib/referrals';
 
 interface MatchRow { match_id:number|null; league:string; season:number; kickoff:string|null; home:string; away:string; home_goals:number|null; away_goals:number|null; finished:boolean; source:string; source_url:string; fetched_at:string; }
 interface SorarePlayer {
@@ -89,7 +90,7 @@ const datasetSchema = {
             <td>{player.l15_score == null ? '—' : player.l15_score.toFixed(1)}</td>
             <td>{player.l5_appearances ?? '—'}</td>
             <td>{player.l15_appearances ?? '—'}</td>
-            <td><a href={player.source_url} rel="nofollow noreferrer">Sorare ↗</a></td>
+            <td><a href={SORARE_REFERRAL_URL} rel="sponsored nofollow noreferrer">Sorare · parrainage ↗</a></td>
           </tr>
         ))}
       </tbody></table></div>

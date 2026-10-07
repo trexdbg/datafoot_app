@@ -3,6 +3,7 @@ import { getCollection, render, type CollectionEntry } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Sparkline from '../../components/Sparkline.astro';
 import stats from '../../data/stats.json';
+import { SORARE_REFERRAL_URL } from '../../lib/referrals';
 
 export async function getStaticPaths() {
   const articles = await getCollection('articles');
@@ -26,6 +27,7 @@ const sorare = (((stats as any).sorare_players ?? []) as any[]).find((p) =>
   norm(p.matched_from || p.player) === norm(data.player)
 );
 const delta = playerStat?.xg_delta ?? null;
+const primarySourceHref = data.source === 'Sorare' ? SORARE_REFERRAL_URL : data.sourceUrl;
 
 const articleSchema = {
   '@context': 'https://schema.org', '@type': 'Article',
@@ -108,7 +110,7 @@ const breadcrumbSchema = {
             <div class="side-score-pair"><div><small>L5</small><b>{Math.round(sorare.l5_score ?? 0)}</b></div><div><small>L15</small><b>{Math.round(sorare.l15_score ?? 0)}</b></div></div>
             <Sparkline values={(sorare.recent_scores ?? []).slice(0,10).reverse()} width={240} height={64}/>
             <p>{sorare.l5_appearances ?? '—'} apparitions L5 · {sorare.l15_appearances ?? '—'} apparitions L15</p>
-            <a href={sorare.source_url} rel="nofollow noreferrer">SOURCE SORARE ↗</a>
+            <a href={SORARE_REFERRAL_URL} rel="sponsored nofollow noreferrer">SORARE · LIEN DE PARRAINAGE ↗</a>
           </section>
         )}
 
@@ -132,7 +134,7 @@ const breadcrumbSchema = {
           <div class="side-module-head"><span>PROVENANCE</span><span>VERIFIED</span></div>
           <strong>{data.source}</strong>
           <p>Données calculées avant rédaction. Les xG/xA restent des indicateurs probabilistes.</p>
-          <a href={data.sourceUrl} rel="nofollow noreferrer">SOURCE PRIMAIRE ↗</a>
+          <a href={primarySourceHref} rel={data.source === 'Sorare' ? 'sponsored nofollow noreferrer' : 'nofollow noreferrer'}>SOURCE PRIMAIRE ↗</a>
           <a href={`${base}/methodologie/`}>PROTOCOLE ↗</a>
         </section>
       </aside>
