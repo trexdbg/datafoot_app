@@ -7,12 +7,12 @@ const url = (path:string)=>`${base}${path}`;
 ---
 <BaseLayout
   title="Analyses football xG, forme et signaux | DataFoot"
-  description="Le desk DataFoot : analyses de joueurs basées sur xG, xA, tirs, forme Sorare et signaux statistiques sourcés."
+  description="DataFoot Football Intelligence : analyses de joueurs basées sur xG, xA, tirs, forme Sorare et signaux statistiques sourcés."
 >
   <section class="shell archive-head">
     <div class="edition-line"><span>DATAFOOT / ANALYSIS ARCHIVE</span><span>{articles.length} REPORTS</span></div>
     <h1>Analysis<br/><span>Archive.</span></h1>
-    <p>Les rapports publiés par le desk, triés du plus récent au plus ancien. Chaque ligne conserve la source, le signal et le joueur analysé.</p>
+    <p>Les rapports publiés par DataFoot, triés du plus récent au plus ancien. Chaque ligne conserve la source, le signal et le joueur analysé.</p>
   </section>
   <section class="shell archive-list">
     {articles.map((article,index)=>(

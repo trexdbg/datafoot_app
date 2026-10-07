@@ -54,14 +54,14 @@ const articleForPlayer = (player: string) =>
   <section class="desk-hero shell">
     <div class="desk-mast">
       <div class="edition-line">
-        <span>DATAFOOT INTELLIGENCE DESK</span>
+        <span>DATAFOOT / FOOTBALL INTELLIGENCE</span>
         <span>{updated.toLocaleDateString('fr-FR', { day:'2-digit', month:'short', year:'numeric' }).toUpperCase()}</span>
       </div>
-      <h1>Football<br/><span>Intelligence</span><br/>Desk.</h1>
+      <h1>Football<br/><span>Intelligence.</span></h1>
       <div class="desk-intro">
         <p>Un radar éditorial alimenté par les xG d’Understat, la forme L5/L15 de Sorare et des signaux calculés avant rédaction.</p>
         <div class="desk-actions">
-          <a class="cut-button" href={url('/articles/')}>OUVRIR LE DESK <b>↗</b></a>
+          <a class="cut-button" href={url('/articles/')}>VOIR LES ANALYSES <b>↗</b></a>
           <a class="plain-link" href={url('/stats/')}>DATASET LIVE →</a>
         </div>
       </div>
@@ -164,7 +164,7 @@ const articleForPlayer = (player: string) =>
 
   <section class="shell latest-desk">
     <div class="module-head horizontal">
-      <div><span>04 / EDITORIAL FEED</span><h2>Le reste du desk.</h2></div>
+      <div><span>04 / EDITORIAL FEED</span><h2>Dernières analyses.</h2></div>
       <a href={url('/articles/')}>TOUTES LES ANALYSES ↗</a>
     </div>
     <div class="story-stack">
