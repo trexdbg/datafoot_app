@@ -18,7 +18,7 @@ const schema = {
 ---
 <BaseLayout
   title="Méthodologie, sources et transparence | DataFoot"
-  description="Découvrez comment DataFoot collecte les statistiques football, sélectionne ses sujets et encadre sa rédaction automatisée."
+  description="Découvrez comment DataFoot collecte, normalise et vérifie les statistiques utilisées dans ses analyses football."
   jsonLd={schema}
 >
   <section class="shell page-head page-head-grid methodology-head">
@@ -26,26 +26,26 @@ const schema = {
       <p class="eyebrow">MÉTHODOLOGIE & TRANSPARENCE</p>
       <h1>Comment DataFoot transforme des données en analyses.</h1>
     </div>
-    <p>DataFoot est une publication automatisée expérimentale. L’objectif est simple : conserver une chaîne traçable entre la donnée source, le signal statistique et le texte publié.</p>
+    <p>DataFoot est une publication spécialisée dans l’analyse statistique du football. L’objectif : conserver une chaîne claire entre la source, le signal observé et l’analyse publiée.</p>
   </section>
 
   <section class="shell trust-grid">
     <article><span>01</span><h2>Collecte</h2><p>Les données sont récupérées via des connecteurs indépendants. Une source indisponible n’interrompt pas les autres collectes.</p></article>
     <article><span>02</span><h2>Normalisation</h2><p>Python convertit les métriques dans un format commun et ajoute la provenance ainsi que l’horodatage.</p></article>
     <article><span>03</span><h2>Détection</h2><p>Des règles statistiques construisent un vivier de sujets possibles : écarts buts/xG, xG par 90, création xA, volume de tirs et implication offensive.</p></article>
-    <article><span>04</span><h2>Sélection</h2><p>Un moteur éditorial compare les candidats et peut choisir de ne publier aucun sujet. Un mécanisme de secours déterministe garantit la continuité.</p></article>
-    <article><span>05</span><h2>Rédaction</h2><p>La rédaction reçoit uniquement des faits structurés. Elle ne doit jamais inventer blessures, transferts, citations, résultats ou contexte absent.</p></article>
+    <article><span>04</span><h2>Sélection</h2><p>Les signaux sont comparés selon leur force statistique, leur lisibilité et leur intérêt éditorial. Un sujet trop faible peut être écarté.</p></article>
+    <article><span>05</span><h2>Vérification</h2><p>Les chiffres publiés doivent être présents dans les données collectées. Aucun contexte extérieur non sourcé ne doit être présenté comme un fait.</p></article>
     <article><span>06</span><h2>Publication</h2><p>Chaque article conserve sa source statistique et le dataset public est publié en JSON pour permettre une vérification indépendante.</p></article>
   </section>
 
   <section class="shell section principles-section">
     <div class="section-heading"><div><p class="eyebrow">RÈGLES ÉDITORIALES</p><h2>Ce que nous faisons — et ce que nous ne faisons pas.</h2></div></div>
     <div class="principles-grid">
-      <div><strong>Faits explicites</strong><p>Les chiffres affichés doivent exister dans les données fournies au modèle.</p></div>
+      <div><strong>Faits vérifiables</strong><p>Chaque chiffre affiché doit pouvoir être retrouvé dans les données utilisées pour l’analyse.</p></div>
       <div><strong>Source visible</strong><p>Chaque article affiche la source statistique primaire utilisée.</p></div>
       <div><strong>Pas de certitude xG</strong><p>Les expected goals décrivent des probabilités, pas des prédictions certaines.</p></div>
       <div><strong>Pas de faux contexte</strong><p>Une information d’actualité non présente dans le dataset ne doit pas être ajoutée.</p></div>
-      <div><strong>Automatisation déclarée</strong><p>La sélection et la rédaction sont automatisées à partir de données structurées ; ce fonctionnement est exposé publiquement.</p></div>
+      <div><strong>Échantillon lisible</strong><p>Les classements de taux appliquent un minimum de minutes afin d’éviter les petits échantillons trompeurs.</p></div>
       <div><strong>Accès aux données</strong><p>Le JSON public permet de contrôler les données utilisées par le site.</p></div>
     </div>
   </section>
