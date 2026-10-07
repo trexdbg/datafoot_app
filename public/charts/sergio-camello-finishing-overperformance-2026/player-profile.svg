@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 620" role="img" aria-labelledby="title desc">
+  <title id="title">Profil statistique de Sergio Camello</title>
+  <desc id="desc">Percentiles et statistiques football récentes de Sergio Camello</desc>
+  <rect width="1200" height="620" fill="#0b0e0b" rx="26"/>
+  <defs>
+    <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse">
+      <path d="M48 0H0V48" fill="none" stroke="#2b322b" stroke-width="1" opacity=".3"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="620" fill="url(#grid)" opacity=".36"/>
+  <style>
+    text { font-family: Inter, Arial, sans-serif; fill: #f2f4ee; }
+    .mono,.label,.axis-label,.footer { font-family: ui-monospace,SFMono-Regular,Menlo,monospace; }
+    .kicker { font-size:14px;font-weight:800;letter-spacing:2px;fill:#b7ff3c; }
+    .title { font-size:40px;font-weight:850;letter-spacing:-1.7px; }
+    .subtitle { font-size:16px;fill:#8f998f; }
+    .label { font-size:11px;font-weight:800;letter-spacing:1px;fill:#8f998f; }
+    .axis-label { font-size:10px;font-weight:800;letter-spacing:.4px;fill:#8f998f; }
+    .value { font-size:27px;font-weight:900; }
+    .footer { font-size:11px;font-weight:700;letter-spacing:.8px;fill:#8f998f; }
+  </style>
+
+  <text x="72" y="68" class="kicker">DATAFOOT / PLAYER PROFILE</text>
+  <text x="72" y="116" class="title">Sergio Camello</text>
+  <text x="72" y="148" class="subtitle">Rayo Vallecano · La Liga · Forward</text>
+
+  <polygon points="330.0,311.2 363.6,330.6 363.6,369.4 330.0,388.8 296.4,369.4 296.4,330.6" fill="none" stroke="#2b322b" stroke-width="1"/><polygon points="330.0,272.5 397.1,311.2 397.1,388.8 330.0,427.5 262.9,388.8 262.9,311.3" fill="none" stroke="#2b322b" stroke-width="1"/><polygon points="330.0,233.8 430.7,291.9 430.7,408.1 330.0,466.2 229.3,408.1 229.3,291.9" fill="none" stroke="#2b322b" stroke-width="1"/><polygon points="330.0,195.0 464.2,272.5 464.2,427.5 330.0,505.0 195.8,427.5 195.8,272.5" fill="none" stroke="#2b322b" stroke-width="1"/>
+  <line x1="330.0" y1="350.0" x2="330.0" y2="195.0" stroke="#2b322b" stroke-width="1"/><line x1="330.0" y1="350.0" x2="464.2" y2="272.5" stroke="#2b322b" stroke-width="1"/><line x1="330.0" y1="350.0" x2="464.2" y2="427.5" stroke="#2b322b" stroke-width="1"/><line x1="330.0" y1="350.0" x2="330.0" y2="505.0" stroke="#2b322b" stroke-width="1"/><line x1="330.0" y1="350.0" x2="195.8" y2="427.5" stroke="#2b322b" stroke-width="1"/><line x1="330.0" y1="350.0" x2="195.8" y2="272.5" stroke="#2b322b" stroke-width="1"/>
+  <polygon points="330.0,232.2 442.8,284.9 405.2,393.4 330.0,467.8 254.8,393.4 265.6,312.8" fill="#b7ff3c" fill-opacity=".18" stroke="#b7ff3c" stroke-width="3"/>
+  <text x="330.0" y="156.0" text-anchor="middle" class="axis-label">TIRS · P76</text><text x="501.5" y="255.0" text-anchor="start" class="axis-label">CADRÉS · P84</text><text x="501.5" y="453.0" text-anchor="start" class="axis-label">DRIBBLES · P56</text><text x="330.0" y="552.0" text-anchor="middle" class="axis-label">DUELS · P76</text><text x="158.5" y="453.0" text-anchor="end" class="axis-label">DERNIER TIERS · P56</text><text x="158.5" y="255.0" text-anchor="end" class="axis-label">ENTRÉES SURFACE · P48</text>
+
+  
+        <rect x="650" y="220" width="220" height="92" rx="12" fill="#111510" stroke="#2b322b"/>
+        <text x="668" y="248" class="label">BUTS / xG</text>
+        <text x="668" y="289" class="value">7 / 2.83</text>
+        
+        <rect x="890" y="220" width="220" height="92" rx="12" fill="#111510" stroke="#2b322b"/>
+        <text x="908" y="248" class="label">TIRS / 90</text>
+        <text x="908" y="289" class="value">3.95</text>
+        
+        <rect x="650" y="340" width="220" height="92" rx="12" fill="#111510" stroke="#2b322b"/>
+        <text x="668" y="368" class="label">PASSES RÉUSSIES / 90</text>
+        <text x="668" y="409" class="value">20.2</text>
+        
+        <rect x="890" y="340" width="220" height="92" rx="12" fill="#111510" stroke="#2b322b"/>
+        <text x="908" y="368" class="label">DRIBBLES RÉUSSIS / 90</text>
+        <text x="908" y="409" class="value">1.02</text>
+        
+        <rect x="650" y="460" width="460" height="92" rx="12" fill="#111510" stroke="#2b322b"/>
+        <text x="668" y="488" class="label">DUELS GAGNÉS / 90</text>
+        <text x="668" y="529" class="value">5.41</text>
+        
+
+  <line x1="72" y1="574" x2="1128" y2="574" stroke="#2b322b"/>
+  <text x="72" y="600" class="footer">VS 25 JOUEURS COMPARABLES · 615 MINUTES DE MATCH RÉCENTES</text>
+  <text x="1128" y="600" text-anchor="end" class="footer">SOURCES · UNDERSTAT + DONNÉES DE MATCH</text>
+</svg>

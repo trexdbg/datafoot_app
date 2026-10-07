@@ -1,32 +1,36 @@
 ---
-title: "Kylian Mbappe-Lottin se distingue par son volume de tirs"
+title: "Kylian Mbappé affiche un volume de tirs très élevé avec le Real Madrid"
 description: "Kylian Mbappe-Lottin tente 5.86 tirs par 90 minutes sur 630 minutes."
-publishedAt: "2026-10-07T13:59:38+00:00"
+publishedAt: "2026-10-07T14:29:07+00:00"
 league: "La_Liga"
 player: "Kylian Mbappe-Lottin"
 team: "Real Madrid"
 source: "Understat"
 sourceUrl: "https://understat.com/league/La_Liga/2026"
-storyScore: 80.0
+storyScore: 82.0
 ---
-### Kylian Mbappé-Lottin se distingue par son volume de tirs
+Kylian Mbappé réalise des débuts remarqués sous les couleurs du Real Madrid en Liga. En ce début de saison 2026, l'attaquant français s'est rapidement imposé comme le point focal de l'animation offensive madrilène, affichant des volumes de jeu particulièrement denses sur les pelouses espagnoles.
 
-Depuis son arrivée au Real Madrid pour la saison 2026 de La Liga, Kylian Mbappé-Lottin s'est immédiatement imposé comme le point focal de l'animation offensive madrilène. En l'espace de sept rencontres et 630 minutes de jeu, l'attaquant français a non seulement maintenu une efficacité statistique élevée, mais il a surtout imposé un volume de frappes qui le place dans une catégorie à part.
+Ce qui rend ce signal statistique particulièrement intéressant, c'est l'intensité de sa présence dans la zone de conclusion. Sur un échantillon initial de 630 minutes réparties sur 7 matchs de championnat, l'ancien joueur du Paris Saint-Germain cumule un total de 41 tirs, se positionnant immédiatement comme l'un des attaquants les plus entreprenants du championnat.
 
-#### Un signal statistique de premier plan
-Ce qui rend le profil de Mbappé-Lottin particulièrement intéressant en ce début de saison, c'est son intensité de tir. Avec 41 tentatives enregistrées en 630 minutes, il affiche une moyenne de 5,86 tirs par match. Dans le football moderne, un tel volume est rare ; il témoigne d'une capacité constante à se projeter dans la zone de vérité et à solliciter le gardien adverse, indépendamment de la physionomie des rencontres. Cette propension à déclencher le tir fait de lui le moteur principal de la création d'occasions du Real Madrid.
+### Une activité offensive de premier plan
 
-#### Analyse des chiffres : efficacité et probabilités
-Les données d'Understat permettent de nuancer cette performance brute. Avec 7 buts inscrits pour un xG (Expected Goals) cumulé de 8,35, Mbappé-Lottin présente un différentiel négatif de -1,35. En clair, le Français a marqué un peu moins que ce que la qualité de ses occasions aurait dû théoriquement produire. 
+Les chiffres détaillés fournis par Understat permettent de mesurer précisément l'ampleur de cette activité. Kylian Mbappé affiche une moyenne impressionnante de 5,857 tirs par 90 minutes en Liga. Cette propension à frapper au but se traduit par des indicateurs de menace élevés : son total de buts s'élève à 7 réalisations, accompagnées de 2 passes décisives. 
 
-À l'inverse, son apport à la création est conforme aux attentes : avec 2 passes décisives pour 1,81 xA (Expected Assists), il surperforme légèrement ses statistiques de création pure. Son indicateur de performance globale, le xG+xA par 90 minutes, s'établit à 1,45. Ce chiffre confirme qu'il est impliqué, par le tir ou la passe, dans près d'un but et demi par match, une donnée qui souligne son poids colossal dans le système offensif madrilène.
+Sur le plan des indicateurs probabilistes, l'international français présente un xG (buts attendus) de 8,347, soit un xG par 90 minutes de 1,192. Son influence dans la construction et la transmission se lit également à travers un xA (passes décisives attendues) de 1,809 (0,258 par 90 minutes), portant son total combiné de xG+xA par 90 minutes à 1,451. 
 
-#### Limites et interprétation prudente
-Il est crucial de rappeler que les xG et xA sont des indicateurs probabilistes et non des certitudes. Le différentiel négatif de -1,35 entre ses buts réels et ses xG ne signifie pas nécessairement une baisse de forme ou un manque de réalisme chronique ; il peut simplement refléter une période de variance statistique sur un échantillon encore réduit de sept matchs. De même, un volume de 5,86 tirs par match est une observation statistique solide, mais elle ne garantit pas la pérennité de cette efficacité sur la durée totale d'une saison, où les défenses adverses pourraient ajuster leur bloc pour limiter ses espaces de tir.
+En élargissant l'analyse aux statistiques récentes agrégées sur 10 apparitions et 868 minutes jouées, le profil du joueur se confirme avec une moyenne de 5,7 tirs par 90 minutes, dont 3,21 tirs cadrés par 90 minutes. Ses statistiques englobent aussi 1,14 but par 90 minutes, 0,31 passe décisive par 90 minutes, ainsi qu'une précision de passe de 86,2 % (29,76 passes réussies par 90 minutes) et 2,8 dribbles réussis par 90 minutes.
 
-#### Perspectives : ce qu'il faudra observer
-Pour les prochaines journées de La Liga, l'enjeu sera de déterminer si ce volume de tirs reste stable ou s'il s'érode sous la pression des calendriers chargés. Il sera également intéressant de surveiller si le différentiel entre ses buts réels et ses xG tend vers l'équilibre, ce qui confirmerait une montée en puissance dans la précision chirurgicale qui a fait sa réputation. La capacité de Mbappé-Lottin à maintenir cette intensité tout en améliorant sa conversion sera le baromètre de la réussite offensive du Real Madrid.
+### Entre efficacité brute et volume de tirs
+
+Il convient toutefois d'analyser ces métriques avec la distance nécessaire. La différence entre les buts inscrits et les buts attendus (Buts moins xG) s'établit à -1,347 (7 buts pour 8,347 xG), ce qui indique que l'attaquant convertit légèrement en dessous de la valeur probabiliste brute de ses occasions sur cette séquence. À l'inverse, sa balance entre passes décisives et xA est positive de 0,191 (2 passes décisives pour 1,809 xA). 
+
+Rappelons que les xG et xA sont des indicateurs probabilistes mesurant la qualité des situations de tir et de passe, et non des certitudes absolues sur la réussite future d'un joueur. 
+
+### Perspectives pour la suite de la saison
+
+Pour la suite de la compétition, il sera pertinent d'observer si ce volume très élevé de 5,857 tirs par 90 minutes se maintient sur un échantillon de matchs plus large. L'évolution de sa capacité à transformer ce grand nombre de tentatives en buts réguliers constituera un baromètre décisif pour l'attaque du Real Madrid.
 
 ***
 
-*Note méthodologique : Les données présentées sont issues de la plateforme Understat pour la saison 2026 de La Liga. Les statistiques par 90 minutes sont calculées sur la base de 630 minutes de temps de jeu effectif. Les indicateurs xG (Expected Goals) et xA (Expected Assists) mesurent la probabilité qu'un tir ou une passe débouche sur un but en fonction de la qualité et du contexte de l'occasion.*
+*Note méthodologique : Les données présentées proviennent d'Understat pour la Liga 2026, basées sur 7 matchs et 630 minutes disputées (ainsi que des agrégats récents sur 868 minutes). Les métriques par 90 minutes sont calculées pour normaliser le temps de jeu.*
