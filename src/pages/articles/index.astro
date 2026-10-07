@@ -1,41 +1,29 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-
-const articles = (await getCollection('articles'))
-  .sort((a, b) => b.data.publishedAt.valueOf() - a.data.publishedAt.valueOf());
+const articles = (await getCollection('articles')).sort((a,b)=>b.data.publishedAt.valueOf()-a.data.publishedAt.valueOf());
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
-const url = (path: string) => `${base}${path}`;
+const url = (path:string)=>`${base}${path}`;
 ---
 <BaseLayout
-  title="Analyses football xG, statistiques joueurs et tendances | DataFoot"
-  description="Analyses football basées sur les xG, xA, tirs et performances joueurs. Chaque article DataFoot cite sa source statistique."
+  title="Analyses football xG, forme et signaux | DataFoot"
+  description="Le desk DataFoot : analyses de joueurs basées sur xG, xA, tirs, forme Sorare et signaux statistiques sourcés."
 >
-  <section class="shell page-head page-head-grid">
-    <div>
-      <p class="eyebrow">ANALYSES DATA FOOTBALL</p>
-      <h1>Les signaux qui méritent une analyse.</h1>
-    </div>
-    <p>Une sélection éditoriale à partir de statistiques traçables. Pas de remplissage : le pipeline peut publier moins d’articles si les signaux sont faibles.</p>
+  <section class="shell archive-head">
+    <div class="edition-line"><span>DATAFOOT / ANALYSIS ARCHIVE</span><span>{articles.length} REPORTS</span></div>
+    <h1>Analysis<br/><span>Archive.</span></h1>
+    <p>Les rapports publiés par le desk, triés du plus récent au plus ancien. Chaque ligne conserve la source, le signal et le joueur analysé.</p>
   </section>
-
-  <section class="shell section article-list-section">
-    <div class="article-grid editorial-grid">
-      {articles.map((article, index) => (
-        <article class:list={['card', index === 0 && 'card-featured']}>
-          <div class="card-index">{String(index + 1).padStart(2, '0')}</div>
-          <div class="card-meta">
-            <span>{article.data.league.replaceAll('_', ' ')}</span>
-            <time datetime={article.data.publishedAt.toISOString()}>{article.data.publishedAt.toLocaleDateString('fr-FR')}</time>
-          </div>
-          <h2><a href={url(`/articles/${article.id}/`)}>{article.data.title}</a></h2>
-          <p>{article.data.description}</p>
-          <div class="card-footer">
-            <span>{article.data.player} · {article.data.team}</span>
-            <span>{article.data.source}</span>
-          </div>
-        </article>
-      ))}
-    </div>
+  <section class="shell archive-list">
+    {articles.map((article,index)=>(
+      <a class="archive-row" href={url(`/articles/${article.id}/`)}>
+        <span class="archive-no">{String(index+1).padStart(2,'0')}</span>
+        <div class="archive-meta"><span>{article.data.league.replaceAll('_',' ')}</span><small>{article.data.publishedAt.toLocaleDateString('fr-FR')}</small></div>
+        <div class="archive-title"><h2>{article.data.title}</h2><p>{article.data.player} · {article.data.team}</p></div>
+        <span class="archive-source">{article.data.source}</span>
+        <div class="archive-score"><small>SIGNAL</small><b>{Math.round(article.data.storyScore)}</b></div>
+        <span class="archive-arrow">↗</span>
+      </a>
+    ))}
   </section>
 </BaseLayout>

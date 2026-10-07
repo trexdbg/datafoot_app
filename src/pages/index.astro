@@ -1,95 +1,193 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Sparkline from '../components/Sparkline.astro';
 import stats from '../data/stats.json';
 
-const articles = (await getCollection('articles'))
-  .sort((a, b) => b.data.publishedAt.valueOf() - a.data.publishedAt.valueOf())
-  .slice(0, 6);
-
+const allArticles = (await getCollection('articles'))
+  .sort((a, b) => b.data.publishedAt.valueOf() - a.data.publishedAt.valueOf());
+const articles = allArticles.slice(0, 6);
+const featured = articles[0];
+const secondary = articles.slice(1, 4);
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const url = (path: string) => `${base}${path}`;
 const updated = new Date(stats.generated_at);
-const liveSources = Object.entries((stats as any).source_status ?? {}).filter(([, value]: any) => value?.status === 'active').length;
-const editorialPlan = ((stats as any).editorial_plan ?? []) as Array<{selector?: string}>;
-const aiSelected = editorialPlan.some((pick) => pick.selector?.startsWith('gemini:'));
+
+type Pick = {
+  kind:string; title:string; rationale:string; editorial_score:number; selector:string;
+  player:string; team:string; league:string;
+};
+type SorarePlayer = {
+  player:string; matched_from:string; club:string; position:string;
+  l5_score:number|null; l15_score:number|null; recent_scores:number[];
+  source_url:string; match_confidence:number;
+};
+
+const picks = (((stats as any).editorial_plan ?? []) as Pick[]).slice(0, 4);
+const sorare = (((stats as any).sorare_players ?? []) as SorarePlayer[])
+  .filter((p) => p.l5_score != null && p.l15_score != null && p.match_confidence >= .9);
+const movers = [...sorare]
+  .sort((a, b) => ((b.l5_score ?? 0) - (b.l15_score ?? 0)) - ((a.l5_score ?? 0) - (a.l15_score ?? 0)))
+  .slice(0, 5);
+const formLeaders = [...sorare].sort((a, b) => (b.l5_score ?? 0) - (a.l5_score ?? 0)).slice(0, 4);
+const understatLeaders = [...stats.top_players]
+  .filter((p) => p.minutes >= 300)
+  .sort((a, b) => b.xgi_per90 - a.xgi_per90)
+  .slice(0, 5);
+
+const signalLabel = (kind: string) => ({
+  finishing_overperformance: 'FINISHING +',
+  finishing_underperformance: 'FINISHING −',
+  shot_volume: 'SHOT VOLUME',
+  high_xg_rate: 'xG RATE',
+  creative_output: 'CREATION',
+  attacking_involvement: 'ATTACKING LOAD',
+}[kind] ?? kind.replaceAll('_', ' ').toUpperCase());
+
+const articleForPlayer = (player: string) =>
+  allArticles.find((article) => article.data.player.toLowerCase() === player.toLowerCase());
 ---
-<BaseLayout>
-  <section class="hero shell">
-    <div class="hero-copy-wrap">
-      <div class="signal-line"><span class="pulse"></span> DATASET ACTUALISÉ · {updated.toLocaleDateString('fr-FR')}</div>
-      <p class="eyebrow">FOOTBALL / DATA / SIGNAL</p>
-      <h1>Lire le football<br /><em>par les données.</em></h1>
-      <p class="hero-copy">
-        xG, xA, tirs, efficacité et tendances : DataFoot transforme des statistiques sourcées
-        en analyses compréhensibles, vérifiables et conçues pour aller au-delà du score brut.
-      </p>
-      <div class="actions">
-        <a class="button primary" href={url('/articles/')}>Voir les analyses <span>↗</span></a>
-        <a class="button ghost" href={url('/stats/')}>Explorer les données</a>
+<BaseLayout
+  title="DataFoot — Football Intelligence, xG et forme joueurs"
+  description="Radar data football : signaux xG, forme Sorare L5/L15, volume de tirs et analyses sourcées sur les joueurs des grands championnats."
+>
+  <section class="desk-hero shell">
+    <div class="desk-mast">
+      <div class="edition-line">
+        <span>DATAFOOT INTELLIGENCE DESK</span>
+        <span>{updated.toLocaleDateString('fr-FR', { day:'2-digit', month:'short', year:'numeric' }).toUpperCase()}</span>
+      </div>
+      <h1>Football<br/><span>Intelligence</span><br/>Desk.</h1>
+      <div class="desk-intro">
+        <p>Un radar éditorial alimenté par les xG d’Understat, la forme L5/L15 de Sorare et des signaux calculés avant rédaction.</p>
+        <div class="desk-actions">
+          <a class="cut-button" href={url('/articles/')}>OUVRIR LE DESK <b>↗</b></a>
+          <a class="plain-link" href={url('/stats/')}>DATASET LIVE →</a>
+        </div>
       </div>
     </div>
 
-    <aside class="signal-board" aria-label="État du pipeline DataFoot">
-      <div class="board-head"><span>DATAFOOT / LIVE</span><span class="status-pill">ONLINE</span></div>
-      <div class="board-number">{stats.player_count.toLocaleString('fr-FR')}</div>
-      <div class="board-label">joueurs observés cette saison</div>
-      <div class="board-grid">
-        <div><span>Ligues</span><strong>{stats.leagues.length}</strong></div>
-        <div><span>Sources actives</span><strong>{liveSources}</strong></div>
-        <div><span>Candidats</span><strong>{(stats as any).candidate_count ?? '—'}</strong></div>
-        <div><span>Sélection</span><strong>{aiSelected ? 'IA' : 'Fallback'}</strong></div>
+    <div class="radar-panel">
+      <div class="radar-grid" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+      <div class="radar-head">
+        <span><b class="live-beacon"></b> LIVE SIGNALS</span>
+        <span>{picks.length} RETENUS / {(stats as any).candidate_count ?? 0} DÉTECTÉS</span>
       </div>
-      <div class="board-foot">Dernière génération · {updated.toLocaleString('fr-FR')}</div>
-    </aside>
+      <div class="radar-list">
+        {picks.map((pick, index) => {
+          const linked = articleForPlayer(pick.player);
+          return (
+            <a class="radar-row" href={linked ? url(`/articles/${linked.id}/`) : url('/articles/')}>
+              <span class="radar-rank">{String(index + 1).padStart(2,'0')}</span>
+              <div>
+                <span class="signal-tag">{signalLabel(pick.kind)}</span>
+                <strong>{pick.player}</strong>
+                <small>{pick.team} · {pick.league.replaceAll('_',' ')}</small>
+              </div>
+              <b>{Math.round(pick.editorial_score)}</b>
+            </a>
+          );
+        })}
+      </div>
+      <div class="radar-foot">
+        <span>UNDERSTAT</span><span>SORARE</span><span>OPENLIGADB</span>
+      </div>
+    </div>
   </section>
 
-  <section class="ticker" aria-label="Principes DataFoot">
-    <div class="shell ticker-inner">
-      <span>DONNÉES SOURCÉES</span><i>•</i><span>ANGLES SÉLECTIONNÉS</span><i>•</i><span>FAITS VÉRIFIABLES</span><i>•</i><span>MÉTHODOLOGIE PUBLIQUE</span>
+  <section class="score-tape">
+    <div class="shell score-tape-inner">
+      <strong>FORM WATCH</strong>
+      {formLeaders.map((player) => (
+        <span><b>{player.player}</b> L5 <em>{Math.round(player.l5_score ?? 0)}</em></span>
+      ))}
+      <a href={url('/stats/')}>ALL DATA ↗</a>
     </div>
   </section>
 
-  <section class="shell section">
-    <div class="section-heading editorial-heading">
-      <div>
-        <p class="eyebrow">SIGNALS RETENUS</p>
-        <h2>Dernières analyses</h2>
-      </div>
-      <a class="text-link" href={url('/articles/')}>Toutes les analyses →</a>
-    </div>
-
-    <div class="article-grid editorial-grid">
-      {articles.map((article, index) => (
-        <article class:list={['card', index === 0 && 'card-featured']}>
-          <div class="card-index">0{index + 1}</div>
-          <div class="card-meta">
-            <span>{article.data.league.replaceAll('_', ' ')}</span>
-            <time datetime={article.data.publishedAt.toISOString()}>{article.data.publishedAt.toLocaleDateString('fr-FR')}</time>
+  {featured && (
+    <section class="shell lead-story">
+      <div class="lead-label"><span>LEAD / 01</span><span>{featured.data.league.replaceAll('_',' ')}</span></div>
+      <a class="lead-link" href={url(`/articles/${featured.id}/`)}>
+        <div class="lead-copy">
+          <p class="signal-tag">LATEST ANALYSIS</p>
+          <h2>{featured.data.title}</h2>
+          <p>{featured.data.description}</p>
+          <div class="lead-meta">
+            <span>{featured.data.player}</span>
+            <span>{featured.data.team}</span>
+            <span>SIGNAL {Math.round(featured.data.storyScore)}</span>
           </div>
-          <h3><a href={url(`/articles/${article.id}/`)}>{article.data.title}</a></h3>
+        </div>
+        <div class="lead-number">
+          <span>DF</span>
+          <b>{Math.round(featured.data.storyScore)}</b>
+          <small>EDITORIAL<br/>SIGNAL</small>
+        </div>
+      </a>
+    </section>
+  )}
+
+  <section class="shell intelligence-grid">
+    <div class="desk-column">
+      <div class="module-head"><span>02 / FORM INDEX</span><h2>Qui monte ?</h2><p>Écart L5 vs L15 Sorare.</p></div>
+      <div class="form-board">
+        {movers.map((player, index) => {
+          const delta = (player.l5_score ?? 0) - (player.l15_score ?? 0);
+          return (
+            <div class="form-row">
+              <span class="row-no">{String(index + 1).padStart(2,'0')}</span>
+              <div class="form-player"><strong>{player.player}</strong><small>{player.club}</small></div>
+              <Sparkline values={player.recent_scores.slice(0, 8).reverse()} />
+              <div class="form-score"><small>L5</small><b>{Math.round(player.l5_score ?? 0)}</b></div>
+              <span class:list={['delta-chip', delta >= 0 ? 'up' : 'down']}>{delta >= 0 ? '+' : ''}{Math.round(delta)}</span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+
+    <div class="desk-column xgi-column">
+      <div class="module-head"><span>03 / ATTACKING LOAD</span><h2>Pression offensive.</h2><p>xG + xA par 90, minimum 300 minutes.</p></div>
+      <div class="metric-ranking">
+        {understatLeaders.map((player, index) => (
+          <div class="metric-row">
+            <span>{String(index + 1).padStart(2,'0')}</span>
+            <div><strong>{player.name}</strong><small>{player.team} · {player.league.replaceAll('_',' ')}</small></div>
+            <div class="metric-bar"><i style={`--value:${Math.min(100, player.xgi_per90 * 58)}%`}></i></div>
+            <b>{player.xgi_per90.toFixed(2)}</b>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="shell latest-desk">
+    <div class="module-head horizontal">
+      <div><span>04 / EDITORIAL FEED</span><h2>Le reste du desk.</h2></div>
+      <a href={url('/articles/')}>TOUTES LES ANALYSES ↗</a>
+    </div>
+    <div class="story-stack">
+      {secondary.map((article, index) => (
+        <a class="story-row" href={url(`/articles/${article.id}/`)}>
+          <span class="story-code">A{String(index + 2).padStart(2,'0')}</span>
+          <div class="story-title"><small>{article.data.league.replaceAll('_',' ')} / {article.data.source}</small><h3>{article.data.title}</h3></div>
           <p>{article.data.description}</p>
-          <div class="card-footer">
-            <span>{article.data.player} · {article.data.team}</span>
-            <span class="score-chip">signal {Math.round(article.data.storyScore)}</span>
-          </div>
-        </article>
+          <div class="story-score"><small>SIGNAL</small><b>{Math.round(article.data.storyScore)}</b></div>
+          <span class="story-arrow">↗</span>
+        </a>
       ))}
     </div>
   </section>
 
-  <section class="shell evidence-section">
-    <div class="evidence-intro">
-      <p class="eyebrow">POURQUOI DATAFOOT</p>
-      <h2>Un article doit pouvoir être remonté jusqu’à ses données.</h2>
-      <p>Chaque analyse expose sa source, ses métriques principales et le cadre méthodologique utilisé. Les chiffres sont calculés avant la rédaction.</p>
-      <a class="text-link" href={url('/methodologie/')}>Voir la méthodologie complète →</a>
-    </div>
-    <div class="evidence-list">
-      <div><span>01</span><div><strong>Collecter</strong><p>Les sources sont interrogées indépendamment et peuvent échouer sans casser le pipeline.</p></div></div>
-      <div><span>02</span><div><strong>Normaliser</strong><p>Les données sont converties dans un schéma commun avec provenance et horodatage.</p></div></div>
-      <div><span>03</span><div><strong>Détecter</strong><p>Python construit un vivier de signaux statistiques à partir de seuils explicites.</p></div></div>
-      <div><span>04</span><div><strong>Sélectionner</strong><p>Gemini compare les signaux et peut décider de ne pas publier un sujet trop faible.</p></div></div>
+  <section class="method-band">
+    <div class="shell method-band-inner">
+      <span class="huge-index">05</span>
+      <div><p class="signal-tag">PROCESS / TRACEABILITY</p><h2>Pas de donnée,<br/>pas d’histoire.</h2></div>
+      <div class="method-copy">
+        <p>Les statistiques sont collectées et calculées en amont. Gemini sélectionne les angles à partir de candidats factuels et peut décider de ne rien publier.</p>
+        <a href={url('/methodologie/')}>LIRE LE PROTOCOLE ÉDITORIAL →</a>
+      </div>
     </div>
   </section>
 </BaseLayout>

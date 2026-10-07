@@ -1,6 +1,8 @@
 ---
 import { getCollection, render, type CollectionEntry } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import Sparkline from '../../components/Sparkline.astro';
+import stats from '../../data/stats.json';
 
 export async function getStaticPaths() {
   const articles = await getCollection('articles');
@@ -8,7 +10,6 @@ export async function getStaticPaths() {
 }
 
 interface Props { article: CollectionEntry<'articles'>; }
-
 const { article } = Astro.props;
 const { Content } = await render(article);
 const { data } = article;
@@ -18,33 +19,31 @@ const siteOrigin = Astro.site ?? new URL('https://trexdbg.github.io');
 const canonicalUrl = new URL(canonicalPath, siteOrigin).toString();
 const methodUrl = new URL(`${base}/methodologie/`, siteOrigin).toString();
 const homeUrl = new URL(`${base}/`, siteOrigin).toString();
+
+const norm = (value: string) => value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,' ').trim();
+const playerStat = stats.top_players.find((p) => norm(p.name) === norm(data.player));
+const sorare = (((stats as any).sorare_players ?? []) as any[]).find((p) =>
+  norm(p.matched_from || p.player) === norm(data.player)
+);
+const delta = playerStat?.xg_delta ?? null;
+
 const articleSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'Article',
-  headline: data.title,
-  description: data.description,
-  url: canonicalUrl,
-  mainEntityOfPage: canonicalUrl,
-  datePublished: data.publishedAt.toISOString(),
-  dateModified: data.publishedAt.toISOString(),
-  inLanguage: 'fr-FR',
-  isAccessibleForFree: true,
+  '@context': 'https://schema.org', '@type': 'Article',
+  headline: data.title, description: data.description, url: canonicalUrl,
+  mainEntityOfPage: canonicalUrl, datePublished: data.publishedAt.toISOString(),
+  dateModified: data.publishedAt.toISOString(), inLanguage: 'fr-FR', isAccessibleForFree: true,
   author: { '@type': 'Organization', name: 'DataFoot', url: methodUrl },
   publisher: { '@type': 'Organization', name: 'DataFoot', url: homeUrl },
-  about: [
-    { '@type': 'Person', name: data.player },
-    { '@type': 'SportsTeam', name: data.team },
-  ],
-  keywords: [data.player, data.team, data.league.replaceAll('_', ' '), 'football', 'xG', 'statistiques football'],
-  citation: data.sourceUrl,
+  about: [{ '@type': 'Person', name: data.player }, { '@type': 'SportsTeam', name: data.team }],
+  keywords: [data.player, data.team, data.league.replaceAll('_',' '), 'football', 'xG', 'statistiques football'],
+  citation: [data.sourceUrl, ...(sorare?.source_url ? [sorare.source_url] : [])],
 };
 const breadcrumbSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'BreadcrumbList',
-  itemListElement: [
-    { '@type': 'ListItem', position: 1, name: 'Accueil', item: homeUrl },
-    { '@type': 'ListItem', position: 2, name: 'Analyses', item: new URL(`${base}/articles/`, siteOrigin).toString() },
-    { '@type': 'ListItem', position: 3, name: data.title, item: canonicalUrl },
+  '@context':'https://schema.org','@type':'BreadcrumbList',
+  itemListElement:[
+    {'@type':'ListItem',position:1,name:'Accueil',item:homeUrl},
+    {'@type':'ListItem',position:2,name:'Analyses',item:new URL(`${base}/articles/`,siteOrigin).toString()},
+    {'@type':'ListItem',position:3,name:data.title,item:canonicalUrl},
   ],
 };
 ---
@@ -56,47 +55,86 @@ const breadcrumbSchema = {
   publishedAt={data.publishedAt.toISOString()}
   jsonLd={[articleSchema, breadcrumbSchema]}
 >
-  <article class="article shell">
-    <nav class="breadcrumbs" aria-label="Fil d’Ariane">
-      <a href={`${base}/`}>Accueil</a><span>›</span><a href={`${base}/articles/`}>Analyses</a><span>›</span><span>{data.player}</span>
+  <article class="report shell">
+    <nav class="report-crumbs" aria-label="Fil d’Ariane">
+      <a href={`${base}/`}>DF</a><span>/</span><a href={`${base}/articles/`}>ANALYSES</a><span>/</span><span>{data.player.toUpperCase()}</span>
     </nav>
 
-    <header class="article-header">
-      <div class="article-kicker">
-        <span>{data.league.replaceAll('_', ' ')}</span>
-        <time datetime={data.publishedAt.toISOString()}>{data.publishedAt.toLocaleDateString('fr-FR', { dateStyle: 'long' })}</time>
+    <header class="report-head">
+      <div class="report-stamp">
+        <span>DATAFOOT / SCOUTING REPORT</span>
+        <span>{data.publishedAt.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'})}</span>
       </div>
-      <h1>{data.title}</h1>
-      <p class="lede">{data.description}</p>
+      <div class="report-title-grid">
+        <div>
+          <p class="signal-tag">{data.league.replaceAll('_',' ')} · {data.team}</p>
+          <h1>{data.title}</h1>
+          <p class="report-dek">{data.description}</p>
+        </div>
+        <div class="report-score">
+          <small>EDITORIAL<br/>SIGNAL</small>
+          <strong>{Math.round(data.storyScore)}</strong>
+          <span>/100</span>
+        </div>
+      </div>
     </header>
 
-    <div class="article-layout">
-      <div class="article-main">
-        <section class="answer-box" aria-labelledby="en-bref">
-          <p class="eyebrow" id="en-bref">EN BREF</p>
-          <p>{data.description}</p>
-          <div class="answer-facts">
-            <span><small>Joueur</small><strong>{data.player}</strong></span>
-            <span><small>Équipe</small><strong>{data.team}</strong></span>
-            <span><small>Signal éditorial</small><strong>{Math.round(data.storyScore)}/100</strong></span>
+    <section class="snapshot-strip">
+      <div><small>PLAYER</small><strong>{data.player}</strong><span>{data.team}</span></div>
+      {playerStat && <div><small>GOALS / xG</small><strong>{playerStat.goals} / {playerStat.xg.toFixed(2)}</strong><span class:list={['snapshot-delta', (delta ?? 0) >= 0 ? 'up' : 'down']}>{delta != null ? `${delta >= 0 ? '+' : ''}${delta.toFixed(2)} Δ` : '—'}</span></div>}
+      {playerStat && <div><small>xG / 90</small><strong>{playerStat.xg_per90.toFixed(2)}</strong><span>{playerStat.minutes} minutes</span></div>}
+      {playerStat && <div><small>SHOTS / 90</small><strong>{playerStat.shots_per90.toFixed(2)}</strong><span>{playerStat.shots} tirs</span></div>}
+      {sorare && <div><small>SORARE L5</small><strong>{Math.round(sorare.l5_score ?? 0)}</strong><span>L15 {Math.round(sorare.l15_score ?? 0)}</span></div>}
+    </section>
+
+    <div class="report-grid">
+      <main class="report-body">
+        <section class="executive-note">
+          <div class="note-index">01</div>
+          <div>
+            <p class="signal-tag">EXECUTIVE READ</p>
+            <h2>Le signal.</h2>
+            <p>{data.description}</p>
           </div>
         </section>
 
-        <div class="prose"><Content /></div>
-      </div>
+        <div class="prose report-prose"><Content /></div>
+      </main>
 
-      <aside class="article-rail">
-        <div class="rail-card">
-          <span class="rail-label">SOURCE PRIMAIRE</span>
+      <aside class="report-aside">
+        {sorare && (
+          <section class="side-module form-module">
+            <div class="side-module-head"><span>FORM TRACE</span><span>SORARE</span></div>
+            <div class="side-score-pair"><div><small>L5</small><b>{Math.round(sorare.l5_score ?? 0)}</b></div><div><small>L15</small><b>{Math.round(sorare.l15_score ?? 0)}</b></div></div>
+            <Sparkline values={(sorare.recent_scores ?? []).slice(0,10).reverse()} width={240} height={64}/>
+            <p>{sorare.l5_appearances ?? '—'} apparitions L5 · {sorare.l15_appearances ?? '—'} apparitions L15</p>
+            <a href={sorare.source_url} rel="nofollow noreferrer">SOURCE SORARE ↗</a>
+          </section>
+        )}
+
+        {playerStat && (
+          <section class="side-module">
+            <div class="side-module-head"><span>DATA SNAPSHOT</span><span>UNDERSTAT</span></div>
+            <dl class="data-list">
+              <div><dt>Matchs</dt><dd>{playerStat.games}</dd></div>
+              <div><dt>Minutes</dt><dd>{playerStat.minutes}</dd></div>
+              <div><dt>Buts</dt><dd>{playerStat.goals}</dd></div>
+              <div><dt>Passes</dt><dd>{playerStat.assists}</dd></div>
+              <div><dt>xG</dt><dd>{playerStat.xg.toFixed(2)}</dd></div>
+              <div><dt>xA</dt><dd>{playerStat.xa.toFixed(2)}</dd></div>
+              <div><dt>Tirs</dt><dd>{playerStat.shots}</dd></div>
+              <div><dt>xG+xA/90</dt><dd>{playerStat.xgi_per90.toFixed(2)}</dd></div>
+            </dl>
+          </section>
+        )}
+
+        <section class="side-module source-module">
+          <div class="side-module-head"><span>PROVENANCE</span><span>VERIFIED</span></div>
           <strong>{data.source}</strong>
-          <p>Les statistiques citées dans cet article proviennent de cette source.</p>
-          <a href={data.sourceUrl} rel="nofollow noreferrer">Consulter la source ↗</a>
-        </div>
-        <div class="rail-card">
-          <span class="rail-label">TRANSPARENCE</span>
-          <p>Les métriques sont collectées et calculées avant rédaction. Le modèle ne doit pas inventer de faits absents du dataset.</p>
-          <a href={`${base}/methodologie/`}>Lire la méthode →</a>
-        </div>
+          <p>Données calculées avant rédaction. Les xG/xA restent des indicateurs probabilistes.</p>
+          <a href={data.sourceUrl} rel="nofollow noreferrer">SOURCE PRIMAIRE ↗</a>
+          <a href={`${base}/methodologie/`}>PROTOCOLE ↗</a>
+        </section>
       </aside>
     </div>
   </article>
