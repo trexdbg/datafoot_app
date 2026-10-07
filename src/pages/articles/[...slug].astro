@@ -27,7 +27,12 @@ const sorare = (((stats as any).sorare_players ?? []) as any[]).find((p) =>
   norm(p.matched_from || p.player) === norm(data.player)
 );
 const delta = playerStat?.xg_delta ?? null;
+type ArticleVisual = { kind:string; src:string; alt:string; caption:string; source:string };
+const visuals = ((((stats as any).article_visuals ?? {})[article.id] ?? []) as ArticleVisual[]);
 const primarySourceHref = data.source === 'Sorare' ? SORARE_REFERRAL_URL : data.sourceUrl;
+const firstVisualUrl = visuals[0]?.src
+  ? new URL(`${base}${visuals[0].src}`, siteOrigin).toString()
+  : undefined;
 
 const articleSchema = {
   '@context': 'https://schema.org', '@type': 'Article',
@@ -39,6 +44,7 @@ const articleSchema = {
   about: [{ '@type': 'Person', name: data.player }, { '@type': 'SportsTeam', name: data.team }],
   keywords: [data.player, data.team, data.league.replaceAll('_',' '), 'football', 'xG', 'statistiques football'],
   citation: [data.sourceUrl, ...(sorare?.source_url ? [sorare.source_url] : [])],
+  ...(firstVisualUrl ? { image: firstVisualUrl } : {}),
 };
 const breadcrumbSchema = {
   '@context':'https://schema.org','@type':'BreadcrumbList',
@@ -99,6 +105,37 @@ const breadcrumbSchema = {
             <p>{data.description}</p>
           </div>
         </section>
+
+        {visuals.length > 0 && (
+          <section class="visual-analysis" aria-labelledby="visual-analysis-title">
+            <div class="visual-analysis-head">
+              <div>
+                <p class="signal-tag">VISUAL ANALYSIS</p>
+                <h2 id="visual-analysis-title">Le joueur en trois graphiques.</h2>
+              </div>
+              <span>{visuals.length} VISUELS</span>
+            </div>
+            <div class="visual-stack">
+              {visuals.map((visual, index) => (
+                <figure class="data-figure">
+                  <div class="figure-index">{String(index + 1).padStart(2, '0')}</div>
+                  <img
+                    src={`${base}${visual.src}`}
+                    alt={visual.alt}
+                    width="1200"
+                    height="620"
+                    loading={index === 0 ? 'eager' : 'lazy'}
+                    decoding="async"
+                  />
+                  <figcaption>
+                    <span>{visual.caption}</span>
+                    <small>Source · {visual.source}</small>
+                  </figcaption>
+                </figure>
+              ))}
+            </div>
+          </section>
+        )}
 
         <div class="prose report-prose"><Content /></div>
       </main>
