@@ -3,10 +3,17 @@
   "season": 2026,
   "leagues": ["EPL", "Ligue_1", "La_liga", "Bundesliga", "Serie_A"],
   "sources": [],
+  "source_status": {
+    "Understat": {"status": "pending", "items": 0},
+    "OpenLigaDB": {"status": "pending", "items": 0},
+    "Sorare": {"configured": true, "status": "pending", "items": 0}
+  },
   "player_count": 0,
   "match_count": 0,
+  "sorare_card_count": 0,
   "article_count": 1,
   "articles": [],
   "top_players": [],
-  "recent_matches": []
+  "recent_matches": [],
+  "sorare_cards": []
 }

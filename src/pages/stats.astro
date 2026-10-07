@@ -18,9 +18,28 @@ interface MatchRow {
   fetched_at: string;
 }
 
+interface SorareCard {
+  card_name: string;
+  age: number | null;
+  player: string;
+  player_slug: string;
+  source: string;
+  source_url: string;
+  fetched_at: string;
+}
+
 const updated = new Date(stats.generated_at);
 const players = stats.top_players.slice(0, 30);
 const matches = (stats.recent_matches as MatchRow[]).slice(0, 12);
+const sorareCards = ((stats as any).sorare_cards ?? []) as SorareCard[];
+const sourceStatus = (stats as any).source_status ?? {};
+const statusLabel = (name: string) => {
+  const status = sourceStatus[name]?.status ?? 'pending';
+  if (status === 'active') return 'Actif';
+  if (status === 'unavailable') return 'Indisponible';
+  if (status === 'not_configured') return 'Non configuré';
+  return 'En attente';
+};
 ---
 <BaseLayout title="Data — DataFoot" description="Statistiques football normalisées et sourcées.">
   <section class="shell page-head">
@@ -37,6 +56,23 @@ const matches = (stats.recent_matches as MatchRow[]).slice(0, 12);
       <div><span>Sources actives</span><strong>{stats.sources.length}</strong></div>
       <div><span>Joueurs</span><strong>{stats.player_count}</strong></div>
       <div><span>Matchs</span><strong>{stats.match_count}</strong></div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Source</th><th>État</th><th>Éléments</th></tr>
+        </thead>
+        <tbody>
+          {['Understat', 'OpenLigaDB', 'Sorare'].map((name) => (
+            <tr>
+              <td><strong>{name}</strong></td>
+              <td>{statusLabel(name)}</td>
+              <td>{sourceStatus[name]?.items ?? 0}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
 
     <div class="section-heading data-heading">
@@ -91,6 +127,42 @@ const matches = (stats.recent_matches as MatchRow[]).slice(0, 12);
       <div class="empty-state">
         <h3>En attente de la première collecte OpenLigaDB</h3>
         <p>Les fixtures et résultats apparaîtront ici après le prochain pipeline.</p>
+      </div>
+    )}
+
+    <div class="section-heading data-heading">
+      <div>
+        <p class="eyebrow">SORARE</p>
+        <h2>Enrichissement public</h2>
+      </div>
+      <p>Échantillon public récupéré avec la clé API Sorare, sans authentification utilisateur.</p>
+    </div>
+
+    {sorareCards.length > 0 ? (
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Joueur</th><th>Carte</th><th>Âge</th><th>Source</th></tr>
+          </thead>
+          <tbody>
+            {sorareCards.slice(0, 12).map((card) => (
+              <tr>
+                <td><strong>{card.player || '—'}</strong></td>
+                <td>{card.card_name || '—'}</td>
+                <td>{card.age ?? '—'}</td>
+                <td><a href={card.source_url} rel="nofollow noreferrer">Sorare ↗</a></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    ) : (
+      <div class="empty-state">
+        <h3>Sorare : {statusLabel('Sorare')}</h3>
+        <p>
+          Si Sorare exige un JWT pour la requête publique testée, la source reste optionnelle et
+          n'empêche jamais Understat, OpenLigaDB ou la génération des articles de fonctionner.
+        </p>
       </div>
     )}
   </section>
