@@ -1,13 +1,13 @@
 ---
 title: "Raphinha surperforme nettement ses xG"
 description: "Raphinha compte 12 buts pour 9.06 xG en 7 matchs avec Barcelona."
-publishedAt: "2026-10-07T09:02:43+00:00"
+publishedAt: "2026-10-07T14:45:02+00:00"
 league: "La_Liga"
 player: "Raphinha"
 team: "Barcelona"
 source: "Understat"
 sourceUrl: "https://understat.com/league/La_Liga/2026"
-storyScore: 93.6
+storyScore: 85.0
 ---
 ## Ce que disent les données
 
@@ -33,4 +33,4 @@ générer des occasions. Son rythme actuel est de **1.41 xG par
 significative qu'un seul match très efficace ou très maladroit.
 
 > Source statistique : [Understat](https://understat.com/league/La_Liga/2026). Données récupérées le
-> 2026-10-07T09:02:43+00:00.
+> 2026-10-07T14:45:02+00:00.

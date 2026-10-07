@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 620" role="img" aria-labelledby="title desc">
-  <title id="title">Profil statistique de Sergio Camello</title>
-  <desc id="desc">Percentiles et statistiques football récentes de Sergio Camello</desc>
+  <title id="title">Profil statistique de Raphinha</title>
+  <desc id="desc">Percentiles et statistiques football récentes de Raphinha</desc>
   <rect width="1200" height="620" fill="#0b0e0b" rx="26"/>
   <defs>
     <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse">
@@ -21,37 +21,37 @@
   </style>
 
   <text x="72" y="68" class="kicker">DATAFOOT / PLAYER PROFILE</text>
-  <text x="72" y="116" class="title">Sergio Camello</text>
-  <text x="72" y="148" class="subtitle">Rayo Vallecano · La Liga · Forward</text>
+  <text x="72" y="116" class="title">Raphinha</text>
+  <text x="72" y="148" class="subtitle">Barcelona · La Liga · Forward</text>
 
   <polygon points="350.0,318.8 390.1,341.9 390.1,388.1 350.0,411.2 309.9,388.1 309.9,341.9" fill="none" stroke="#2b322b" stroke-width="1.6"/><polygon points="350.0,272.5 430.1,318.8 430.1,411.2 350.0,457.5 269.9,411.2 269.9,318.8" fill="none" stroke="#2b322b" stroke-width="1.6"/><polygon points="350.0,226.2 470.2,295.6 470.2,434.4 350.0,503.8 229.8,434.4 229.8,295.6" fill="none" stroke="#2b322b" stroke-width="1.6"/><polygon points="350.0,180.0 510.2,272.5 510.2,457.5 350.0,550.0 189.8,457.5 189.8,272.5" fill="none" stroke="#2b322b" stroke-width="1.6"/>
   <line x1="350.0" y1="365.0" x2="350.0" y2="180.0" stroke="#2b322b" stroke-width="1"/><line x1="350.0" y1="365.0" x2="510.2" y2="272.5" stroke="#2b322b" stroke-width="1"/><line x1="350.0" y1="365.0" x2="510.2" y2="457.5" stroke="#2b322b" stroke-width="1"/><line x1="350.0" y1="365.0" x2="350.0" y2="550.0" stroke="#2b322b" stroke-width="1"/><line x1="350.0" y1="365.0" x2="189.8" y2="457.5" stroke="#2b322b" stroke-width="1"/><line x1="350.0" y1="365.0" x2="189.8" y2="272.5" stroke="#2b322b" stroke-width="1"/>
-  <polygon points="350.0,224.4 484.6,287.3 439.7,416.8 350.0,505.6 260.3,416.8 273.1,320.6" fill="#b7ff3c" fill-opacity=".18" stroke="#b7ff3c" stroke-width="5"/>
-  <text x="350.0" y="141.0" text-anchor="middle" class="axis-label">TIRS · P76</text><text x="563.9" y="255.0" text-anchor="start" class="axis-label">CADRÉS · P84</text><text x="563.9" y="483.0" text-anchor="start" class="axis-label">DRIBBLES · P56</text><text x="350.0" y="597.0" text-anchor="middle" class="axis-label">DUELS · P76</text><text x="136.1" y="483.0" text-anchor="end" class="axis-label">DERNIER TIERS · P56</text><text x="136.1" y="255.0" text-anchor="end" class="axis-label">ENTRÉES SURFACE · P48</text>
+  <polygon points="350.0,217.0 503.8,276.2 484.6,442.7 350.0,439.0 247.5,424.2 228.2,294.7" fill="#b7ff3c" fill-opacity=".18" stroke="#b7ff3c" stroke-width="5"/>
+  <text x="350.0" y="141.0" text-anchor="middle" class="axis-label">TIRS · P80</text><text x="563.9" y="255.0" text-anchor="start" class="axis-label">CADRÉS · P96</text><text x="563.9" y="483.0" text-anchor="start" class="axis-label">DRIBBLES · P84</text><text x="350.0" y="597.0" text-anchor="middle" class="axis-label">DUELS · P40</text><text x="136.1" y="483.0" text-anchor="end" class="axis-label">DERNIER TIERS · P64</text><text x="136.1" y="255.0" text-anchor="end" class="axis-label">ENTRÉES SURFACE · P76</text>
 
   
         <rect x="665" y="210" width="210" height="104" rx="12" fill="#111510" stroke="#2b322b"/>
         <text x="683" y="244" class="label">BUTS / xG</text>
-        <text x="683" y="292" class="value">7 / 2.83</text>
+        <text x="683" y="292" class="value">12 / 9.06</text>
         
         <rect x="895" y="210" width="225" height="104" rx="12" fill="#111510" stroke="#2b322b"/>
         <text x="913" y="244" class="label">TIRS / 90</text>
-        <text x="913" y="292" class="value">3.95</text>
+        <text x="913" y="292" class="value">4.03</text>
         
         <rect x="665" y="335" width="210" height="104" rx="12" fill="#111510" stroke="#2b322b"/>
         <text x="683" y="369" class="label">PASSES RÉUSSIES / 90</text>
-        <text x="683" y="417" class="value">20.2</text>
+        <text x="683" y="417" class="value">27.0</text>
         
         <rect x="895" y="335" width="225" height="104" rx="12" fill="#111510" stroke="#2b322b"/>
         <text x="913" y="369" class="label">DRIBBLES RÉUSSIS / 90</text>
-        <text x="913" y="417" class="value">1.02</text>
+        <text x="913" y="417" class="value">2.16</text>
         
         <rect x="665" y="460" width="455" height="104" rx="12" fill="#111510" stroke="#2b322b"/>
         <text x="683" y="494" class="label">DUELS GAGNÉS / 90</text>
-        <text x="683" y="542" class="value">5.41</text>
+        <text x="683" y="542" class="value">4.03</text>
         
 
   <line x1="72" y1="574" x2="1128" y2="574" stroke="#2b322b"/>
-  <text x="72" y="600" class="footer">VS 25 JOUEURS COMPARABLES · 615 MINUTES DE MATCH RÉCENTES</text>
+  <text x="72" y="600" class="footer">VS 25 JOUEURS COMPARABLES · 626 MINUTES DE MATCH RÉCENTES</text>
   <text x="1128" y="600" text-anchor="end" class="footer">SOURCES · UNDERSTAT + DONNÉES DE MATCH</text>
 </svg>
