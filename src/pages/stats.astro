@@ -1,0 +1,40 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PlayerTable from '../components/PlayerTable.astro';
+import stats from '../data/stats.json';
+
+const updated = new Date(stats.generated_at);
+const players = stats.top_players.slice(0, 30);
+---
+<BaseLayout title="Data — DataFoot" description="Statistiques football normalisées et sourcées.">
+  <section class="shell page-head">
+    <p class="eyebrow">DATASET</p>
+    <h1>Les données derrière les articles</h1>
+    <p>
+      Saison {stats.season} · {stats.player_count} joueurs · mise à jour
+      {updated.toLocaleString('fr-FR')}.
+    </p>
+  </section>
+  <section class="shell section">
+    <div class="stat-strip">
+      <div><span>Ligues</span><strong>{stats.leagues.length}</strong></div>
+      <div><span>Joueurs</span><strong>{stats.player_count}</strong></div>
+      <div><span>Articles générés</span><strong>{stats.article_count}</strong></div>
+    </div>
+    <div class="section-heading data-heading">
+      <div>
+        <p class="eyebrow">CLASSEMENT</p>
+        <h2>xG par 90 minutes</h2>
+      </div>
+      <p>Les données seront remplacées automatiquement à chaque collecte.</p>
+    </div>
+    {players.length > 0 ? (
+      <PlayerTable players={players} />
+    ) : (
+      <div class="empty-state">
+        <h3>En attente de la première collecte live</h3>
+        <p>Le workflow DataFoot remplacera automatiquement ce dataset initial.</p>
+      </div>
+    )}
+  </section>
+</BaseLayout>
