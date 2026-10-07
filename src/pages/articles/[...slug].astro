@@ -87,6 +87,31 @@ const breadcrumbSchema = {
       {playerStat && <div><small>TIRS / 90</small><strong>{playerStat.shots_per90.toFixed(2)}</strong><span>{playerStat.shots} tirs</span></div>}
     </section>
 
+    {visual && (
+      <section class="visual-analysis visual-analysis-wide" aria-labelledby="visual-analysis-title">
+        <div class="visual-analysis-head">
+          <div>
+            <p class="signal-tag">PLAYER PROFILE</p>
+            <h2 id="visual-analysis-title">Profil statistique.</h2>
+          </div>
+        </div>
+        <figure class="data-figure">
+          <img
+            src={`${base}${visual.src}`}
+            alt={visual.alt}
+            width="1200"
+            height="620"
+            loading="eager"
+            decoding="async"
+          />
+          <figcaption>
+            <span>{visual.caption}</span>
+            <small>Sources · {visual.source}</small>
+          </figcaption>
+        </figure>
+      </section>
+    )}
+
     <div class="report-grid">
       <main class="report-body">
         <section class="executive-note">
@@ -96,31 +121,6 @@ const breadcrumbSchema = {
             <p>{data.description}</p>
           </div>
         </section>
-
-        {visual && (
-          <section class="visual-analysis" aria-labelledby="visual-analysis-title">
-            <div class="visual-analysis-head">
-              <div>
-                <p class="signal-tag">PLAYER PROFILE</p>
-                <h2 id="visual-analysis-title">Profil statistique.</h2>
-              </div>
-            </div>
-            <figure class="data-figure">
-              <img
-                src={`${base}${visual.src}`}
-                alt={visual.alt}
-                width="1200"
-                height="620"
-                loading="eager"
-                decoding="async"
-              />
-              <figcaption>
-                <span>{visual.caption}</span>
-                <small>Sources · {visual.source}</small>
-              </figcaption>
-            </figure>
-          </section>
-        )}
 
         <div class="prose report-prose"><Content /></div>
       </main>
