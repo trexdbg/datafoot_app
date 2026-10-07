@@ -26,7 +26,16 @@ interface SorarePlayer {
 
 const updated = new Date(stats.generated_at);
 const players = stats.top_players.slice(0, 30).filter((player) => player.minutes >= 90);
-const matches = (stats.recent_matches as MatchRow[]).slice(0, 12);
+const referenceDate = new Date(stats.generated_at);
+const maxDistanceMs = 45 * 24 * 60 * 60 * 1000;
+const matches = (stats.recent_matches as MatchRow[])
+  .filter((match) => {
+    if (!match.kickoff) return false;
+    const kickoff = new Date(match.kickoff);
+    return Number.isFinite(kickoff.valueOf()) && Math.abs(kickoff.valueOf() - referenceDate.valueOf()) <= maxDistanceMs;
+  })
+  .sort((a, b) => new Date(a.kickoff ?? 0).valueOf() - new Date(b.kickoff ?? 0).valueOf())
+  .slice(0, 12);
 const sorarePlayers = ((stats as any).sorare_players ?? []) as SorarePlayer[];
 const sourceStatus = (stats as any).source_status ?? {};
 const statusLabel = (name: string) => {
@@ -96,12 +105,12 @@ const datasetSchema = {
       </tbody></table></div>
     ) : <div class="empty-state"><h3>Sorare : {statusLabel('Sorare')}</h3><p>Le pipeline tente désormais d’enrichir les principaux candidats avec leurs scores Sorare L5/L15. Les détails d’erreur restent exposés dans le JSON si l’API refuse une requête.</p></div>}
 
-    <div class="section-heading data-heading"><div><p class="eyebrow">OPENLIGADB</p><h2>Matchs Bundesliga</h2></div><p>Fixtures et résultats présents dans le dataset courant.</p></div>
+    <div class="section-heading data-heading"><div><p class="eyebrow">OPENLIGADB</p><h2>Matchs récents et à venir</h2></div><p>Bundesliga autour de la date actuelle : résultats récents et prochaines rencontres, sans afficher la fin de saison plusieurs mois à l’avance.</p></div>
     {matches.length > 0 ? (
       <div class="table-wrap"><table><thead><tr><th>Date</th><th>Match</th><th>Score</th><th>État</th><th>Source</th></tr></thead><tbody>
       {matches.map((match) => (<tr><td>{match.kickoff ? new Date(match.kickoff).toLocaleDateString('fr-FR') : '—'}</td><td><strong>{match.home}</strong> — {match.away}</td><td>{match.home_goals === null || match.away_goals === null ? '—' : `${match.home_goals} - ${match.away_goals}`}</td><td>{match.finished ? 'Terminé' : 'À venir'}</td><td><a href={match.source_url} rel="nofollow noreferrer">{match.source} ↗</a></td></tr>))}
       </tbody></table></div>
-    ) : <div class="empty-state"><h3>En attente d’OpenLigaDB</h3><p>Les fixtures apparaîtront après la prochaine collecte disponible.</p></div>}
+    ) : <div class="empty-state"><h3>Aucun match proche de la date actuelle</h3><p>Le prochain run remplacera les anciennes fixtures lointaines par les résultats récents et les prochaines rencontres.</p></div>}
 
     <div class="raw-data-link"><span>Besoin de vérifier ou réutiliser les données ?</span><a href={`${base}/data/stats.json`}>Télécharger le JSON public →</a></div>
   </section>
