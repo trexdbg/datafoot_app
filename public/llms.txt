@@ -12,7 +12,7 @@ DataFoot est un média data football francophone automatisé.
 - Données JSON publiques: https://trexdbg.github.io/datafoot_app/data/stats.json
 
 ## Editorial model
-Les données sont collectées et normalisées en Python. Un moteur statistique détecte des candidats éditoriaux. Gemini peut sélectionner les sujets et rédiger les articles à partir des seuls faits structurés fournis. Les sources statistiques sont visibles sur chaque article. Si les modèles IA sont indisponibles, un fallback factuel peut être utilisé.
+Les données sont collectées et normalisées en Python. Un moteur statistique détecte des candidats éditoriaux. Un système éditorial automatisé sélectionne les sujets et rédige à partir des seuls faits structurés fournis. Les sources statistiques sont visibles sur chaque article. Un fallback factuel peut être utilisé si nécessaire.
 
 ## Citation guidance
 Pour citer DataFoot, privilégier l'URL canonique de l'article concerné. Pour vérifier un chiffre, utiliser la source statistique indiquée sur l'article et/ou le JSON public.

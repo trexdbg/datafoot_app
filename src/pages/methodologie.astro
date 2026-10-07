@@ -18,7 +18,7 @@ const schema = {
 ---
 <BaseLayout
   title="Méthodologie, sources et transparence | DataFoot"
-  description="Découvrez comment DataFoot collecte les statistiques football, sélectionne ses sujets et encadre la rédaction assistée par IA."
+  description="Découvrez comment DataFoot collecte les statistiques football, sélectionne ses sujets et encadre sa rédaction automatisée."
   jsonLd={schema}
 >
   <section class="shell page-head page-head-grid methodology-head">
@@ -33,8 +33,8 @@ const schema = {
     <article><span>01</span><h2>Collecte</h2><p>Les données sont récupérées via des connecteurs indépendants. Une source indisponible n’interrompt pas les autres collectes.</p></article>
     <article><span>02</span><h2>Normalisation</h2><p>Python convertit les métriques dans un format commun et ajoute la provenance ainsi que l’horodatage.</p></article>
     <article><span>03</span><h2>Détection</h2><p>Des règles statistiques construisent un vivier de sujets possibles : écarts buts/xG, xG par 90, création xA, volume de tirs et implication offensive.</p></article>
-    <article><span>04</span><h2>Sélection</h2><p>Gemini compare les candidats et peut choisir de ne publier aucun sujet. En cas d’indisponibilité IA, un fallback déterministe garantit la continuité.</p></article>
-    <article><span>05</span><h2>Rédaction</h2><p>Le modèle reçoit uniquement des faits structurés. Il lui est interdit d’inventer blessures, transferts, citations, résultats ou contexte absent.</p></article>
+    <article><span>04</span><h2>Sélection</h2><p>Un moteur éditorial compare les candidats et peut choisir de ne publier aucun sujet. Un mécanisme de secours déterministe garantit la continuité.</p></article>
+    <article><span>05</span><h2>Rédaction</h2><p>La rédaction reçoit uniquement des faits structurés. Elle ne doit jamais inventer blessures, transferts, citations, résultats ou contexte absent.</p></article>
     <article><span>06</span><h2>Publication</h2><p>Chaque article conserve sa source statistique et le dataset public est publié en JSON pour permettre une vérification indépendante.</p></article>
   </section>
 
@@ -45,7 +45,7 @@ const schema = {
       <div><strong>Source visible</strong><p>Chaque article affiche la source statistique primaire utilisée.</p></div>
       <div><strong>Pas de certitude xG</strong><p>Les expected goals décrivent des probabilités, pas des prédictions certaines.</p></div>
       <div><strong>Pas de faux contexte</strong><p>Une information d’actualité non présente dans le dataset ne doit pas être ajoutée.</p></div>
-      <div><strong>Automatisation déclarée</strong><p>La sélection et la rédaction peuvent être assistées par IA ; ce fonctionnement est exposé publiquement.</p></div>
+      <div><strong>Automatisation déclarée</strong><p>La sélection et la rédaction sont automatisées à partir de données structurées ; ce fonctionnement est exposé publiquement.</p></div>
       <div><strong>Accès aux données</strong><p>Le JSON public permet de contrôler les données utilisées par le site.</p></div>
     </div>
   </section>
