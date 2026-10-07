@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://trexdbg.github.io/datafoot_app/sitemap.xml
