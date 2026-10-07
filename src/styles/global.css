@@ -41,3 +41,5 @@ footer{border-top:1px solid var(--line);color:var(--muted)}.footer-grid{display:
 .data-figure figcaption span{max-width:78%}
 .data-figure figcaption small{font:700 .68rem var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.07em;text-align:right}
 @media(max-width:680px){.visual-analysis{margin-top:42px}.visual-analysis-head{align-items:flex-start;flex-direction:column}.visual-analysis-head h2{font-size:1.8rem}.data-figure{margin-inline:-6px}.data-figure img{border-radius:12px}.data-figure figcaption{flex-direction:column;gap:6px;padding-inline:6px}.data-figure figcaption span{max-width:none}.data-figure figcaption small{text-align:left}}
+
+@media(max-width:680px){.data-figure{overflow-x:auto;scrollbar-width:thin}.data-figure img{min-width:820px}.data-figure figcaption{min-width:820px}}
