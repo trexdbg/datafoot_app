@@ -7,24 +7,31 @@ const articles = (await getCollection('articles'))
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const url = (path: string) => `${base}${path}`;
 ---
-<BaseLayout title="Articles — DataFoot" description="Analyses football produites à partir de données sourcées.">
-  <section class="shell page-head">
-    <p class="eyebrow">ARTICLES</p>
-    <h1>Analyses data football</h1>
-    <p>Chaque article conserve la source statistique utilisée par le pipeline.</p>
+<BaseLayout
+  title="Analyses football xG, statistiques joueurs et tendances | DataFoot"
+  description="Analyses football basées sur les xG, xA, tirs et performances joueurs. Chaque article DataFoot cite sa source statistique."
+>
+  <section class="shell page-head page-head-grid">
+    <div>
+      <p class="eyebrow">ANALYSES DATA FOOTBALL</p>
+      <h1>Les signaux qui méritent une analyse.</h1>
+    </div>
+    <p>Une sélection éditoriale à partir de statistiques traçables. Pas de remplissage : le pipeline peut publier moins d’articles si les signaux sont faibles.</p>
   </section>
-  <section class="shell section">
-    <div class="article-grid">
-      {articles.map((article) => (
-        <article class="card">
+
+  <section class="shell section article-list-section">
+    <div class="article-grid editorial-grid">
+      {articles.map((article, index) => (
+        <article class:list={['card', index === 0 && 'card-featured']}>
+          <div class="card-index">{String(index + 1).padStart(2, '0')}</div>
           <div class="card-meta">
-            <span>{article.data.league}</span>
-            <time>{article.data.publishedAt.toLocaleDateString('fr-FR')}</time>
+            <span>{article.data.league.replaceAll('_', ' ')}</span>
+            <time datetime={article.data.publishedAt.toISOString()}>{article.data.publishedAt.toLocaleDateString('fr-FR')}</time>
           </div>
           <h2><a href={url(`/articles/${article.id}/`)}>{article.data.title}</a></h2>
           <p>{article.data.description}</p>
           <div class="card-footer">
-            <span>{article.data.team}</span>
+            <span>{article.data.player} · {article.data.team}</span>
             <span>{article.data.source}</span>
           </div>
         </article>
