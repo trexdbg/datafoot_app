@@ -5,23 +5,13 @@ import stats from '../data/stats.json';
 import { SORARE_REFERRAL_URL } from '../lib/referrals';
 
 interface MatchRow { match_id:number|null; league:string; season:number; kickoff:string|null; home:string; away:string; home_goals:number|null; away_goals:number|null; finished:boolean; source:string; source_url:string; fetched_at:string; }
-interface SorarePlayer {
-  player:string;
-  player_slug:string;
-  matched_from:string;
-  match_confidence:number;
-  club:string;
-  club_slug:string;
-  age:number|null;
-  position:string;
-  l5_score:number|null;
-  l15_score:number|null;
-  l5_appearances:number|null;
-  l15_appearances:number|null;
-  recent_scores:number[];
-  source:string;
-  source_url:string;
-  fetched_at:string;
+interface PlayerProfile {
+  player:string; matched_from:string; match_confidence:number; club:string; position:string;
+  football_metrics?: {
+    appearances:number; minutes:number; pass_accuracy:number|null;
+    accurate_pass_per90:number; final_third_passes_per90:number;
+    dribbles_won_per90:number; duels_won_per90:number; shots_per90:number;
+  };
 }
 
 const updated = new Date(stats.generated_at);
@@ -36,7 +26,8 @@ const matches = (stats.recent_matches as MatchRow[])
   })
   .sort((a, b) => new Date(a.kickoff ?? 0).valueOf() - new Date(b.kickoff ?? 0).valueOf())
   .slice(0, 12);
-const sorarePlayers = ((stats as any).sorare_players ?? []) as SorarePlayer[];
+const profiles = (((stats as any).player_profiles ?? (stats as any).sorare_players ?? []) as PlayerProfile[])
+  .filter((player) => player.football_metrics && player.match_confidence >= .82);
 const sourceStatus = (stats as any).source_status ?? {};
 const statusLabel = (name: string) => {
   const status = sourceStatus[name]?.status ?? 'pending';
@@ -52,66 +43,70 @@ const datasetSchema = {
   '@context': 'https://schema.org',
   '@type': 'Dataset',
   name: `DataFoot — dataset football saison ${stats.season}`,
-  description: 'Statistiques joueurs football normalisées, signaux éditoriaux, forme Sorare L5/L15 et matchs récents utilisés par DataFoot.',
+  description: 'Statistiques football normalisées : xG, xA, tirs, passes, dribbles, duels et matchs.',
   url: new URL(`${base}/stats/`, siteOrigin).toString(),
   dateModified: stats.generated_at,
   inLanguage: 'fr-FR',
   creator: { '@type': 'Organization', name: 'DataFoot' },
-  variableMeasured: ['buts', 'passes décisives', 'xG', 'xA', 'tirs', 'xG par 90 minutes', 'score Sorare L5', 'score Sorare L15'],
+  variableMeasured: ['buts', 'passes décisives', 'xG', 'xA', 'tirs', 'passes réussies', 'dribbles réussis', 'duels gagnés'],
   distribution: [{ '@type': 'DataDownload', encodingFormat: 'application/json', contentUrl: dataUrl }],
 };
 ---
 <BaseLayout
-  title="Données football : xG, forme Sorare, joueurs et matchs | DataFoot"
-  description={`Dataset DataFoot saison ${stats.season} : ${stats.player_count} joueurs, xG, xA, scores Sorare L5/L15 et ${stats.match_count} matchs avec sources et provenance.`}
+  title="Données football : xG, passes, dribbles et matchs | DataFoot"
+  description={`Dataset DataFoot saison ${stats.season} : xG, xA, tirs et statistiques de match détaillées pour ${stats.player_count} joueurs.`}
   jsonLd={datasetSchema}
 >
   <section class="shell page-head page-head-grid">
-    <div><p class="eyebrow">DATASET FOOTBALL</p><h1>Les données derrière chaque analyse.</h1></div>
-    <p>Saison {stats.season} · {stats.player_count.toLocaleString('fr-FR')} joueurs · {stats.match_count} matchs · mise à jour {updated.toLocaleString('fr-FR')}.</p>
+    <div><p class="eyebrow">DATA</p><h1>Les données derrière les analyses.</h1></div>
+    <p>Saison {stats.season} · {stats.player_count.toLocaleString('fr-FR')} joueurs · mise à jour {updated.toLocaleString('fr-FR')}.</p>
   </section>
 
   <section class="shell section data-dashboard">
     <div class="stat-strip">
-      <div><span>Sources</span><strong>{stats.sources.length}</strong><small>actives dans le dataset</small></div>
-      <div><span>Joueurs</span><strong>{stats.player_count.toLocaleString('fr-FR')}</strong><small>observations normalisées</small></div>
-      <div><span>Candidats</span><strong>{(stats as any).candidate_count ?? '—'}</strong><small>signaux éditoriaux détectés</small></div>
+      <div><span>Sources</span><strong>{stats.sources.length}</strong><small>actives</small></div>
+      <div><span>Joueurs</span><strong>{stats.player_count.toLocaleString('fr-FR')}</strong><small>observations</small></div>
+      <div><span>Profils</span><strong>{profiles.length}</strong><small>enrichis en stats de match</small></div>
     </div>
 
     <div class="source-status-grid">
       {['Understat', 'OpenLigaDB', 'Sorare'].map((name) => (
-        <div class="source-status-card"><span class:list={['status-dot', sourceStatus[name]?.status === 'active' && 'ok']}></span><div><strong>{name}</strong><p>{statusLabel(name)} · {sourceStatus[name]?.items ?? 0} éléments</p></div></div>
+        <div class="source-status-card"><span class:list={['status-dot', sourceStatus[name]?.status === 'active' && 'ok']}></span><div><strong>{name}</strong><p>{statusLabel(name)}</p></div></div>
       ))}
     </div>
 
-    <div class="section-heading data-heading"><div><p class="eyebrow">UNDERSTAT</p><h2>xG par 90 — échantillon ≥ 90 min</h2></div><p>Filtre minimal pour éviter que quelques minutes de jeu dominent artificiellement le classement.</p></div>
-    {players.length > 0 ? <PlayerTable players={players} /> : <div class="empty-state"><h3>Pas encore assez de minutes</h3><p>Les joueurs apparaîtront lorsque l’échantillon sera suffisant.</p></div>}
+    <div class="section-heading data-heading"><div><p class="eyebrow">PERFORMANCE</p><h2>xG par 90</h2></div><p>Joueurs avec au moins 90 minutes observées.</p></div>
+    {players.length > 0 ? <PlayerTable players={players} /> : <div class="empty-state"><p>Pas encore assez de données.</p></div>}
 
-    <div class="section-heading data-heading"><div><p class="eyebrow">SORARE</p><h2>Forme récente — scores L5 / L15</h2></div><p>Scores de performance Sorare, utilisés comme signal de forme complémentaire aux métriques xG d’Understat.</p></div>
-    {sorarePlayers.length > 0 ? (
-      <div class="table-wrap"><table><thead><tr><th>Joueur</th><th>Club</th><th>Poste</th><th>L5</th><th>L15</th><th>App. L5</th><th>App. L15</th><th>Source</th></tr></thead><tbody>
-        {sorarePlayers.slice(0, 12).map((player) => (
-          <tr>
-            <td><strong>{player.player}</strong></td>
-            <td>{player.club || '—'}</td>
-            <td>{player.position || '—'}</td>
-            <td>{player.l5_score == null ? '—' : player.l5_score.toFixed(1)}</td>
-            <td>{player.l15_score == null ? '—' : player.l15_score.toFixed(1)}</td>
-            <td>{player.l5_appearances ?? '—'}</td>
-            <td>{player.l15_appearances ?? '—'}</td>
-            <td><a href={SORARE_REFERRAL_URL} rel="sponsored nofollow noreferrer">Sorare · parrainage ↗</a></td>
-          </tr>
-        ))}
+    <div class="section-heading data-heading"><div><p class="eyebrow">PROFILS JOUEURS</p><h2>Stats de match récentes</h2></div><p>Passes, dribbles, duels et tirs ramenés à 90 minutes.</p></div>
+    {profiles.length > 0 ? (
+      <div class="table-wrap"><table><thead><tr><th>Joueur</th><th>Poste</th><th>Min.</th><th>Passes/90</th><th>Dernier tiers/90</th><th>Dribbles/90</th><th>Duels/90</th><th>Tirs/90</th><th>Source</th></tr></thead><tbody>
+        {profiles.slice(0, 20).map((player) => {
+          const m = player.football_metrics!;
+          return (
+            <tr>
+              <td><strong>{player.player}</strong><br/><small>{player.club || '—'}</small></td>
+              <td>{player.position || '—'}</td>
+              <td>{m.minutes}</td>
+              <td>{m.accurate_pass_per90.toFixed(1)}</td>
+              <td>{m.final_third_passes_per90.toFixed(1)}</td>
+              <td>{m.dribbles_won_per90.toFixed(2)}</td>
+              <td>{m.duels_won_per90.toFixed(2)}</td>
+              <td>{m.shots_per90.toFixed(2)}</td>
+              <td><a href={SORARE_REFERRAL_URL} rel="sponsored nofollow noreferrer">Source ↗</a></td>
+            </tr>
+          );
+        })}
       </tbody></table></div>
-    ) : <div class="empty-state"><h3>Sorare : {statusLabel('Sorare')}</h3><p>Le pipeline tente désormais d’enrichir les principaux candidats avec leurs scores Sorare L5/L15. Les détails d’erreur restent exposés dans le JSON si l’API refuse une requête.</p></div>}
+    ) : <div class="empty-state"><p>Les profils détaillés apparaîtront après la prochaine collecte.</p></div>}
 
-    <div class="section-heading data-heading"><div><p class="eyebrow">OPENLIGADB</p><h2>Matchs récents et à venir</h2></div><p>Bundesliga autour de la date actuelle : résultats récents et prochaines rencontres, sans afficher la fin de saison plusieurs mois à l’avance.</p></div>
+    <div class="section-heading data-heading"><div><p class="eyebrow">MATCHS</p><h2>Récents et à venir</h2></div></div>
     {matches.length > 0 ? (
-      <div class="table-wrap"><table><thead><tr><th>Date</th><th>Match</th><th>Score</th><th>État</th><th>Source</th></tr></thead><tbody>
-      {matches.map((match) => (<tr><td>{match.kickoff ? new Date(match.kickoff).toLocaleDateString('fr-FR') : '—'}</td><td><strong>{match.home}</strong> — {match.away}</td><td>{match.home_goals === null || match.away_goals === null ? '—' : `${match.home_goals} - ${match.away_goals}`}</td><td>{match.finished ? 'Terminé' : 'À venir'}</td><td><a href={match.source_url} rel="nofollow noreferrer">{match.source} ↗</a></td></tr>))}
+      <div class="table-wrap"><table><thead><tr><th>Date</th><th>Match</th><th>Score</th><th>État</th></tr></thead><tbody>
+      {matches.map((match) => (<tr><td>{match.kickoff ? new Date(match.kickoff).toLocaleDateString('fr-FR') : '—'}</td><td><strong>{match.home}</strong> — {match.away}</td><td>{match.home_goals === null || match.away_goals === null ? '—' : `${match.home_goals} - ${match.away_goals}`}</td><td>{match.finished ? 'Terminé' : 'À venir'}</td></tr>))}
       </tbody></table></div>
-    ) : <div class="empty-state"><h3>Aucun match proche de la date actuelle</h3><p>Le prochain run remplacera les anciennes fixtures lointaines par les résultats récents et les prochaines rencontres.</p></div>}
+    ) : <div class="empty-state"><p>Aucun match proche de la date actuelle.</p></div>}
 
-    <div class="raw-data-link"><span>Besoin de vérifier ou réutiliser les données ?</span><a href={`${base}/data/stats.json`}>Télécharger le JSON public →</a></div>
+    <div class="raw-data-link"><span>Données brutes et provenance</span><a href={`${base}/data/stats.json`}>JSON public →</a></div>
   </section>
 </BaseLayout>
