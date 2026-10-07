@@ -4,12 +4,29 @@ import PlayerTable from '../components/PlayerTable.astro';
 import stats from '../data/stats.json';
 
 interface MatchRow { match_id:number|null; league:string; season:number; kickoff:string|null; home:string; away:string; home_goals:number|null; away_goals:number|null; finished:boolean; source:string; source_url:string; fetched_at:string; }
-interface SorareCard { card_name:string; age:number|null; player:string; player_slug:string; source:string; source_url:string; fetched_at:string; }
+interface SorarePlayer {
+  player:string;
+  player_slug:string;
+  matched_from:string;
+  match_confidence:number;
+  club:string;
+  club_slug:string;
+  age:number|null;
+  position:string;
+  l5_score:number|null;
+  l15_score:number|null;
+  l5_appearances:number|null;
+  l15_appearances:number|null;
+  recent_scores:number[];
+  source:string;
+  source_url:string;
+  fetched_at:string;
+}
 
 const updated = new Date(stats.generated_at);
 const players = stats.top_players.slice(0, 30).filter((player) => player.minutes >= 90);
 const matches = (stats.recent_matches as MatchRow[]).slice(0, 12);
-const sorareCards = ((stats as any).sorare_cards ?? []) as SorareCard[];
+const sorarePlayers = ((stats as any).sorare_players ?? []) as SorarePlayer[];
 const sourceStatus = (stats as any).source_status ?? {};
 const statusLabel = (name: string) => {
   const status = sourceStatus[name]?.status ?? 'pending';
@@ -25,18 +42,18 @@ const datasetSchema = {
   '@context': 'https://schema.org',
   '@type': 'Dataset',
   name: `DataFoot — dataset football saison ${stats.season}`,
-  description: 'Statistiques joueurs football normalisées, signaux éditoriaux et matchs récents utilisés par DataFoot.',
+  description: 'Statistiques joueurs football normalisées, signaux éditoriaux, forme Sorare L5/L15 et matchs récents utilisés par DataFoot.',
   url: new URL(`${base}/stats/`, siteOrigin).toString(),
   dateModified: stats.generated_at,
   inLanguage: 'fr-FR',
   creator: { '@type': 'Organization', name: 'DataFoot' },
-  variableMeasured: ['buts', 'passes décisives', 'xG', 'xA', 'tirs', 'xG par 90 minutes'],
+  variableMeasured: ['buts', 'passes décisives', 'xG', 'xA', 'tirs', 'xG par 90 minutes', 'score Sorare L5', 'score Sorare L15'],
   distribution: [{ '@type': 'DataDownload', encodingFormat: 'application/json', contentUrl: dataUrl }],
 };
 ---
 <BaseLayout
-  title="Données football : xG, joueurs et matchs | DataFoot"
-  description={`Dataset DataFoot saison ${stats.season} : ${stats.player_count} joueurs, xG, xA, tirs et ${stats.match_count} matchs avec sources et provenance.`}
+  title="Données football : xG, forme Sorare, joueurs et matchs | DataFoot"
+  description={`Dataset DataFoot saison ${stats.season} : ${stats.player_count} joueurs, xG, xA, scores Sorare L5/L15 et ${stats.match_count} matchs avec sources et provenance.`}
   jsonLd={datasetSchema}
 >
   <section class="shell page-head page-head-grid">
@@ -60,17 +77,30 @@ const datasetSchema = {
     <div class="section-heading data-heading"><div><p class="eyebrow">UNDERSTAT</p><h2>xG par 90 — échantillon ≥ 90 min</h2></div><p>Filtre minimal pour éviter que quelques minutes de jeu dominent artificiellement le classement.</p></div>
     {players.length > 0 ? <PlayerTable players={players} /> : <div class="empty-state"><h3>Pas encore assez de minutes</h3><p>Les joueurs apparaîtront lorsque l’échantillon sera suffisant.</p></div>}
 
+    <div class="section-heading data-heading"><div><p class="eyebrow">SORARE</p><h2>Forme récente — scores L5 / L15</h2></div><p>Scores de performance Sorare, utilisés comme signal de forme complémentaire aux métriques xG d’Understat.</p></div>
+    {sorarePlayers.length > 0 ? (
+      <div class="table-wrap"><table><thead><tr><th>Joueur</th><th>Club</th><th>Poste</th><th>L5</th><th>L15</th><th>App. L5</th><th>App. L15</th><th>Source</th></tr></thead><tbody>
+        {sorarePlayers.slice(0, 12).map((player) => (
+          <tr>
+            <td><strong>{player.player}</strong></td>
+            <td>{player.club || '—'}</td>
+            <td>{player.position || '—'}</td>
+            <td>{player.l5_score == null ? '—' : player.l5_score.toFixed(1)}</td>
+            <td>{player.l15_score == null ? '—' : player.l15_score.toFixed(1)}</td>
+            <td>{player.l5_appearances ?? '—'}</td>
+            <td>{player.l15_appearances ?? '—'}</td>
+            <td><a href={player.source_url} rel="nofollow noreferrer">Sorare ↗</a></td>
+          </tr>
+        ))}
+      </tbody></table></div>
+    ) : <div class="empty-state"><h3>Sorare : {statusLabel('Sorare')}</h3><p>Le pipeline tente désormais d’enrichir les principaux candidats avec leurs scores Sorare L5/L15. Les détails d’erreur restent exposés dans le JSON si l’API refuse une requête.</p></div>}
+
     <div class="section-heading data-heading"><div><p class="eyebrow">OPENLIGADB</p><h2>Matchs Bundesliga</h2></div><p>Fixtures et résultats présents dans le dataset courant.</p></div>
     {matches.length > 0 ? (
       <div class="table-wrap"><table><thead><tr><th>Date</th><th>Match</th><th>Score</th><th>État</th><th>Source</th></tr></thead><tbody>
       {matches.map((match) => (<tr><td>{match.kickoff ? new Date(match.kickoff).toLocaleDateString('fr-FR') : '—'}</td><td><strong>{match.home}</strong> — {match.away}</td><td>{match.home_goals === null || match.away_goals === null ? '—' : `${match.home_goals} - ${match.away_goals}`}</td><td>{match.finished ? 'Terminé' : 'À venir'}</td><td><a href={match.source_url} rel="nofollow noreferrer">{match.source} ↗</a></td></tr>))}
       </tbody></table></div>
     ) : <div class="empty-state"><h3>En attente d’OpenLigaDB</h3><p>Les fixtures apparaîtront après la prochaine collecte disponible.</p></div>}
-
-    <div class="section-heading data-heading"><div><p class="eyebrow">SORARE</p><h2>Enrichissement Sorare</h2></div><p>Source optionnelle : son indisponibilité ne bloque jamais le reste du pipeline.</p></div>
-    {sorareCards.length > 0 ? (
-      <div class="table-wrap"><table><thead><tr><th>Joueur</th><th>Carte</th><th>Âge</th><th>Source</th></tr></thead><tbody>{sorareCards.slice(0, 12).map((card) => (<tr><td><strong>{card.player || '—'}</strong></td><td>{card.card_name || '—'}</td><td>{card.age ?? '—'}</td><td><a href={card.source_url} rel="nofollow noreferrer">Sorare ↗</a></td></tr>))}</tbody></table></div>
-    ) : <div class="empty-state"><h3>Sorare : {statusLabel('Sorare')}</h3><p>La source est actuellement facultative. Understat et OpenLigaDB continuent à alimenter le site.</p></div>}
 
     <div class="raw-data-link"><span>Besoin de vérifier ou réutiliser les données ?</span><a href={`${base}/data/stats.json`}>Télécharger le JSON public →</a></div>
   </section>
