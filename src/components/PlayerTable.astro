@@ -1,0 +1,45 @@
+---
+interface Player {
+  player_id: string;
+  name: string;
+  team: string;
+  league: string;
+  games: number;
+  minutes: number;
+  goals: number;
+  assists: number;
+  xg: number;
+  xa: number;
+  shots: number;
+  xg_delta: number;
+  xg_per90: number;
+}
+interface Props { players: Player[]; }
+const { players } = Astro.props;
+---
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>Joueur</th><th>Équipe</th><th>Ligue</th><th>Min.</th>
+        <th>Buts</th><th>xG</th><th>Δ buts-xG</th><th>xG/90</th>
+      </tr>
+    </thead>
+    <tbody>
+      {players.map((player) => (
+        <tr>
+          <td><strong>{player.name}</strong></td>
+          <td>{player.team}</td>
+          <td>{player.league}</td>
+          <td>{player.minutes}</td>
+          <td>{player.goals}</td>
+          <td>{player.xg.toFixed(2)}</td>
+          <td class:list={{ positive: player.xg_delta > 0.5, negative: player.xg_delta < -0.5 }}>
+            {player.xg_delta > 0 ? '+' : ''}{player.xg_delta.toFixed(2)}
+          </td>
+          <td>{player.xg_per90.toFixed(2)}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
