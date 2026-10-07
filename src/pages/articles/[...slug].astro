@@ -4,41 +4,100 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 
 export async function getStaticPaths() {
   const articles = await getCollection('articles');
-  return articles.map((article) => ({
-    params: { slug: article.id },
-    props: { article },
-  }));
+  return articles.map((article) => ({ params: { slug: article.id }, props: { article } }));
 }
 
-interface Props {
-  article: CollectionEntry<'articles'>;
-}
+interface Props { article: CollectionEntry<'articles'>; }
 
 const { article } = Astro.props;
 const { Content } = await render(article);
 const { data } = article;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const canonicalPath = `${base}/articles/${article.id}/`;
+const siteOrigin = Astro.site ?? new URL('https://trexdbg.github.io');
+const canonicalUrl = new URL(canonicalPath, siteOrigin).toString();
+const methodUrl = new URL(`${base}/methodologie/`, siteOrigin).toString();
+const homeUrl = new URL(`${base}/`, siteOrigin).toString();
+const articleSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: data.title,
+  description: data.description,
+  url: canonicalUrl,
+  mainEntityOfPage: canonicalUrl,
+  datePublished: data.publishedAt.toISOString(),
+  dateModified: data.publishedAt.toISOString(),
+  inLanguage: 'fr-FR',
+  isAccessibleForFree: true,
+  author: { '@type': 'Organization', name: 'DataFoot', url: methodUrl },
+  publisher: { '@type': 'Organization', name: 'DataFoot', url: homeUrl },
+  about: [
+    { '@type': 'Person', name: data.player },
+    { '@type': 'SportsTeam', name: data.team },
+  ],
+  keywords: [data.player, data.team, data.league.replaceAll('_', ' '), 'football', 'xG', 'statistiques football'],
+  citation: data.sourceUrl,
+};
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Accueil', item: homeUrl },
+    { '@type': 'ListItem', position: 2, name: 'Analyses', item: new URL(`${base}/articles/`, siteOrigin).toString() },
+    { '@type': 'ListItem', position: 3, name: data.title, item: canonicalUrl },
+  ],
+};
 ---
-<BaseLayout title={`${data.title} — DataFoot`} description={data.description}>
+<BaseLayout
+  title={`${data.title} | DataFoot`}
+  description={data.description}
+  canonicalPath={canonicalPath}
+  ogType="article"
+  publishedAt={data.publishedAt.toISOString()}
+  jsonLd={[articleSchema, breadcrumbSchema]}
+>
   <article class="article shell">
+    <nav class="breadcrumbs" aria-label="Fil d’Ariane">
+      <a href={`${base}/`}>Accueil</a><span>›</span><a href={`${base}/articles/`}>Analyses</a><span>›</span><span>{data.player}</span>
+    </nav>
+
     <header class="article-header">
-      <div class="card-meta">
-        <span>{data.league}</span>
-        <time datetime={data.publishedAt.toISOString()}>
-          {data.publishedAt.toLocaleDateString('fr-FR', { dateStyle: 'long' })}
-        </time>
+      <div class="article-kicker">
+        <span>{data.league.replaceAll('_', ' ')}</span>
+        <time datetime={data.publishedAt.toISOString()}>{data.publishedAt.toLocaleDateString('fr-FR', { dateStyle: 'long' })}</time>
       </div>
       <h1>{data.title}</h1>
       <p class="lede">{data.description}</p>
-      <div class="article-facts">
-        <span>Joueur <b>{data.player}</b></span>
-        <span>Équipe <b>{data.team}</b></span>
-        <span>Signal <b>{data.storyScore.toFixed(2)}</b></span>
-      </div>
     </header>
-    <div class="prose"><Content /></div>
-    <aside class="source-box">
-      <span>Source statistique</span>
-      <a href={data.sourceUrl} rel="nofollow noreferrer">{data.source} ↗</a>
-    </aside>
+
+    <div class="article-layout">
+      <div class="article-main">
+        <section class="answer-box" aria-labelledby="en-bref">
+          <p class="eyebrow" id="en-bref">EN BREF</p>
+          <p>{data.description}</p>
+          <div class="answer-facts">
+            <span><small>Joueur</small><strong>{data.player}</strong></span>
+            <span><small>Équipe</small><strong>{data.team}</strong></span>
+            <span><small>Signal éditorial</small><strong>{Math.round(data.storyScore)}/100</strong></span>
+          </div>
+        </section>
+
+        <div class="prose"><Content /></div>
+      </div>
+
+      <aside class="article-rail">
+        <div class="rail-card">
+          <span class="rail-label">SOURCE PRIMAIRE</span>
+          <strong>{data.source}</strong>
+          <p>Les statistiques citées dans cet article proviennent de cette source.</p>
+          <a href={data.sourceUrl} rel="nofollow noreferrer">Consulter la source ↗</a>
+        </div>
+        <div class="rail-card">
+          <span class="rail-label">TRANSPARENCE</span>
+          <p>Les métriques sont collectées et calculées avant rédaction. Le modèle ne doit pas inventer de faits absents du dataset.</p>
+          <a href={`${base}/methodologie/`}>Lire la méthode →</a>
+        </div>
+      </aside>
+    </div>
   </article>
 </BaseLayout>
