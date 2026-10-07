@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 620" role="img" aria-labelledby="title desc">
+  <title id="title">Profil offensif par 90 minutes</title>
+  <desc id="desc">Kylian Mbappe-Lottin · positionnement relatif dans son championnat</desc>
+  <rect width="1200" height="620" fill="#0b0e0b" rx="26"/>
+  <path d="M0 0H1200V620H0Z" fill="url(#grid)" opacity=".42"/>
+  <defs>
+    <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse">
+      <path d="M48 0H0V48" fill="none" stroke="#2b322b" stroke-width="1" opacity=".35"/>
+    </pattern>
+  </defs>
+  <style>
+    text { font-family: Inter, Arial, sans-serif; fill: #f2f4ee; }
+    .kicker,.footer,.label,.tiny { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .kicker { font-size: 14px; font-weight: 800; letter-spacing: 2px; fill: #b7ff3c; }
+    .title { font-size: 42px; font-weight: 850; letter-spacing: -1.8px; }
+    .subtitle { font-size: 17px; fill: #8f998f; }
+    .label { font-size: 13px; font-weight: 800; letter-spacing: 1.1px; fill: #8f998f; }
+    .value { font-size: 30px; font-weight: 900; }
+    .big { font-size: 68px; font-weight: 950; letter-spacing: -4px; }
+    .tiny { font-size: 12px; fill: #8f998f; }
+    .footer { font-size: 12px; font-weight: 700; letter-spacing: 1px; fill: #8f998f; }
+    .rule { stroke: #2b322b; stroke-width: 1; }
+  </style>
+  
+    <text x="72" y="76" class="kicker">DATAFOOT / FOOTBALL INTELLIGENCE</text>
+    <text x="72" y="128" class="title">Profil offensif par 90 minutes</text>
+    <text x="72" y="160" class="subtitle">Kylian Mbappe-Lottin · positionnement relatif dans son championnat</text>
+    
+  
+        <text x="72" y="227" class="label">xG / 90</text>
+        <rect x="270" y="210" width="610" height="28" rx="6" fill="#111510" stroke="#2b322b"/>
+        <rect x="270" y="210" width="610.0" height="28" rx="6" fill="#b7ff3c"/>
+        <text x="905" y="231" class="tiny">P100</text>
+        <text x="1110" y="231" text-anchor="end" class="value" style="font-size:20px">1.19</text>
+        
+        <text x="72" y="305" class="label">xA / 90</text>
+        <rect x="270" y="288" width="610" height="28" rx="6" fill="#111510" stroke="#2b322b"/>
+        <rect x="270" y="288" width="549.0" height="28" rx="6" fill="#b7ff3c"/>
+        <text x="905" y="309" class="tiny">P90</text>
+        <text x="1110" y="309" text-anchor="end" class="value" style="font-size:20px">0.26</text>
+        
+        <text x="72" y="383" class="label">TIRS / 90</text>
+        <rect x="270" y="366" width="610" height="28" rx="6" fill="#111510" stroke="#2b322b"/>
+        <rect x="270" y="366" width="610.0" height="28" rx="6" fill="#b7ff3c"/>
+        <text x="905" y="387" class="tiny">P100</text>
+        <text x="1110" y="387" text-anchor="end" class="value" style="font-size:20px">5.86</text>
+        
+        <text x="72" y="461" class="label">xG+xA / 90</text>
+        <rect x="270" y="444" width="610" height="28" rx="6" fill="#111510" stroke="#2b322b"/>
+        <rect x="270" y="444" width="603.9" height="28" rx="6" fill="#b7ff3c"/>
+        <text x="905" y="465" class="tiny">P99</text>
+        <text x="1110" y="465" text-anchor="end" class="value" style="font-size:20px">1.45</text>
+        
+    <text x="72" y="532" class="tiny">PERCENTILE DANS LA LIGA · JOUEURS ≥ 300 MIN · N=218</text>
+    
+  
+    <line x1="72" y1="558" x2="1128" y2="558" class="rule" />
+    <text x="72" y="590" class="footer">SOURCE · Understat</text>
+    <text x="1128" y="590" text-anchor="end" class="footer">DATAFOOT</text>
+    
+</svg>
