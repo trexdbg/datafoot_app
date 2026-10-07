@@ -3,37 +3,94 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import PlayerTable from '../components/PlayerTable.astro';
 import stats from '../data/stats.json';
 
+interface MatchRow {
+  match_id: number | null;
+  league: string;
+  season: number;
+  kickoff: string | null;
+  home: string;
+  away: string;
+  home_goals: number | null;
+  away_goals: number | null;
+  finished: boolean;
+  source: string;
+  source_url: string;
+  fetched_at: string;
+}
+
 const updated = new Date(stats.generated_at);
 const players = stats.top_players.slice(0, 30);
+const matches = (stats.recent_matches as MatchRow[]).slice(0, 12);
 ---
 <BaseLayout title="Data — DataFoot" description="Statistiques football normalisées et sourcées.">
   <section class="shell page-head">
     <p class="eyebrow">DATASET</p>
     <h1>Les données derrière les articles</h1>
     <p>
-      Saison {stats.season} · {stats.player_count} joueurs · mise à jour
-      {updated.toLocaleString('fr-FR')}.
+      Saison {stats.season} · {stats.player_count} joueurs · {stats.match_count} matchs ·
+      mise à jour {updated.toLocaleString('fr-FR')}.
     </p>
   </section>
+
   <section class="shell section">
     <div class="stat-strip">
-      <div><span>Ligues</span><strong>{stats.leagues.length}</strong></div>
+      <div><span>Sources actives</span><strong>{stats.sources.length}</strong></div>
       <div><span>Joueurs</span><strong>{stats.player_count}</strong></div>
-      <div><span>Articles générés</span><strong>{stats.article_count}</strong></div>
+      <div><span>Matchs</span><strong>{stats.match_count}</strong></div>
     </div>
+
     <div class="section-heading data-heading">
       <div>
-        <p class="eyebrow">CLASSEMENT</p>
+        <p class="eyebrow">UNDERSTAT</p>
         <h2>xG par 90 minutes</h2>
       </div>
-      <p>Les données seront remplacées automatiquement à chaque collecte.</p>
+      <p>Top joueurs du dataset normalisé.</p>
     </div>
+
     {players.length > 0 ? (
       <PlayerTable players={players} />
     ) : (
       <div class="empty-state">
-        <h3>En attente de la première collecte live</h3>
+        <h3>En attente de la première collecte Understat</h3>
         <p>Le workflow DataFoot remplacera automatiquement ce dataset initial.</p>
+      </div>
+    )}
+
+    <div class="section-heading data-heading">
+      <div>
+        <p class="eyebrow">OPENLIGADB</p>
+        <h2>Matchs Bundesliga</h2>
+      </div>
+      <p>Résultats et fixtures issus de la seconde source du pipeline.</p>
+    </div>
+
+    {matches.length > 0 ? (
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Date</th><th>Match</th><th>Score</th><th>État</th><th>Source</th></tr>
+          </thead>
+          <tbody>
+            {matches.map((match) => (
+              <tr>
+                <td>{match.kickoff ? new Date(match.kickoff).toLocaleDateString('fr-FR') : '—'}</td>
+                <td><strong>{match.home}</strong> — {match.away}</td>
+                <td>
+                  {match.home_goals === null || match.away_goals === null
+                    ? '—'
+                    : `${match.home_goals} - ${match.away_goals}`}
+                </td>
+                <td>{match.finished ? 'Terminé' : 'À venir'}</td>
+                <td><a href={match.source_url} rel="nofollow noreferrer">{match.source} ↗</a></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    ) : (
+      <div class="empty-state">
+        <h3>En attente de la première collecte OpenLigaDB</h3>
+        <p>Les fixtures et résultats apparaîtront ici après le prochain pipeline.</p>
       </div>
     )}
   </section>
