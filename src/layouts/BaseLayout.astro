@@ -76,6 +76,40 @@ const schemaBlocks = [baseSchema, ...(Array.isArray(jsonLd) ? jsonLd : jsonLd ? 
     <meta name="twitter:description" content={description} />
 
     <title>{title}</title>
+
+    <script is:inline>
+      (() => {
+        const measurementId = 'G-G2M1RYC5K1';
+        const consentKey = 'datafoot_analytics_consent';
+
+        window.dataLayer = window.dataLayer || [];
+        window.gtag = window.gtag || function(){ window.dataLayer.push(arguments); };
+
+        function loadAnalytics() {
+          if (window.__datafootAnalyticsLoaded) return;
+          window.__datafootAnalyticsLoaded = true;
+
+          const script = document.createElement('script');
+          script.async = true;
+          script.src = 'https://www.googletagmanager.com/gtag/js?id=' + measurementId;
+          document.head.appendChild(script);
+
+          window.gtag('js', new Date());
+          window.gtag('config', measurementId, {
+            send_page_view: true
+          });
+        }
+
+        window.__datafootSetAnalyticsConsent = function(value) {
+          localStorage.setItem(consentKey, value);
+          if (value === 'granted') loadAnalytics();
+        };
+
+        if (localStorage.getItem(consentKey) === 'granted') {
+          loadAnalytics();
+        }
+      })();
+    </script>
     {schemaBlocks.map((schema) => (
       <script type="application/ld+json" set:html={JSON.stringify(schema)} />
     ))}
@@ -96,6 +130,60 @@ const schemaBlocks = [baseSchema, ...(Array.isArray(jsonLd) ? jsonLd : jsonLd ? 
       </div>
     </header>
     <main id="main-content"><slot /></main>
+
+    <aside class="analytics-consent" data-analytics-consent hidden aria-label="Mesure d’audience">
+      <p><strong>Mesure d’audience</strong><span>DataFoot utilise Google Analytics pour comprendre quelles pages sont consultées et améliorer le site.</span></p>
+      <div>
+        <button type="button" data-analytics-deny>Refuser</button>
+        <button type="button" class="accept" data-analytics-accept>Accepter</button>
+      </div>
+    </aside>
+    <script is:inline>
+      (() => {
+        const consentKey = 'datafoot_analytics_consent';
+        const panel = document.querySelector('[data-analytics-consent]');
+        const choice = localStorage.getItem(consentKey);
+
+        if (panel && !choice) panel.hidden = false;
+
+        document.querySelector('[data-analytics-accept]')?.addEventListener('click', () => {
+          window.__datafootSetAnalyticsConsent?.('granted');
+          if (panel) panel.hidden = true;
+        });
+
+        document.querySelector('[data-analytics-deny]')?.addEventListener('click', () => {
+          window.__datafootSetAnalyticsConsent?.('denied');
+          if (panel) panel.hidden = true;
+        });
+
+        document.addEventListener('click', (event) => {
+          if (localStorage.getItem(consentKey) !== 'granted' || !window.gtag) return;
+          const link = event.target instanceof Element ? event.target.closest('a[href*="sorare.com/"]') : null;
+          if (!link) return;
+          window.gtag('event', 'sorare_click', {
+            link_url: link.href,
+            page_path: location.pathname
+          });
+        });
+
+        const profile = document.querySelector('.visual-analysis');
+        if (profile && 'IntersectionObserver' in window) {
+          let sent = false;
+          const observer = new IntersectionObserver((entries) => {
+            if (sent || localStorage.getItem(consentKey) !== 'granted' || !window.gtag) return;
+            if (entries.some((entry) => entry.isIntersecting)) {
+              sent = true;
+              window.gtag('event', 'player_profile_view', {
+                page_path: location.pathname
+              });
+              observer.disconnect();
+            }
+          }, { threshold: 0.45 });
+          observer.observe(profile);
+        }
+      })();
+    </script>
+
     <footer>
       <div class="shell footer-grid">
         <div>
