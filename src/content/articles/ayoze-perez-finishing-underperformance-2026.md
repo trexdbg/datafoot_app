@@ -1,24 +1,38 @@
 ---
-title: "Ayoze Pérez marque moins que ses occasions ne le suggèrent"
+title: "Ayoze Pérez en manque d'efficacité avec Villarreal"
 description: "Ayoze Pérez compte 1 buts pour 4.38 xG en 8 matchs avec Villarreal."
-publishedAt: "2026-10-08T06:03:39+00:00"
+publishedAt: "2026-10-08T11:06:43+00:00"
 league: "La_Liga"
 player: "Ayoze Pérez"
 team: "Villarreal"
 source: "Understat"
 sourceUrl: "https://understat.com/league/La_Liga/2026"
-storyScore: 93.0
+storyScore: 80.0
 ---
-Au cœur de la saison de La Liga, les performances offensives d'Ayoze Pérez avec Villarreal méritent un coup d'œil attentif. Si l'attaquant espagnol répond présent dans la création et le volume de jeu, un décalage net apparaît entre la qualité des situations qu'il se procure et son efficacité réelle devant le but. 
+L'entame de saison en Liga d'Ayoze Pérez avec Villarreal se caractérise par un paradoxe comptable net. S'il s'impose comme un élément capable de se procurer un volume important d'opportunités offensives, la concrétisation de ces situations pose question à l'analyse des données de la compétition. 
 
-Ce qui rend ce signal statistique particulièrement intéressant, c'est l'ampleur de cet écart. Sur un échantillon de 8 matchs et 430 minutes jouées en championnat, Ayoze Pérez affiche un total de 4,38 buts attendus (xG), pour seulement 1 but inscrit. Sa métrique « Buts moins xG » s'établit ainsi à -3,38. En clair, les modèles probabilistes estiment qu'avec les opportunités qu'il a eu le٫ il aurait dû, en moyenne, alourdir bien davantage son compteur personnel.
+### Ce qui rend ce signal statistique intéressant
 
-Les chiffres détaillés confirment pourtant une activité offensive constante. L'attaquant de Villarreal pèse lourdement sur les défenses adverses, comme en atteste son volume de 3,349 tirs par 90 minutes, un total complété par un xG par 90 minutes particulièrement élevé de 0,917. L'agrégat de ses matchs récents (portant sur 9 apparitions et 516 minutes) appuie cette observation avec 3,49 tirs par 90 minutes, dont 1,57 cadrés par rencontre. 
+L'intérêt majeur de ce début de parcours réside dans la cassure entre la qualité des positions obtenues et le rendement réel au tableau d'affichage. Avec un seul but inscrit pour plus de quatre buts attendus cumulés, le joueur se trouve au cœur du plus fort déficit de concrétisation statistique de sa formation sur la période. Un tel écart sur un échantillon de huit apparitions en championnat attire immédiatement l'attention des observateurs de la performance offensive.
 
-Là où le bilan se rééquilibre, c'est dans la passe. Avec 3 passes décisives pour un xA (passes décisives attendues) de 1,060, Pérez surperforme dans la distribution, affichant un solde positif de 1,940 (Passes décisives moins xA). Ses statistiques de match récentes montrent d'ailleurs une implication variée dans le jeu de Villarreal, avec notamment 17,27 passes réussies par 90 minutes, 6,98 passes dans le dernier tiers par 90 minutes, et 0,52 grandes occasions créées par 90 minutes.
+### Ce que montrent exactement les chiffres
 
-Il convient toutefois de manipuler ces observations avec la prudence qui s'impose. Les xG et xA demeurent des indicateurs probabilistes de la qualité des tirs et des passes, et non des certitudes mathématiques. Un déficit de réalisme sur un format restreint de 430 ou 516 minutes peut simplement refléter une variance à court terme ou une maladresse passagère plutôt qu'une incompétence chronique à conclure. 
+Les métriques détaillées de la saison en cours traduisent une activité constante dans les zones de conclusion. En 430 minutes passées sur les pelouses de Liga réparties sur 8 matchs, Ayoze Pérez a décoché 16 tirs, ce qui génère une moyenne de 3,35 tirs par 90 minutes. 
 
-Ce qu'il faudra observer ensuite, c'est la persistance ou la résorption de cet écart. Si Ayoze Pérez parvient à maintenir un tel volume de tirs (supérieur à 3 par match) tout en rectifiant la mire, son compteur de buts devrait mécaniquement se rapprocher de son total d'xG. 
+Son volume de chances s'établit à 4,380 xG (buts attendus) au total, soit une moyenne particulièrement élevée de 0,917 xG par 90 minutes. Pourtant, la ligne de statistiques brutes ne compte qu'une seule réalisation, ce qui place son différentiel (buts moins xG) à -3,380.
 
-*Note méthodologique : Les données utilisées proviennent des métriques avancées de performance (xG, xA, tirs, passes et duels par 90 minutes) enregistrées sur un échantillon de 8 à 9 apparitions en Liga.*
+À l'inverse, le secteur de la passe montre une surperformance intéressante : pour 1,060 xA (passes décisives attendues) – soit 0,222 xA par 90 minutes –, le joueur comptabilise 3 passes décisives, affichant un solde positif de 1,940 entre passes décisives réelles et xA. Sa production offensive globale atteint ainsi un total cumulé de 1,139 xG+xA par 90 minutes. Les données de match récentes agrégées sur un échantillon de 516 minutes (9 apparitions) confirment cette présence avec 3,49 tirs par 90 minutes, dont 1,57 cadrés par 90 minutes, ainsi qu'une moyenne de 0,52 passe décisive et 0,52 but par 90 minutes.
+
+### Limites et interprétation prudente
+
+Il convient de rappeler que les xG (buts attendus) et les xA (passes décisives attendues) sont des indicateurs probabilistes de la qualité des tirs et des passes, et non des certitudes absolues. Un différentiel négatif de -3,380 buts par rapport aux xG indique simplement que les situations de tir obtenues présentaient, en moyenne statistique, une probabilité plus élevée de se transformer en but que le résultat réel observé. 
+
+Cet écart peut illustrer une période de malchance dans le dernier geste, une habileté des gardiens adverses, ou encore des choix de frappe sous-optimaux au moment de conclure. De même, la surperformance constatée à la passe (3 passes décisives pour 1,060 xA) relève en partie de l'efficacité de ses coéquipiers à convertir les offrandes reçues.
+
+### Ce qu'il faudra observer ensuite
+
+La trajectoire d'Ayoze Pérez lors des prochaines rencontres de Liga permettra de vérifier si la tendance s'inverse. Le maintien d'un tel volume d'occasions (proche d'un xG par match complet) constitue une base favorable pour Villarreal, à condition que la précision dans le dernier geste rejoigne les standards probabilistes suggérés par ses xG.
+
+---
+
+*Note méthodologique : Les données proviennent des observations de matchs de La Liga pour la saison 2026. Les statistiques exprimées par 90 minutes reposent sur un temps de jeu suffisant pour normaliser l'activité du joueur.*
