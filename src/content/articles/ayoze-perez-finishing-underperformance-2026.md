@@ -1,24 +1,24 @@
 ---
-title: "Ayoze Pérez en difficulté face au but avec Villarreal"
+title: "Ayoze Pérez marque moins que ses occasions ne le suggèrent"
 description: "Ayoze Pérez compte 1 buts pour 4.38 xG en 8 matchs avec Villarreal."
-publishedAt: "2026-10-07T09:39:15+00:00"
+publishedAt: "2026-10-08T06:03:39+00:00"
 league: "La_Liga"
 player: "Ayoze Pérez"
 team: "Villarreal"
 source: "Understat"
 sourceUrl: "https://understat.com/league/La_Liga/2026"
-storyScore: 79.0
+storyScore: 93.0
 ---
-L'analyse des performances offensives en Liga pour cette saison met en lumière un cas marquant de sous-performance à la finition. L'attaquant de Villarreal, Ayoze Pérez, traverse une période délicate face au but, illustrée par un décalage net entre la qualité des occasions qu'il se procure et son efficacité réelle dans le dernier geste.
+Au cœur de la saison de La Liga, les performances offensives d'Ayoze Pérez avec Villarreal méritent un coup d'œil attentif. Si l'attaquant espagnol répond présent dans la création et le volume de jeu, un décalage net apparaît entre la qualité des situations qu'il se procure et son efficacité réelle devant le but. 
 
-Ce qui rend ce signal statistique particulièrement intéressant, c'est l'ampleur de l'écart mesuré après un volume de matchs déjà significatif. En 8 rencontres disputées et 430 minutes passées sur les terrains de Liga, l'international espagnol affiche un total de 4,38 expected goals (xG) pour seulement 1 but inscrit. Un tel différentiel soulève inévitablement des questions sur son réalisme actuel, d'autant que sa capacité à peser dans la zone de vérité ne fait, elle, aucun doute.
+Ce qui rend ce signal statistique particulièrement intéressant, c'est l'ampleur de cet écart. Sur un échantillon de 8 matchs et 430 minutes jouées en championnat, Ayoze Pérez affiche un total de 4,38 buts attendus (xG), pour seulement 1 but inscrit. Sa métrique « Buts moins xG » s'établit ainsi à -3,38. En clair, les modèles probabilistes estiment qu'avec les opportunités qu'il a eu le٫ il aurait dû, en moyenne, alourdir bien davantage son compteur personnel.
 
-Dans le détail, les données fournies par Understat permettent de mesurer précisément l'activité offensive du joueur de Villarreal. Avec 16 tirs tentés, Ayoze Pérez présente une moyenne de 3,34 tirs par 90 minutes. Son volume de xG par 90 minutes s'établit à un niveau très élevé de 0,917, témoignant d'une présence constante dans des positions de tir à forte probabilité. Son différentiel "Buts moins xG" s'élève à -3,380, matérialisant mathématiquement ce déficit net de concrétisation. 
+Les chiffres détaillés confirment pourtant une activité offensive constante. L'attaquant de Villarreal pèse lourdement sur les défenses adverses, comme en atteste son volume de 3,349 tirs par 90 minutes, un total complété par un xG par 90 minutes particulièrement élevé de 0,917. L'agrégat de ses matchs récents (portant sur 9 apparitions et 516 minutes) appuie cette observation avec 3,49 tirs par 90 minutes, dont 1,57 cadrés par rencontre. 
 
-À l'inverse, son profil se distingue par une intéressante contribution à la création pour ses coéquipiers. Pérez cumule en effet 3 passes décisives pour 1,06 expected assists (xA), soit une métrique de passes décisives moins xA de +1,940, et un xA par 90 minutes de 0,222. Sa production offensive globale reste donc soutenue, comme l'atteste son total d'implication directe chiffré à 1,139 xG+xA par 90 minutes.
+Là où le bilan se rééquilibre, c'est dans la passe. Avec 3 passes décisives pour un xA (passes décisives attendues) de 1,060, Pérez surperforme dans la distribution, affichant un solde positif de 1,940 (Passes décisives moins xA). Ses statistiques de match récentes montrent d'ailleurs une implication variée dans le jeu de Villarreal, avec notamment 17,27 passes réussies par 90 minutes, 6,98 passes dans le dernier tiers par 90 minutes, et 0,52 grandes occasions créées par 90 minutes.
 
-Néanmoins, il convient d'aborder ces observations avec la nuance qui s'impose. Les xG et xA sont des indicateurs probabilistes et non des certitudes mathématiques ; ils mesurent la qualité moyenne d'une situation de tir ou de passe à partir de données historiques, sans capturer l'ensemble des micro-paramètres d'une action (position exacte des défenseurs, angle précis, intervention décisive d'un gardien). Cet écart négatif de -3,380 buts peut ainsi traduire une maladresse temporaire de l'attaquant, un manque de réussite ponctuel, ou encore la survenue d'un volume de situations de tirs difficiles que les xG traditionnels peinent à pondérer parfaitement.
+Il convient toutefois de manipuler ces observations avec la prudence qui s'impose. Les xG et xA demeurent des indicateurs probabilistes de la qualité des tirs et des passes, et non des certitudes mathématiques. Un déficit de réalisme sur un format restreint de 430 ou 516 minutes peut simplement refléter une variance à court terme ou une maladresse passagère plutôt qu'une incompétence chronique à conclure. 
 
-Ce qu'il faudra observer ensuite, c'est la capacité d'Ayoze Pérez à maintenir ce volume d'occasions élevé tout en inversant sa courbe de réussite. Si sa présence dans les zones de concluding demeure aussi constante — avec des ratios de xG par 90 minutes aussi prononcés —, la logique statistique suggère qu'une correction positive de sa réussite face au but devrait s'opérer à moyen terme, à condition que Villarreal continue de l'alimenter dans les mêmes conditions.
+Ce qu'il faudra observer ensuite, c'est la persistance ou la résorption de cet écart. Si Ayoze Pérez parvient à maintenir un tel volume de tirs (supérieur à 3 par match) tout en rectifiant la mire, son compteur de buts devrait mécaniquement se rapprocher de son total d'xG. 
 
-*Note méthodologique : Les statistiques présentées proviennent de la base de données d'Understat pour la saison de Liga 2026. Les métriques d'expected goals (xG) et d'expected assists (xA) évaluent la probabilité qu'un tir devienne un but ou qu'une passe débouche sur une passe décisive, selon l'emplacement sur le terrain et la nature de l'action.*
+*Note méthodologique : Les données utilisées proviennent des métriques avancées de performance (xG, xA, tirs, passes et duels par 90 minutes) enregistrées sur un échantillon de 8 à 9 apparitions en Liga.*
