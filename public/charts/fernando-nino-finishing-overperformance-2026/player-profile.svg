@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 760">
+    <rect width="1400" height="760" fill="#0b0e0b" rx="26"/>
+    <style>
+      text { font-family: Inter,Arial,sans-serif; fill:#f2f4ee; }
+      .label { font-family:ui-monospace,monospace;font-size:12px;font-weight:800;fill:#8f998f; }
+      .value { font-size:28px;font-weight:900; }
+    </style>
+    <text x="72" y="70" style="font-size:14px;font-weight:800;fill:#b7ff3c">DATAFOOT / PLAYER PROFILE</text>
+    <text x="72" y="122" style="font-size:40px;font-weight:850">Fernando Niño</text>
+    <text x="72" y="154" style="font-size:16px;fill:#8f998f">Elche · La Liga</text>
+    
+        <text x="72" y="248" class="label">XG / 90</text>
+        <rect x="260" y="230" width="700" height="30" rx="6" fill="#111510" stroke="#2b322b"/>
+        <rect x="260" y="230" width="644.0" height="30" rx="6" fill="#b7ff3c"/>
+        <text x="990" y="252" class="value" style="font-size:20px">P92</text>
+        <text x="1110" y="252" text-anchor="end" class="value" style="font-size:20px">0.52</text>
+        
+        <text x="72" y="323" class="label">XA / 90</text>
+        <rect x="260" y="305" width="700" height="30" rx="6" fill="#111510" stroke="#2b322b"/>
+        <rect x="260" y="305" width="385.0" height="30" rx="6" fill="#b7ff3c"/>
+        <text x="990" y="327" class="value" style="font-size:20px">P55</text>
+        <text x="1110" y="327" text-anchor="end" class="value" style="font-size:20px">0.06</text>
+        
+        <text x="72" y="398" class="label">TIRS / 90</text>
+        <rect x="260" y="380" width="700" height="30" rx="6" fill="#111510" stroke="#2b322b"/>
+        <rect x="260" y="380" width="546.0" height="30" rx="6" fill="#b7ff3c"/>
+        <text x="990" y="402" class="value" style="font-size:20px">P78</text>
+        <text x="1110" y="402" text-anchor="end" class="value" style="font-size:20px">2.06</text>
+        
+        <text x="72" y="473" class="label">XG+XA / 90</text>
+        <rect x="260" y="455" width="700" height="30" rx="6" fill="#111510" stroke="#2b322b"/>
+        <rect x="260" y="455" width="616.0" height="30" rx="6" fill="#b7ff3c"/>
+        <text x="990" y="477" class="value" style="font-size:20px">P88</text>
+        <text x="1110" y="477" text-anchor="end" class="value" style="font-size:20px">0.58</text>
+        
+    </svg>

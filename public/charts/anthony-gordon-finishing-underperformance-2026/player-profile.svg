@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 760"
+      role="img" aria-labelledby="title desc">
+  <title id="title">Profil statistique de Anthony Gordon</title>
+  <desc id="desc">Percentiles et statistiques football récentes de Anthony Gordon</desc>
+  <rect width="1400" height="760" fill="#0b0e0b" rx="26"/>
+  <defs>
+    <pattern id="grid" width="52" height="52" patternUnits="userSpaceOnUse">
+      <path d="M52 0H0V52" fill="none" stroke="#2b322b" stroke-width="1" opacity=".22"/>
+    </pattern>
+  </defs>
+  <rect width="1400" height="760" fill="url(#grid)" opacity=".28"/>
+  <style>
+    text { font-family: Inter, Arial, sans-serif; fill: #f2f4ee; }
+    .kicker,.card-label,.axis-label,.footer {
+      font-family: ui-monospace,SFMono-Regular,Menlo,monospace;
+    }
+    .kicker { font-size:17px;font-weight:850;letter-spacing:2px;fill:#b7ff3c; }
+    .title { font-size:44px;font-weight:900;letter-spacing:-1.7px; }
+    .subtitle { font-size:19px;fill:#8f998f; }
+    .card-label { font-size:14px;font-weight:850;letter-spacing:.9px;fill:#8f998f; }
+    .axis-label { font-size:16px;font-weight:850;letter-spacing:.25px;fill:#f2f4ee; }
+    .pct { fill:#b7ff3c; }
+    .value { font-size:34px;font-weight:950; }
+    .footer { font-size:13px;font-weight:750;letter-spacing:.75px;fill:#8f998f; }
+  </style>
+
+  <text x="64" y="54" class="kicker">DATAFOOT / PLAYER PROFILE</text>
+  <text x="64" y="104" class="title">Anthony Gordon</text>
+  <text x="64" y="140" class="subtitle">Barcelona · La Liga · Forward</text>
+
+  <polygon points="360.0,396.0 389.4,413.0 389.4,447.0 360.0,464.0 330.6,447.0 330.6,413.0" fill="none" stroke="#2b322b" stroke-width="1.4"/><polygon points="360.0,362.0 418.9,396.0 418.9,464.0 360.0,498.0 301.1,464.0 301.1,396.0" fill="none" stroke="#2b322b" stroke-width="1.4"/><polygon points="360.0,328.0 448.3,379.0 448.3,481.0 360.0,532.0 271.7,481.0 271.7,379.0" fill="none" stroke="#2b322b" stroke-width="1.4"/><polygon points="360.0,294.0 477.8,362.0 477.8,498.0 360.0,566.0 242.2,498.0 242.2,362.0" fill="none" stroke="#2b322b" stroke-width="1.4"/><polygon points="360.0,260.0 507.2,345.0 507.2,515.0 360.0,600.0 212.8,515.0 212.8,345.0" fill="none" stroke="#2b322b" stroke-width="1.4"/>
+  <line x1="360.0" y1="430.0" x2="360.0" y2="260.0" stroke="#2b322b" stroke-width="1.2"/><line x1="360.0" y1="430.0" x2="507.2" y2="345.0" stroke="#2b322b" stroke-width="1.2"/><line x1="360.0" y1="430.0" x2="507.2" y2="515.0" stroke="#2b322b" stroke-width="1.2"/><line x1="360.0" y1="430.0" x2="360.0" y2="600.0" stroke="#2b322b" stroke-width="1.2"/><line x1="360.0" y1="430.0" x2="212.8" y2="515.0" stroke="#2b322b" stroke-width="1.2"/><line x1="360.0" y1="430.0" x2="212.8" y2="345.0" stroke="#2b322b" stroke-width="1.2"/>
+  <polygon points="360.0,319.5 455.7,374.8 499.9,510.8 360.0,515.0 227.5,506.5 264.3,374.8" fill="#b7ff3c" fill-opacity=".18"
+    stroke="#b7ff3c" stroke-width="5" stroke-linejoin="round"/>
+  <circle cx="360.0" cy="319.5" r="6.5" fill="#b7ff3c" stroke="#0b0e0b" stroke-width="3"/><circle cx="455.7" cy="374.8" r="6.5" fill="#b7ff3c" stroke="#0b0e0b" stroke-width="3"/><circle cx="499.9" cy="510.8" r="6.5" fill="#b7ff3c" stroke="#0b0e0b" stroke-width="3"/><circle cx="360.0" cy="515.0" r="6.5" fill="#b7ff3c" stroke="#0b0e0b" stroke-width="3"/><circle cx="227.5" cy="506.5" r="6.5" fill="#b7ff3c" stroke="#0b0e0b" stroke-width="3"/><circle cx="264.3" cy="374.8" r="6.5" fill="#b7ff3c" stroke="#0b0e0b" stroke-width="3"/>
+  <text x="360" y="220" text-anchor="middle" class="axis-label">TIRS<tspan class="pct"> · P65</tspan></text><text x="565" y="318" text-anchor="start" class="axis-label">CADRÉS<tspan class="pct"> · P65</tspan></text><text x="565" y="542" text-anchor="start" class="axis-label">DRIBBLES<tspan class="pct"> · P95</tspan></text><text x="360" y="650" text-anchor="middle" class="axis-label">DUELS<tspan class="pct"> · P50</tspan></text><text x="155" y="542" text-anchor="end" class="axis-label">DERNIER TIERS<tspan class="pct"> · P90</tspan></text><text x="155" y="318" text-anchor="end" class="axis-label">ENTRÉES SURFACE<tspan class="pct"> · P65</tspan></text>
+
+  
+        <rect x="790" y="225" width="250" height="112" rx="14"
+          fill="#111510" stroke="#2b322b" stroke-width="1.4"/>
+        <text x="810" y="259" class="card-label">BUTS / xG</text>
+        <text x="810" y="309" class="value">0 / 2.36</text>
+        
+        <rect x="1060" y="225" width="270" height="112" rx="14"
+          fill="#111510" stroke="#2b322b" stroke-width="1.4"/>
+        <text x="1080" y="259" class="card-label">TIRS / 90</text>
+        <text x="1080" y="309" class="value">3.33</text>
+        
+        <rect x="790" y="365" width="250" height="112" rx="14"
+          fill="#111510" stroke="#2b322b" stroke-width="1.4"/>
+        <text x="810" y="399" class="card-label">PASSES RÉUSSIES / 90</text>
+        <text x="810" y="449" class="value">35.0</text>
+        
+        <rect x="1060" y="365" width="270" height="112" rx="14"
+          fill="#111510" stroke="#2b322b" stroke-width="1.4"/>
+        <text x="1080" y="399" class="card-label">DRIBBLES RÉUSSIS / 90</text>
+        <text x="1080" y="449" class="value">2.83</text>
+        
+        <rect x="790" y="505" width="540" height="112" rx="14"
+          fill="#111510" stroke="#2b322b" stroke-width="1.4"/>
+        <text x="810" y="539" class="card-label">DUELS GAGNÉS / 90</text>
+        <text x="810" y="589" class="value">4.17</text>
+        
+
+  <line x1="64" y1="696" x2="1336" y2="696" stroke="#2b322b" stroke-width="1.4"/>
+  <text x="64" y="729" class="footer">VS 20 JOUEURS COMPARABLES · 540 MINUTES DE MATCH RÉCENTES</text>
+  <text x="1336" y="729" text-anchor="end" class="footer">SOURCES · UNDERSTAT + DONNÉES DE MATCH</text>
+</svg>
