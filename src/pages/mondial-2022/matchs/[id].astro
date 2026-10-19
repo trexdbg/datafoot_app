@@ -29,14 +29,15 @@ const duelStats=[
  {label:'xG',first:xg(homeActions),second:xg(awayActions),format:'decimal' as const},
  {label:'Passes réussies',first:successfulPasses(homeActions),second:successfulPasses(awayActions),format:'int' as const}
 ];
-const goalMarkers=game.goals.map(goal=>({
- minute:goal.minute,
- team:labelCountry(goal.team),
- kind:goal.kind,
- label:goal.kind==='own-goal'
-  ?((game.players.find(p=>p.id===goal.playerId)?playerName(game.players.find(p=>p.id===goal.playerId)!):undefined)??'But contre son camp')
-  :((game.players.find(p=>p.id===goal.playerId)?playerName(game.players.find(p=>p.id===goal.playerId)!):undefined)??'Buteur non renseigné')
-}));
+const goalMarkers=game.goals.map(goal=>{
+ const scorer=game.players.find(p=>p.id===goal.playerId);
+ return {
+  minute:goal.minute,
+  team:labelCountry(goal.team),
+  kind:goal.kind,
+  label:scorer?playerName(scorer):goal.kind==='own-goal'?'But contre son camp':'Buteur non renseigné'
+ };
+});
 
 ---
 <BaseLayout title={titleMatch(game)+' · profils des deux équipes | DataFoot Atlas'} description={'Toutes les actions et tous les profils joueurs du match '+titleMatch(game)+' au Mondial 2022.'} canonicalPath={matchUrl(base,game.id)}>
