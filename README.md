@@ -57,6 +57,15 @@ aucune clé et aucune API appelée par le visiteur.
 Le build est vérifié par \`.github/workflows/match-profile-check.yml\`
 sur les PR concernées. Le lien est présent sur l'accueil et dans la navigation.
 
+
+## Explorateur des matchs — France 2022
+
+- `/equipes/france/` : les 7 matchs de la France à la Coupe du monde 2022, accessibles par recherche d'adversaire ou de date ; chaque carte compare la moyenne d'équipe et Mbappé sur une **échelle fixe**.
+- `/joueurs/mbappe/` et `/joueurs/<id>/` : tous les matchs **couverts par ce jeu de données** pour chacun des 24 joueurs français, avec courbes comparables.
+- `/matchs/coupe-du-monde-2022/<id>/` : moyenne collective de France, comparaison avec Mbappé et courbes individuelles de tous les participants.
+- Source intégrée : `src/data/matches/france-world-cup-2022.json` (actions des joueurs de France sur les 7 matchs de StatsBomb Open Data). Un score débute à 50 à l'entrée sur le terrain, perd 1 par minute, gagne 5 par passe ou dribble réussi, 45 par but et ne descend pas sous 0. L'équipe représente la moyenne des joueurs présents minute par minute. Interpolation/lissage **visuel uniquement**, score et provenance inchangés.
+- Les données de carrière complète de Mbappé ne figurent pas dans StatsBomb Open Data : **ne pas présenter cette série de 7 rencontres comme l'intégralité de sa carrière**.
+
 ## Développement local
 
 ```bash

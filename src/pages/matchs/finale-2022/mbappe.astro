@@ -8,12 +8,12 @@ import '../../../styles/match-weather.css';
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const {timeline} = computeActivity(actionsData.events, profile.match.duration_minutes);
 const rawEvents = actionsData.events;
-const maxActivity = Math.max(...timeline.map(point => point.activity));
+const maxActivity = Math.max(...timeline.map(point => point.activity??0));
 const axisMax = Math.max(100, Math.ceil(maxActivity / 25) * 25);
 const left = 66, right = 1170, top = 218, bottom = 530;
 const x = (minute: number) => left + minute / profile.match.duration_minutes * (right - left);
 const y = (activity: number) => bottom - activity / axisMax * (bottom - top);
-const smooth = monotonePath(timeline.map(p => ({x:x(p.minute),y:y(p.activity)})));
+const smooth = monotonePath(timeline.map(p => ({x:x(p.minute),y:y(p.activity??0)})));
 const area = smooth + ' L ' + right + ' ' + bottom + ' L ' + left + ' ' + bottom + ' Z';
 const xTicks = [0,15,30,45,60,75,90,105,120];
 const yTicks = Array.from({length: axisMax / 25 + 1}, (_, i) => i * 25).filter(v=> v%50===0 || v===axisMax);
@@ -52,6 +52,7 @@ const sourcePath = base+'/data/matches/2022-final-mbappe.json';
    <a class="mw-back" href={base+'/'}>← RETOUR AUX ANALYSES</a>
    <p class="mw-kicker">DATAFOOT / PROFILS DE MATCH / N° 001</p>
   </div>
+  <nav class="shell mw-links" aria-label="Explorer les autres profils"><a href={base+'/joueurs/mbappe/'}>← Tous les matchs de Mbappé</a><a href={base+'/equipes/france/'}>Les matchs de la France →</a><a href={base+'/matchs/coupe-du-monde-2022/3869685/'}>Comparer les joueurs de la finale →</a></nav>
   <section class="shell mw-report" aria-labelledby="mw-main-title">
    <div class="mw-report-top">
     <div class="mw-title-group">
@@ -112,8 +113,8 @@ const sourcePath = base+'/data/matches/2022-final-mbappe.json';
      <path d={smooth} fill="none" stroke="url(#mw-activity-stroke)" stroke-width="16" stroke-opacity=".48" filter="url(#mw-neon)"/>
      <path d={smooth} fill="none" stroke="url(#mw-activity-stroke)" stroke-width="4.25" stroke-linejoin="round" stroke-linecap="round"/>
      {annotations.map(a=><g class:list={['mw-annotation',a.kind]}>
-      <path d={'M '+a.labelX+' '+(a.labelY+43)+' L '+x(a.minute)+' '+(y(timeline[a.minute].activity)-10)} class="mw-annotation-guide"/>
-      <circle cx={x(a.minute)} cy={y(timeline[a.minute].activity)} r={a.kind==='goal'?7:5} class="mw-annotation-dot"/>
+      <path d={'M '+a.labelX+' '+(a.labelY+43)+' L '+x(a.minute)+' '+(y(timeline[a.minute].activity??0)-10)} class="mw-annotation-guide"/>
+      <circle cx={x(a.minute)} cy={y(timeline[a.minute].activity??0)} r={a.kind==='goal'?7:5} class="mw-annotation-dot"/>
       <text x={a.labelX} y={a.labelY} text-anchor="middle" class="mw-annotation-minute">{a.minute}′</text>
       <text x={a.labelX} y={a.labelY+17} text-anchor="middle" class="mw-annotation-name">{a.label}</text>
       <text x={a.labelX} y={a.labelY+34} text-anchor="middle" class="mw-annotation-value">{a.value}</text>
@@ -129,7 +130,7 @@ const sourcePath = base+'/data/matches/2022-final-mbappe.json';
       <title>{m.minute}′{String(m.second).padStart(2,'0')}″ — {m.label}{m.impact?' +'+m.impact:''}</title>
      </g>)}
      <line id="mw-cursor" x1={x(80)} y1={top} x2={x(80)} y2={bottom} stroke="#d9f1ff" stroke-width="1.4" stroke-dasharray="5 5" opacity=".7" pointer-events="none"/>
-     <circle id="mw-dot" cx={x(80)} cy={y(readoutAt80)} r="7" fill="#ff759d" stroke="#fff" stroke-width="2" pointer-events="none"/>
+     <circle id="mw-dot" cx={x(80)} cy={y(readoutAt80??0)} r="7" fill="#ff759d" stroke="#fff" stroke-width="2" pointer-events="none"/>
      <rect id="mw-hit" x={left} y={top} width={right-left} height={bottom-top} fill="transparent" tabindex="0" aria-label="Examiner le score de chaque minute avec les flèches ou la souris"/>
     </svg>
    </div>
