@@ -35,6 +35,7 @@ const paths=(timeline:typeof primary)=>{
  return segments.map(points=>monotonePath(points.map(p=>({x:x(p.minute),y:y(p.activity??0)}))));
 };
 const playerPath=paths(primary);
+const activityArea=primary[0]?.activity!=null&&primary.at(-1)?.activity!=null&&playerPath.length===1;
 const teamPath=comparison?paths(comparison):[];
 const axisStep=scoreMax>300?100:50;
 const yTicks=[...new Set([...Array.from({length:Math.floor(scoreMax/axisStep)+1},(_,i)=>i*axisStep),scoreMax])];
@@ -91,7 +92,7 @@ const detailHref=base+'/matchs/coupe-du-monde-2022/'+game.id+'/profils/';
    <section class="md-report" aria-labelledby="md-chart-heading">
     <div class="md-report-top">
      <div><p class="md-kicker">COURBE D’ACTIVITÉ</p><h2 id="md-chart-heading">{name}</h2><p>{teamView?'Moyenne des joueurs français présents sur le terrain':'Profil individuel en rose · moyenne française en bleu'}</p></div>
-     <div class="md-key"><span><i class="md-key-swatch primary"></i>{teamView?'France':name}</span>{!teamView&&<span><i class="md-key-swatch compare"></i>France · moyenne</span>}<span><i class="md-key-dot"></i> But</span></div>
+     <div class="md-key"><span><i class:list={['md-key-swatch','primary',teamView&&'team']}></i>{teamView?'France':name}</span>{!teamView&&<span><i class="md-key-swatch compare"></i>France · moyenne</span>}<span><i class="md-key-dot"></i> But</span></div>
     </div>
     <div class="md-chart-scroll" tabindex="0" aria-label="Graphique défilable horizontalement sur petit écran">
      <svg id="md-chart" viewBox="0 0 1110 455" role="img" aria-labelledby="md-svg-title md-svg-description">
@@ -106,9 +107,9 @@ const detailHref=base+'/matchs/coupe-du-monde-2022/'+game.id+'/profils/';
       <text class="md-svg-label" x={left} y="28">SCORE D’ACTIVITÉ</text>
       {game.duration>90&&<g><line x1={x(90)} x2={x(90)} y1={top} y2={bottom} stroke="#7caccd" stroke-dasharray="7 5" stroke-opacity=".65"/><text class="md-extension" x={x(90)+8} y={top+15}>PROLONGATION</text></g>}
       {teamPath.map(path=><path d={path} fill="none" stroke="#58c9ff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity=".62"/>)}
-      {playerPath.map(path=><path d={path+' L '+right+' '+bottom+' L '+left+' '+bottom+' Z'} fill="url(#md-area)" opacity={playerPath.length===1?1:0}/>)}
+      {activityArea&&playerPath.map(path=><path d={path+' L '+right+' '+bottom+' L '+left+' '+bottom+' Z'} fill="url(#md-area)"/>)}
       {playerPath.map(path=><path d={path} fill="none" stroke={teamView?'#5ac9ff':'#fc8ab9'} stroke-width="4" stroke-linecap="round" stroke-linejoin="round" class="md-primary-path"/>)}
-      {goals.map((minute,i)=>primary[minute]?.activity!=null?<g>
+      {goals.map(minute=>primary[minute]?.activity!=null?<g>
        <circle cx={x(minute)} cy={y(primary[minute].activity!)} r="7" fill="#ff668f" stroke="#ffe8f0" stroke-width="2.5"/>
        <title>But à la {minute}′{teamView?' · moyenne d’équipe':' · +45 points'}</title>
       </g>:null)}
