@@ -92,7 +92,7 @@ const initialEventCount=initial.actions.filter(a=>a.minute===initialMinute).leng
   </section>
   <aside class="wc-profile-note"><p class="wc-eyebrow">LE MODÈLE PULSE</p><h2>Observer le rythme, pas attribuer une note.</h2><p>Les actions créent des impulsions qui s’atténuent avec une mémoire courte de 3 minutes et une mémoire longue de 10 minutes. L’axe 0–100 est fixe pour comparer les matchs, sans ajouter une courbe d’équipe au profil individuel.</p><p><strong>Impact indicatif :</strong> indicateur éditorial fondé sur les types d’actions et leur résultat. Ce n’est pas un xT ou un VAEP validé.</p><a href={playerUrl(base,initial.player.id)} id="wc-other-games">↗ Tous les matchs de ce joueur</a><a href={matchUrl(base,game.id)}>← Retour aux deux équipes</a></aside>
  </div>
- <p class="wc-footnote">Source de l’ensemble des événements : <a href={game.source} target="_blank" rel="noopener noreferrer">StatsBomb Open Data / Hudl ↗</a>. Pas de données inventées ni de suivi GPS. La séance de tirs au but ne fait pas partie de la courbe ; temps additionnel et prolongations sont conservés.</p>
+ <p class="wc-footnote">Source de l’ensemble des événements : <a href={game.source} target="_blank" rel="noopener noreferrer">StatsBomb Open Data / Hudl ↗</a> · <a href={base+'/data/worldcup-2022/matches/'+game.id+'.json'}>Télécharger les actions du match (JSON) ↗</a>. Pas de données inventées ni de suivi GPS. La séance de tirs au but ne fait pas partie de la courbe ; temps additionnel et prolongations sont conservés.</p>
 </div></div>
 <script is:inline define:vars={{players:clientPlayers,duration:game.duration,defaultId:initial.player.id,basePath:base}}>
 (()=>{
