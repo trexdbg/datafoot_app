@@ -58,6 +58,9 @@ jobs:
       - name: Verify above-50 activity persistence
         run: npm run test:presence
 
+      - name: Verify continuous thermal color scale
+        run: npm run test:temperature
+
       - name: Browser interaction smoke tests
         run: npm run test:browser
 
