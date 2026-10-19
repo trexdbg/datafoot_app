@@ -1,4 +1,4 @@
-import raw from '../data/matches/france-world-cup-2022.json';
+import raw from '../data/matches/france-world-cup-2022.json' with {type:'json'};
 import {computeMatchProfiles} from './match-activity.mjs';
 
 const nations = {Argentina:'Argentine',Australia:'Australie',Denmark:'Danemark',England:'Angleterre',Morocco:'Maroc',Poland:'Pologne',Tunisia:'Tunisie'};
