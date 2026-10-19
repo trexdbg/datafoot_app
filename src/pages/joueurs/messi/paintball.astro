@@ -27,7 +27,17 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
       <div class="pw-board">
         <div class="pw-arena">
           <div class="pw-arena-head"><div><span class="pw-spark">🎨</span> PAINTBALL V3 · 0 TRAIT · 96+ PASSES</div><div id="pw-state">CHARGEMENT DES DONNÉES…</div></div>
-          <div class="pw-canvas-scroll"><canvas id="pw-canvas" width="1200" height="780" role="img" aria-label="Messi au centre avec ses partenaires ayant plus de 95 passes. Chaque partenaire possède une couleur propre. Les petites billes se déplacent entre Messi et son partenaire et produisent des éclaboussures à l'arrivée. Aucun lien fixe entre les joueurs."></canvas></div>
+          <div class="pw-canvas-scroll">
+            <div class="pw-chart-date" aria-live="off">
+              <span>MOIS / ANNÉE</span>
+              <strong id="pw-now">--/----</strong>
+            </div>
+            <canvas id="pw-canvas" width="1200" height="780" role="img" aria-label="Messi au centre avec ses partenaires ayant plus de 95 passes. Chaque partenaire possède une couleur propre. Les petites billes se déplacent entre Messi et son partenaire et produisent des éclaboussures à l'arrivée. Aucun lien fixe entre les joueurs."></canvas></div>
+          <div class="pw-month-timeline" aria-label="Chronologie des matchs de Messi">
+            <div class="pw-month-caption"><span>CHRONOLOGIE · DÉFILEMENT DES MOIS</span><span>FAIRE GLISSER POUR EXPLORER</span></div>
+            <input id="pw-month-scrub" type="range" min="0" max="1" step="1" value="0" disabled aria-label="Faire défiler les matchs par mois et année"/>
+            <div class="pw-month-ticks" id="pw-month-ticks" aria-hidden="true"><span>--/----</span><span>--/----</span></div>
+          </div>
           <div class="pw-canvas-legend"><span><i class="pw-swatch palette"></i> 1 COULEUR = 1 JOUEUR</span><span>↗ MESSI <b>→</b> PARTENAIRE</span><span>↙ PARTENAIRE <b>→</b> MESSI</span><span>IMPACTS PAINTBALL · AUCUN TRAIT</span><span>96 PASSES MINIMUM / JOUEUR</span></div>
         </div>
         <aside class="pw-aside">
@@ -46,7 +56,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
       </div>
       <div class="pw-controls">
         <div class="pw-transport"><button id="pw-play" type="button" aria-label="Démarrer l'animation">▶</button><button id="pw-reset" type="button" aria-label="Recommencer">↺</button><button id="pw-battle" type="button" aria-pressed="false">⚡ BATTLE MODE</button></div>
-        <div class="pw-progress"><label for="pw-scrub"><span id="pw-now">DÉPART</span><span id="pw-progress-text">0 / 0 PASSES</span></label><input id="pw-scrub" type="range" min="0" max="1" step="1" value="0"/><div><span>PREMIER MATCH COUVERT</span><span>DERNIER MATCH COUVERT</span></div></div>
+        <div class="pw-playback-status"><span>FRISE MOIS/ANNÉE JUSTE SOUS LE GRAPHIQUE</span><strong id="pw-progress-text">0 / 0 PASSES</strong></div>
         <div class="pw-speed"><label for="pw-speed">DÉBIT</label><select id="pw-speed"><option value="4">×1</option><option value="12">×2</option><option value="28" selected>×4</option><option value="60">×8</option></select></div>
       </div>
       <div id="pw-message" class="pw-message" role="status" aria-live="polite">Lecture des données réelles…</div>
