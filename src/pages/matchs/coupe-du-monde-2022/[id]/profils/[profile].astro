@@ -24,9 +24,10 @@ const scoreMax=matchComparisonScale(game);
 const left=58,right=1050,top=45,bottom=325;
 const x=(minute:number)=>left+minute/game.duration*(right-left);
 const y=(score:number)=>bottom-Math.max(0,score)/scoreMax*(bottom-top);
-const paths=(timeline:typeof primary)=>{
- const segments:typeof primary[]=[];
- let segment:typeof primary=[];
+type ChartPoint={minute:number;activity:number|null};
+const paths=(timeline:ChartPoint[])=>{
+ const segments:ChartPoint[][]=[];
+ let segment:ChartPoint[]=[];
  for(const point of timeline){
   if(point.activity==null){if(segment.length)segments.push(segment);segment=[];}
   else segment.push(point);
@@ -50,7 +51,9 @@ const goals=teamView?teamGoals(game):playerGoals(game,playerId!);
 const passes=events.filter(a=>a.kind==='Pass'&&a.outcome==='Complete').length;
 const dribbles=events.filter(a=>a.kind==='Dribble'&&a.outcome==='Complete').length;
 const stacks=new Map<number,number>();
-const dots=events.flatMap(a=>{
+// Priorité aux buts et aux actions qui rapportent des points sur le rail collectif.
+const railEvents=teamView?[...events].sort((a,b)=>a.minute-b.minute||b.impact-a.impact||a.second-b.second):events;
+const dots=railEvents.flatMap(a=>{
  const stack=stacks.get(a.minute)||0;
  stacks.set(a.minute,stack+1);
  if(teamView&&stack>=8)return [];
@@ -66,7 +69,7 @@ const start=teamView?Math.min(game.duration,45):Math.min(game.duration,Math.max(
 const startScore=primary[start]?.activity;
 const firstAvailable=primary.find(p=>p.activity!=null)?.minute??0;
 const initialMinute=startScore==null?firstAvailable:start;
-const initialScore=primary[initialMinute].activity;
+const initialScore=primary[initialMinute]?.activity??null;
 const durationLabel=teamView?game.duration+'′':profile!.player.entry+'′ – '+(profile!.player.exit==null?game.duration+'′ (fin)':profile!.player.exit+'′');
 const timelineForClient=primary.map(p=>({minute:p.minute,activity:p.activity,players:'players' in p?p.players:null}));
 const eventsForClient=events.map(a=>({minute:a.minute,second:a.second,label:a.label,impact:a.impact,playerName:teamView?a.playerName:null}));
