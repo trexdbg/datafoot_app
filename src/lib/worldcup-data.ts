@@ -10,7 +10,7 @@ export interface Match {
  homeScore:number;awayScore:number;duration:number;players:Player[];
  actions:Action[];goals:Goal[];source:string
 }
-export interface Point {minute:number;activity:number|null;impact:number|null;actions?:number;players?:number;gain?:number;impactGain?:number}
+export interface Point {minute:number;activity:number|null;impact:number|null;actions?:number;players?:number;gain?:number;penaltyGain?:number;impactGain?:number;events?:Array<{kind:string;outcome:string;playerName?:string}>}
 export interface Profile {player:Player;actions:Array<{minute:number;second:number;kind:string;outcome:string;playerId:number}>;timeline:Point[]}
 export interface EnrichedMatch extends Match {profiles:Profile[];team:Point[]}
 export interface PlayerIndex {id:number;name:string;country:string;matches:Array<{id:number;date:string;opponent:string}>}
@@ -66,9 +66,11 @@ export const mean=(timeline:Point[],key:'activity'|'impact'='activity')=>{
 };
 export const teamTimeline=(game:EnrichedMatch,teamName:string):Point[]=>
  Array.from({length:game.duration+1},(_,minute)=>{
-  const active=game.profiles.filter(p=>p.player.team===teamName).map(p=>p.timeline[minute]).filter(p=>p?.activity!=null);
+  const players=game.profiles.filter(p=>p.player.team===teamName&&p.timeline[minute]?.activity!=null);
+  const active=players.map(p=>p.timeline[minute]);
   const avg=(key:'activity'|'impact')=>active.length?Number((active.reduce((sum,p)=>sum+(p[key]??0),0)/active.length).toFixed(1)):0;
-  return {minute,activity:avg('activity'),impact:avg('impact'),players:active.length,actions:active.reduce((sum,p)=>sum+(p.actions??0),0)};
+  const events=players.flatMap(p=>(p.timeline[minute].events??[]).map(event=>({kind:event.kind,outcome:event.outcome,playerName:p.player.name})));
+  return {minute,activity:avg('activity'),impact:avg('impact'),players:active.length,actions:active.reduce((sum,p)=>sum+(p.actions??0),0),events};
  });
 export const teamPlayers=(game:EnrichedMatch,team:string)=>game.profiles.filter(p=>p.player.team===team);
 export const teamGoals=(game:EnrichedMatch,team:string)=>game.goals.filter(g=>g.team===team).map(g=>g.minute);
