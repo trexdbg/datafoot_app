@@ -57,6 +57,12 @@ export function compactMatch(fixture,raw) {
       if(leaving)leaving.exit=minute;
       add(event.substitution?.replacement,event.team.name,minute);
     }
+    // A red card ends an individual's activity even without a substitution.
+    const card=event.bad_behaviour?.card?.name||event.foul_committed?.card?.name;
+    if(card==='Red Card'||card==='Second Yellow'){
+      const leaving=add(event.player,event.team?.name,0);
+      if(leaving)leaving.exit=event.minute+1;
+    }
   }
   const actions=[];
   const goals=[];
