@@ -211,3 +211,25 @@ bruts StatsBomb ; ceux-ci restent dans le cache du collecteur. Seuls les
 événements dérivés et les métadonnées nécessaires à la visualisation sont
 publiés. « Tous les matchs ouverts où Messi a été identifié » ne signifie
 jamais « carrière complète ».
+
+
+### Messi Pass Wars — animation fluide des dizaines de milliers de passes
+
+Depuis la collecte des **602 rencontres Messi identifiées dans StatsBomb Open Data**
+(62 259 passes échangées dans le jeu publié le 19 octobre 2026), le moteur
+ne déclenche plus chaque événement du même match simultanément. L’axe
+mois/année reste proportionnel au calendrier réel, et chaque passe est
+**intégralement prise en compte** dans les compteurs, filtres, classements
+et recherches de partenaires.
+
+Pour préserver des mouvements lisibles à l’échelle de toute la période,
+les billes sont un **échantillon de passes réelles**, lancé à cadence
+régulière avec une file bornée. Le mode Battle accélère le débit,
+sans produire de rafale après un retour d’onglet ou un changement de date.
+Un joueur isolé ne reçoit que les animations de ses propres échanges.
+Le jeu ne synthétise aucune fausse passe : seules les visualisations animées
+sont échantillonnées, les totaux restent exhaustifs pour la couverture
+StatsBomb téléchargée.
+
+Les tests `tests/pass-wars.test.mjs` vérifient la sélection de véritables
+événements, la file limitée, le filtrage joueur et la chronologie linéaire.
