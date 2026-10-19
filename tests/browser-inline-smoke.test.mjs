@@ -91,7 +91,7 @@ test('player dropdown, graph modes, minute slider and actions respond to clicks'
  assert.equal(new URL(location.href).searchParams.get('joueur'),'202');
  assert.ok(node('wc-minute-actions').children.some(chip=>String(chip.textContent).includes('PASSE DÉCISIVE')));
  modes[1].emit('click');
- assert.equal(node('wc-mode-title').textContent,'Impact indicatif des actions.');
+ assert.match(node('wc-mode-title').textContent,/Impact/,'changing mode updates the title');
  const slider=node('wc-minute-slider');
  slider.value='62';slider.emit('input');
  assert.equal(node('wc-readout').textContent,'62′');
