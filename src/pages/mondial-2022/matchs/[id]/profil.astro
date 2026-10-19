@@ -1,0 +1,213 @@
+---
+import BaseLayout from '../../../../layouts/BaseLayout.astro';
+import {monotonePath} from '../../../../lib/match-activity.mjs';
+import {games,matchUrl,countryUrl,playerUrl,labelCountry,flag,stageLabel,dateLabel,titleMatch,peak,mean} from '../../../../lib/worldcup-data';
+import '../../../../styles/worldcup.css';
+import '../../../../styles/worldcup-profile.css';
+export function getStaticPaths(){return games.map(game=>({params:{id:String(game.id)},props:{matchId:game.id}}));}
+interface Props {matchId:number}
+const {matchId}=Astro.props;
+const base=import.meta.env.BASE_URL.replace(/\/$/,'');
+const game=games.find(g=>g.id===matchId)!;
+const profiles=[...game.profiles].sort((a,b)=>a.player.team.localeCompare(b.player.team)||a.player.entry-b.player.entry||a.player.name.localeCompare(b.player.name,'fr'));
+const initial=profiles.find(p=>p.player.team===game.home&&p.player.entry===0)??profiles[0];
+const firstPeak=peak(initial.timeline);
+const left=58,right=1071,top=30,bottom=317;
+const x=(minute:number)=>left+minute/game.duration*(right-left);
+const y=(score:number)=>bottom-Math.max(0,Math.min(100,score))/100*(bottom-top);
+const firstPoints=initial.timeline.filter(p=>p.activity!==null);
+const firstPath=monotonePath(firstPoints.map(p=>({x:x(p.minute),y:y(p.activity??0)})));
+const clientPlayers=profiles.map(p=>({
+ id:p.player.id,name:p.player.name,team:p.player.team,entry:p.player.entry,exit:p.player.exit,
+ timeline:p.timeline.map(t=>({activity:t.activity,impact:t.impact,actions:t.actions})),
+ events:p.actions.map(a=>({minute:a.minute,second:a.second,kind:a.kind,outcome:a.outcome,
+  l:(a as any).location??null,e:(a as any).endLocation??null,xg:(a as any).xg??null}))
+}));
+const initialMinute=firstPeak?.minute??0;
+const initialEventCount=initial.actions.filter(a=>a.minute===initialMinute).length;
+---
+<BaseLayout title={'Explorer les actions du match '+titleMatch(game)+' | DataFoot Pulse'} description={'Chaque joueur et chaque action de '+titleMatch(game)+', une courbe à la fois, avec recherche par pays ou nom.'} canonicalPath={matchUrl(base,game.id)+'profil/'}>
+<div class="wc-root wc-profile-root"><div class="shell wc-wrap">
+ <nav class="wc-crumb"><a href={base+'/mondial-2022/'}>MONDIAL 2022</a><span>/</span><a href={matchUrl(base,game.id)}>{titleMatch(game)}</a><span>/</span>ANALYSE DES JOUEURS</nav>
+ <div class="wc-detail-head"><div><p class="wc-eyebrow">DATAFOOT PULSE / {stageLabel(game.stage).toUpperCase()} · {dateLabel(game.date)}</p><h1>Un joueur.<br/><em>Tout son match.</em></h1><p>Choisis n’importe quel participant, passe de l’activité à l’impact indicatif et explore toutes ses actions. Les profils ne sont jamais superposés à la courbe de son pays.</p></div><div class="wc-detail-number"><strong>{profiles.length}</strong><span>PROFILS DISPONIBLES</span></div></div>
+ <div class="wc-match-board"><a href={countryUrl(base,game.home)}>{flag(game.home)} {labelCountry(game.home)}</a><strong>{game.homeScore}–{game.awayScore}</strong><a href={countryUrl(base,game.away)}>{labelCountry(game.away)} {flag(game.away)}</a></div>
+ <section class="wc-inspector" aria-label="Analyse individuelle">
+  <div class="wc-inspector-head">
+   <div><p class="wc-eyebrow">CHOISIR LE JOUEUR</p><h2 id="wc-current-name">{initial.player.name}</h2><p id="wc-current-info">{flag(initial.player.team)} {labelCountry(initial.player.team)} · {initial.player.entry}′ → {initial.player.exit??game.duration}′</p></div>
+   <div class="wc-player-chooser"><label for="wc-select-player">Profil individuel</label>
+    <select id="wc-select-player" aria-label="Choisir un joueur du match">
+     {[game.home,game.away].map(team=><optgroup label={labelCountry(team)}>{profiles.filter(p=>p.player.team===team).map(p=><option value={p.player.id} selected={p.player.id===initial.player.id}>{p.player.name}{p.player.entry>0?' · remplaçant':''}</option>)}</optgroup>)}
+    </select>
+   </div>
+  </div>
+  <div class="wc-current-stats">
+   <div><span>POINT CULMINANT</span><strong id="wc-peak">{firstPeak?.activity?.toFixed(0)??0}<small>/100</small></strong><small id="wc-peak-minute">{initialMinute}′</small></div>
+   <div><span>MOYENNE D’ACTIVITÉ</span><strong id="wc-average">{mean(initial.timeline).toFixed(0)}</strong><small>sur le temps de jeu</small></div>
+   <div><span>ÉVÉNEMENTS</span><strong id="wc-event-total">{initial.actions.length}</strong><small>sur cette rencontre</small></div>
+   <div><span>BUTS</span><strong id="wc-goals">{initial.actions.filter(a=>a.kind==='Shot'&&a.outcome==='Goal').length}</strong><small>hors séance de tirs au but</small></div>
+  </div>
+  <div class="wc-mode-head">
+   <div><p class="wc-eyebrow">LA SIGNATURE DU JOUEUR</p><h3 id="wc-mode-title">Activité dans le match.</h3><p id="wc-mode-desc">Une impulsion pour chaque action : l’activité progresse, puis diminue quand le joueur se fait plus discret.</p></div>
+   <div class="wc-mode-tabs" role="group" aria-label="Lecture du graphique">
+    <button type="button" data-mode="activity" class="active" aria-pressed="true">◉ Activité</button>
+    <button type="button" data-mode="impact" aria-pressed="false">✦ Impact indicatif</button>
+   </div>
+  </div>
+  <div class="wc-profile-chart-scroll" tabindex="0" aria-label="Défiler le graphique sur les petits écrans">
+   <svg id="wc-profile-chart" viewBox="0 0 1140 456" role="img" aria-labelledby="wc-chart-title wc-chart-description">
+    <title id="wc-chart-title">Profil de {initial.player.name} sur {game.duration} minutes</title>
+    <desc id="wc-chart-description">Courbe d’activité 0–100 pour un seul joueur, points représentant les événements sous l’axe horizontal. Mode impact indicatif disponible. Le curseur permet l’inspection des minutes.</desc>
+    <rect width="1140" height="456" fill="#071b30"/>
+    {[0,25,50,75,100].map(t=><g><line x1={left} x2={right} y1={y(t)} y2={y(t)} class="wc-profile-grid"/><text class="wc-profile-axis" text-anchor="end" x="47" y={y(t)+4}>{t}</text></g>)}
+    {Array.from({length:Math.ceil(game.duration/15)+1},(_,i)=>i*15).filter(n=>n<=game.duration).concat([game.duration]).filter((n,i,a)=>a.indexOf(n)===i).map(minute=><g><line x1={x(minute)} x2={x(minute)} y1={top} y2={bottom} class="wc-profile-grid vertical"/><text x={x(minute)} y="345" text-anchor="middle" class="wc-profile-axis">{minute}′</text></g>)}
+    <text class="wc-profile-chartlabel" x={left} y="20">INDICE PULSE /100</text>
+    {game.duration>90&&<g><line x1={x(90)} x2={x(90)} y1={top} y2={bottom} stroke="#b6d8e7" stroke-dasharray="6 7" opacity=".6"/><text class="wc-profile-period" x={x(90)+8} y="48">APRÈS 90′</text></g>}
+    <path id="wc-line-area" d={firstPath+' L '+x(firstPoints.at(-1)?.minute??0)+' '+bottom+' L '+x(firstPoints[0]?.minute??0)+' '+bottom+' Z'} fill="#72dfff" opacity=".13"/>
+    <path id="wc-line-main" d={firstPath} fill="none" stroke="#78dcff" stroke-width="4.7" stroke-linecap="round" stroke-linejoin="round"/>
+    <g id="wc-goal-marks"></g>
+    <line x1={left} x2={right} y1={bottom} y2={bottom} stroke="#b3d6e5" opacity=".8"/>
+    <text x={left} y="369" class="wc-profile-chartlabel">ÉVÉNEMENTS · UN POINT PAR ACTION</text>
+    <line x1={left} x2={right} y1="430" y2="430" stroke="#7a9fbb" opacity=".4"/>
+    <g id="wc-event-markers"></g>
+    <line id="wc-inspect-cursor" x1={x(initialMinute)} x2={x(initialMinute)} y1={top} y2={bottom} stroke="#e3f6ff" stroke-width="1.6" stroke-dasharray="5 6" opacity=".8" pointer-events="none"/>
+    <circle id="wc-inspect-dot" cx={x(initialMinute)} cy={y(initial.timeline[initialMinute]?.activity??0)} r="7" fill="#fff" stroke="#6adfff" stroke-width="2.8" pointer-events="none"/>
+    <rect id="wc-profile-hit" x={left} y={top} width={right-left} height={bottom-top} fill="transparent" tabindex="0" aria-label="Explorer minute par minute avec les flèches ou la souris"/>
+   </svg>
+  </div>
+  <div class="wc-profile-legend"><span><i class="quiet"></i>Autres événements</span><span><i class="positive"></i>Actions significatives</span><span><i class="goal"></i>Buts</span><small>Survolez ou sélectionnez les points sous l’axe X.</small></div>
+  <div class="wc-highlights"><strong>MOMENTS CLÉS</strong><div id="wc-moments"></div></div>
+  <div class="wc-minute-reader" id="wc-minute-reader">
+   <div class="wc-minute-head"><div><span>MINUTE SÉLECTIONNÉE</span><output id="wc-readout">{initialMinute}′</output></div><div class="wc-readout-numbers"><span>Activité <strong id="wc-now-activity">{initial.timeline[initialMinute]?.activity?.toFixed(0)??0}</strong></span><span>Impact <strong id="wc-now-impact">{initial.timeline[initialMinute]?.impact?.toFixed(0)??0}</strong></span></div></div>
+   <input id="wc-minute-slider" type="range" min="0" max={game.duration} value={initialMinute} step="1" aria-label="Sélectionner une minute"/>
+   <div class="wc-minute-controls"><button type="button" data-step="-1">← Minute précédente</button><span id="wc-minute-count">{initialEventCount} actions</span><button type="button" data-step="1">Minute suivante →</button></div>
+   <div id="wc-minute-actions" class="wc-minute-actions" aria-live="polite"></div>
+  </div>
+ </section>
+ <div class="wc-action-bottom">
+  <section class="wc-action-log"><div class="wc-section-head"><div><p class="wc-eyebrow">UN MATCH, ACTION PAR ACTION</p><h2>Le journal.</h2><p>Filtre les événements du joueur et clique sur une action pour retrouver la minute exacte.</p></div></div>
+   <div class="wc-log-filters" role="group" aria-label="Filtrer les actions">
+    <button type="button" class="active" data-filter="all" aria-pressed="true">Toutes</button><button type="button" data-filter="Pass" aria-pressed="false">Passes</button><button type="button" data-filter="Dribble" aria-pressed="false">Dribbles</button><button type="button" data-filter="Shot" aria-pressed="false">Tirs</button><button type="button" data-filter="other" aria-pressed="false">Autres</button>
+   </div>
+   <div class="wc-log-rows" id="wc-log"></div>
+  </section>
+  <aside class="wc-profile-note"><p class="wc-eyebrow">LE MODÈLE PULSE</p><h2>Observer le rythme, pas attribuer une note.</h2><p>Les actions créent des impulsions qui s’atténuent avec une mémoire courte de 3 minutes et une mémoire longue de 10 minutes. L’axe 0–100 est fixe pour comparer les matchs, sans ajouter une courbe d’équipe au profil individuel.</p><p><strong>Impact indicatif :</strong> indicateur éditorial fondé sur les types d’actions et leur résultat. Ce n’est pas un xT ou un VAEP validé.</p><a href={playerUrl(base,initial.player.id)} id="wc-other-games">↗ Tous les matchs de ce joueur</a><a href={matchUrl(base,game.id)}>← Retour aux deux équipes</a></aside>
+ </div>
+ <p class="wc-footnote">Source de l’ensemble des événements : <a href={game.source} target="_blank" rel="noopener noreferrer">StatsBomb Open Data / Hudl ↗</a>. Pas de données inventées ni de suivi GPS. La séance de tirs au but ne fait pas partie de la courbe ; temps additionnel et prolongations sont conservés.</p>
+</div></div>
+<script is:inline define:vars={{players:clientPlayers,duration:game.duration,defaultId:initial.player.id,basePath:base}}>
+(()=>{
+ const svg=document.getElementById('wc-profile-chart'),select=document.getElementById('wc-select-player');
+ const line=document.getElementById('wc-line-main'),area=document.getElementById('wc-line-area'),marks=document.getElementById('wc-event-markers'),goals=document.getElementById('wc-goal-marks');
+ const cursor=document.getElementById('wc-inspect-cursor'),dot=document.getElementById('wc-inspect-dot');
+ const slider=document.getElementById('wc-minute-slider'),count=document.getElementById('wc-minute-count'),chips=document.getElementById('wc-minute-actions');
+ const readout=document.getElementById('wc-readout'),currA=document.getElementById('wc-now-activity'),currI=document.getElementById('wc-now-impact'),log=document.getElementById('wc-log');
+ const minutes=document.getElementById('wc-moments');
+ if(!svg||!select||!line||!area||!marks||!goals||!slider||!count||!chips||!readout||!log||!minutes)return;
+ const ns='http://www.w3.org/2000/svg',fromX=m=>58+m/duration*1013,fromY=v=>317-v/100*287;
+ let player,mode='activity',minute=0,filter='all';
+ const label=a=>a.kind==='Pass'?(a.outcome==='Complete'?'Passe réussie':'Passe non réussie'):
+ a.kind==='Dribble'?(a.outcome==='Complete'?'Dribble réussi':'Dribble non réussi'):
+ a.kind==='Shot'?(a.outcome==='Goal'?'BUT':('Tir · '+a.outcome)):
+ ({Carry:'Conduite de balle','Ball Receipt*':'Réception','Ball Recovery':'Récupération',Pressure:'Pressing',Duel:'Duel',Interception:'Interception',Miscontrol:'Contrôle manqué','Foul Committed':'Faute commise'})[a.kind]||a.kind;
+ const kind=a=>a.kind==='Shot'&&a.outcome==='Goal'?'goal':['Shot','Dribble','Pass','Ball Recovery','Interception'].includes(a.kind)?'positive':'quiet';
+ const svgEl=(tag,attributes,title)=>{const el=document.createElementNS(ns,tag);for(const [key,value] of Object.entries(attributes))el.setAttribute(key,String(value));if(title){const t=document.createElementNS(ns,'title');t.textContent=title;el.append(t);}return el;};
+ const points=()=>player.timeline;
+ function monotone(points){
+  if(!points.length)return '';
+  if(points.length===1)return 'M '+points[0].x+' '+points[0].y;
+  const slopes=points.slice(1).map((p,i)=>(p.y-points[i].y)/(p.x-points[i].x));
+  const tangents=points.map((_,i)=>{if(i===0)return slopes[0];if(i===points.length-1)return slopes.at(-1);const a=slopes[i-1],b=slopes[i];return a*b<=0?0:2*a*b/(a+b);});
+  let path='M '+points[0].x.toFixed(2)+' '+points[0].y.toFixed(2);
+  for(let i=0;i<points.length-1;i++){const p=points[i],q=points[i+1],third=(q.x-p.x)/3;path+=' C '+(p.x+third).toFixed(2)+' '+(p.y+tangents[i]*third).toFixed(2)+' '+(q.x-third).toFixed(2)+' '+(q.y-tangents[i+1]*third).toFixed(2)+' '+q.x.toFixed(2)+' '+q.y.toFixed(2);}
+  return path;
+ }
+ function chart(){
+  const segments=[];let current=[];
+  for(let m=0;m<points().length;m++){const p=points()[m];if(p[mode]==null){if(current.length)segments.push(current);current=[];}else current.push({x:fromX(m),y:fromY(p[mode]),m});}
+  if(current.length)segments.push(current);
+  const d=segments.map(monotone).join(' ');
+  line.setAttribute('d',d);line.setAttribute('stroke',mode==='activity'?'#79e1ff':'#ffc77e');
+  area.setAttribute('d',segments.map(s=>monotone(s)+' L '+s.at(-1).x+' 317 L '+s[0].x+' 317 Z').join(' '));
+  area.setAttribute('fill',mode==='activity'?'#79e1ff':'#ffc77e');
+  marks.replaceChildren();goals.replaceChildren();
+  const stacks=new Map();
+  for(const a of player.events){
+   const position=stacks.get(a.minute)||0;stacks.set(a.minute,position+1);
+   if(position>=10)continue;
+   const category=kind(a);
+   const circle=svgEl('circle',{cx:fromX(a.minute),cy:430-position*5.8,r:category==='goal'?4.8:2.7,fill:category==='goal'?'#ff719c':category==='positive'?'#83dfff':'#7596b0','data-minute':a.minute,tabindex:0,role:'button','aria-label':a.minute+'′ '+label(a)},a.minute+'′ '+String(a.second).padStart(2,'0')+'″ · '+label(a));
+   const jump=()=>{setMinute(a.minute);document.getElementById('wc-minute-reader')?.scrollIntoView({behavior:'smooth',block:'center'});};
+   circle.addEventListener('click',jump);circle.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();jump();}});
+   marks.append(circle);
+  }
+  for(const a of player.events.filter(a=>a.kind==='Shot'&&a.outcome==='Goal')){
+   const p=points()[a.minute];
+   if(!p||p[mode]==null)continue;
+   goals.append(svgEl('circle',{cx:fromX(a.minute),cy:fromY(p[mode]),r:6.5,fill:'#ff699c',stroke:'#ffedf3','stroke-width':2},'BUT · '+a.minute+'′'));
+  }
+ }
+ function setMinute(value){
+  minute=Math.max(0,Math.min(duration,Math.round(Number(value)||0)));slider.value=String(minute);
+  const p=points()[minute]||{},cx=fromX(minute);
+  cursor.setAttribute('x1',cx);cursor.setAttribute('x2',cx);
+  if(p[mode]==null)dot.setAttribute('visibility','hidden');
+  else{dot.setAttribute('visibility','visible');dot.setAttribute('cx',cx);dot.setAttribute('cy',fromY(p[mode]));dot.setAttribute('stroke',mode==='activity'?'#79e1ff':'#ffc77e');}
+  readout.textContent=minute+'′';currA.textContent=p.activity==null?'—':Math.round(p.activity)+'/100';currI.textContent=p.impact==null?'—':Math.round(p.impact)+'/100';
+  const events=player.events.filter(a=>a.minute===minute);count.textContent=events.length+' action'+(events.length!==1?'s':'');
+  chips.replaceChildren();
+  if(!events.length){const node=document.createElement('span');node.className='wc-no-action';node.textContent=p.activity==null?'Joueur hors du terrain.':'Aucune action enregistrée : les impulsions précédentes diminuent.';chips.append(node);return;}
+  for(const e of events){const node=document.createElement('span');node.className='wc-event-chip '+kind(e);node.textContent=String(e.second).padStart(2,'0')+'″ · '+label(e);chips.append(node);}
+ }
+ function peakFor(metric){let best=null;for(let m=0;m<points().length;m++){const value=points()[m][metric];if(value!=null&&(!best||value>best.value))best={m,value};}return best;}
+ function renderMoments(){
+  const moments=[];
+  for(const a of player.events.filter(a=>a.kind==='Shot'&&a.outcome==='Goal'))moments.push({minute:a.minute,label:'⚽ But · '+a.minute+'′',type:'goal'});
+  for(const key of ['activity','impact']){const p=peakFor(key);if(p)moments.push({minute:p.m,label:(key==='activity'?'↗ Pic activité':'✦ Pic impact')+' · '+p.m+'′',type:key});}
+  minutes.replaceChildren();
+  for(const m of moments.filter((v,i,a)=>a.findIndex(x=>x.minute===v.minute)===i)){const b=document.createElement('button');b.type='button';b.className=m.type==='goal'?'goal':'';b.textContent=m.label;b.addEventListener('click',()=>setMinute(m.minute));minutes.append(b);}
+ }
+ function renderLog(){
+  log.replaceChildren();
+  const relevant=player.events.filter(a=>filter==='all'||(filter==='other'?!['Pass','Shot','Dribble'].includes(a.kind):a.kind===filter));
+  for(const a of relevant){
+   const button=document.createElement('button');button.type='button';button.className='wc-event-row';
+   const time=document.createElement('span');time.textContent=a.minute+'′ '+String(a.second).padStart(2,'0')+'″';
+   const name=document.createElement('strong');name.textContent=label(a);
+   const arrow=document.createElement('small');arrow.textContent='Voir ↗';
+   button.append(time,name,arrow);button.addEventListener('click',()=>{setMinute(a.minute);document.getElementById('wc-minute-reader')?.scrollIntoView({behavior:'smooth',block:'center'});});
+   log.append(button);
+  }
+  if(!relevant.length){const node=document.createElement('p');node.className='wc-no-action';node.textContent='Aucun événement de ce type pour ce joueur.';log.append(node);}
+ }
+ function choose(value,updateUrl=true){
+  player=players.find(p=>p.id===Number(value))||players[0];if(!player)return;
+  select.value=String(player.id);
+  if(updateUrl){const url=new URL(location.href);url.searchParams.set('joueur',String(player.id));history.replaceState(null,'',url);}
+  document.getElementById('wc-current-name').textContent=player.name;
+  document.getElementById('wc-current-info').textContent=player.team+' · '+player.entry+'′ → '+(player.exit??duration)+'′';
+  document.getElementById('wc-other-games').href=basePath+'/mondial-2022/joueurs/'+player.id+'/';
+  const active=points().filter(p=>p.activity!=null),sum=active.reduce((n,p)=>n+p.activity,0),high=peakFor('activity');
+  document.getElementById('wc-peak').innerHTML=Math.round(high?.value??0)+'<small>/100</small>';
+  document.getElementById('wc-peak-minute').textContent=(high?.m??0)+'′';
+  document.getElementById('wc-average').textContent=active.length?Math.round(sum/active.length):0;
+  document.getElementById('wc-event-total').textContent=player.events.length;
+  document.getElementById('wc-goals').textContent=player.events.filter(a=>a.kind==='Shot'&&a.outcome==='Goal').length;
+  document.getElementById('wc-chart-title').textContent='Profil de '+player.name+' sur '+duration+' minutes';
+  chart();renderMoments();renderLog();setMinute(high?.m??player.entry);
+ }
+ select.addEventListener('change',()=>choose(select.value));
+ document.querySelectorAll('[data-mode]').forEach(button=>button.addEventListener('click',()=>{
+  mode=button.dataset.mode;for(const b of document.querySelectorAll('[data-mode]')){const active=b===button;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));}
+  document.getElementById('wc-mode-title').textContent=mode==='activity'?'Activité dans le match.':'Impact indicatif des actions.';
+  document.getElementById('wc-mode-desc').textContent=mode==='activity'?'Une impulsion pour chaque action : l’activité progresse puis diminue lors des périodes plus calmes.':'Valeur éditoriale estimée des actions, indépendante de l’activité. Ce n’est pas un modèle xT.';
+  chart();setMinute(minute);
+ }));
+ slider.addEventListener('input',()=>setMinute(slider.value));
+ const hit=document.getElementById('wc-profile-hit');const pointer=e=>{const bounds=svg.getBoundingClientRect();const relativeX=(e.clientX-bounds.left)/bounds.width*1140;setMinute((relativeX-58)/1013*duration);};
+ hit.addEventListener('pointermove',pointer);hit.addEventListener('click',pointer);hit.addEventListener('keydown',e=>{if(e.key==='ArrowLeft'||e.key==='ArrowRight'){e.preventDefault();setMinute(minute+(e.key==='ArrowRight'?1:-1));}});
+ document.querySelectorAll('[data-step]').forEach(button=>button.addEventListener('click',()=>setMinute(minute+Number(button.dataset.step))));
+ document.querySelectorAll('[data-filter]').forEach(button=>button.addEventListener('click',()=>{filter=button.dataset.filter;for(const b of document.querySelectorAll('[data-filter]')){const a=b===button;b.classList.toggle('active',a);b.setAttribute('aria-pressed',String(a));}renderLog();}));
+ choose(new URLSearchParams(location.search).get('joueur')||defaultId,false);
+})();
+</script>
+</BaseLayout>
