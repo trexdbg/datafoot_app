@@ -177,3 +177,15 @@
 .wc-wave-tooltip{width:min(205px,67%);padding:9px 10px;gap:4px;box-shadow:0 8px 22px #0009}
 .wc-wave-tooltip strong{font-size:11px}
 .wc-wave-tooltip span{font-size:10px}
+
+
+/* V5 / Joueur : les actions restent sous la courbe, jamais par-dessus. */
+.wc-wave-shell .wc-wave-action-summary{border-left:3px solid #52D3EF!important;background:#0d2b42!important;padding:10px 12px 11px!important;min-height:64px}
+.wc-wave-action-summary>strong{font-size:11px;color:#eaf8ff;font-weight:870;display:block;margin:0 0 7px}
+.wc-wave-action-summary [data-wave-event-tags]{display:flex;gap:5px;flex-wrap:wrap;align-items:center;line-height:1.45}
+.wc-wave-event-chip{display:inline-flex;align-items:center;padding:5px 7px;background:#143e58;border:1px solid #376680;color:#e1f5ff;border-radius:5px;font-size:10px}
+.wc-wave-event-more{font-size:10px;color:#9ec8de;font-weight:800}
+.wc-wave-shell .wc-wave{cursor:crosshair;touch-action:pan-y}
+.wc-wave-shell.is-inspecting .wc-wave-readout{background:#0b2b43}
+.wc-wave-shell .wc-wave-tooltip{display:none!important}
+@media(max-width:600px){.wc-wave-shell .wc-wave-action-summary{min-height:62px;padding:9px 10px!important}.wc-wave-event-chip{font-size:10px}}
