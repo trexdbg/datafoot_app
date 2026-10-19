@@ -40,6 +40,13 @@
 .ax-mini-grid{stroke:#79a8c5;stroke-opacity:.16;stroke-width:1}
 .ax-mini-tick{fill:#8fb5cc;font-size:10px}
 .ax-mini-line{filter:drop-shadow(0 0 3px #55bbf55e)}
+.ax-mini-rail-title{fill:#80abc6;letter-spacing:.8px;font-size:9px;font-weight:800}
+.ax-mini-rail-base{stroke:#6994b1;stroke-opacity:.35;stroke-width:1}
+.ax-mini-event-dot{fill:#739cb2;stroke:#0e2c45;stroke-width:.7}
+.ax-mini-event-dot.goal{fill:#ff638f;stroke:#ffcbda;stroke-width:1;filter:drop-shadow(0 0 3px #ff638f88)}
+.ax-detail-link{color:#a0f1ff!important;text-decoration:underline;text-decoration-color:#57a8cf66;text-underline-offset:4px;font-weight:850!important}
+.ax-detail-link:hover{color:#fff!important;text-decoration-color:#a0f1ff}
+.ax-feature-info .ax-detail-link{margin-left:auto}
 .ax-card-footer{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;border-top:1px solid #274962;padding-top:11px;margin-top:6px}
 .ax-card-footer a{font-size:11px;font-weight:780;color:#a8dbf7}
 .ax-card-footer a:first-child{color:#bff0ff}
