@@ -73,3 +73,15 @@ footer{border-top:1px solid var(--line);color:var(--muted)}.footer-grid{display:
 .nav{gap:20px}.nav nav{flex-wrap:wrap;justify-content:flex-end;gap:9px 19px}
 @media(max-width:850px){.nav{height:auto;min-height:72px;flex-wrap:wrap;align-items:center;padding:12px 0;justify-content:center}.nav .brand{margin-right:auto}.nav nav{justify-content:center;width:100%;gap:8px 15px;letter-spacing:.05em}}
 @media(max-width:440px){.nav{padding:10px 0}.nav nav{gap:7px 12px;font-size:.57rem}}
+
+/* Identité éditoriale : navigation discrète, lisible et cohérente avec l'Atlas. */
+.site-header{background:rgba(8,14,19,.95);border-bottom:1px solid #243843}
+.site-header .nav{min-height:66px;height:auto;padding-block:12px}
+.site-header .brand-mark{border-radius:3px;clip-path:none;width:40px;height:38px;font-size:12px}
+.site-header .brand-copy strong{font-size:15px;letter-spacing:-.035em}
+.site-header .brand-copy small{font-size:9px;letter-spacing:.07em;line-height:1.2;text-transform:none;color:#a3b8c3}
+.site-header .nav nav{gap:9px 19px;font:750 11px/1.2 Inter,ui-sans-serif,system-ui,sans-serif;letter-spacing:.035em}
+.site-header .nav nav a{color:#c1cbd2;transition:color .15s}
+.site-header .nav nav a:hover,.site-header .nav nav a:focus-visible{color:#c9fa83}
+@media(max-width:850px){.site-header .nav{padding-block:12px}.site-header .nav nav{gap:10px 15px}}
+@media(max-width:440px){.site-header .nav nav{font-size:10px;gap:9px 12px}}
