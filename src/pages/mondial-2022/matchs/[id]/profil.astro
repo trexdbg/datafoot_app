@@ -166,11 +166,11 @@ const initialEventCount=initial.actions.filter(a=>a.minute===initialMinute).leng
   if(p[mode]==null)dot.setAttribute('visibility','hidden');
   else{dot.setAttribute('visibility','visible');dot.setAttribute('cx',cx);dot.setAttribute('cy',fromY(p[mode]));dot.setAttribute('stroke',mode==='activity'?'#79e1ff':'#ffc77e');}
   readout.textContent=minute+'′';currA.textContent=p.activity==null?'—':Math.round(p.activity)+'/100';currI.textContent=p.impact==null?'—':Math.round(p.impact)+'/100';
-  const value=p[mode],color=value==null?'#52D3EF':value<25?'#8A9DB8':value>75?'#B8F27C':'#52D3EF';
+  const selectedScore=p[mode],color=selectedScore==null?'#52D3EF':selectedScore<25?'#8A9DB8':selectedScore>75?'#B8F27C':'#52D3EF';
   dot.setAttribute('stroke',color);
   const events=player.events.filter(a=>a.minute===minute);count.textContent=events.length+' action'+(events.length!==1?'s':'');
   chips.replaceChildren();
-  tipTitle.textContent=minute+'′ · '+(value==null?'Hors terrain':value<25?'Rythme discret':value>75?'Temps fort':'Dans le jeu');
+  tipTitle.textContent=minute+'′ · '+(selectedScore==null?'Hors terrain':selectedScore<25?'Rythme discret':selectedScore>75?'Temps fort':'Dans le jeu');
   tipNumbers.textContent='Activité '+(p.activity==null?'—':Math.round(p.activity)+'/100')+' · Impact '+(p.impact==null?'—':Math.round(p.impact)+'/100')+' · '+events.length+' action'+(events.length===1?'':'s')+(p.penaltyGain>0?' · malus léger −'+p.penaltyGain.toFixed(2):'');
   tipActions.replaceChildren();
   for(const action of events.slice(0,5)){const badge=document.createElement('span');badge.className='wc-tip-action '+kind(action);badge.textContent=String(action.second).padStart(2,'0')+'″ '+label(action)+(action.penalty>0?' · −'+action.penalty.toFixed(2):'');tipActions.append(badge);}
