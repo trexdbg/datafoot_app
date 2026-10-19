@@ -1,0 +1,29 @@
+---
+import {monotonePath, smoothVisual} from '../lib/match-activity.mjs';
+interface Point {minute:number;activity:number|null}
+interface Series {label:string;timeline:Point[];color:string}
+interface Props {series:Series[];maxScale?:number;duration:number;goals?:number[];caption?:string}
+const {series,maxScale=200,duration,goals=[],caption='Évolution de l’activité'}=Astro.props;
+const left=30,right=482,top=20,bottom=152;
+const x=(m:number)=>left+(m/duration)*(right-left);
+const y=(v:number)=>bottom-Math.max(0,v)/maxScale*(bottom-top);
+const paths=series.map(s=>{
+ const visual=smoothVisual(s.timeline);
+ const segments: Point[][]=[];
+ let current:Point[]=[];
+ for(const point of visual){if(point.activity===null){if(current.length)segments.push(current);current=[];} else current.push(point);}
+ if(current.length)segments.push(current);
+ return {label:s.label,color:s.color,paths:segments.map(segment=>monotonePath(segment.map(p=>({x:x(p.minute),y:y(p.activity??0)}))))};
+});
+const first=smoothVisual(series[0]?.timeline||[]);
+const step=maxScale>300?100:50;
+const yTicks=[...new Set([...Array.from({length:Math.floor(maxScale/step)+1},(_,i)=>i*step),maxScale])];
+---
+<svg class="ax-mini-chart" viewBox="0 0 500 174" role="img" aria-label={caption}>
+ <defs><linearGradient id="ax-glow" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0b416b" stop-opacity=".26"/><stop offset="1" stop-color="#0b223c" stop-opacity=".04"/></linearGradient></defs>
+ <rect width="500" height="174" fill="url(#ax-glow)" rx="8"/>
+ {yTicks.map(t=><g><line class="ax-mini-grid" x1={left} x2={right} y1={y(t)} y2={y(t)}/><text class="ax-mini-tick" x="24" y={y(t)+3} text-anchor="end">{t}</text></g>)}
+ {[0,45,90,duration].filter((t,i,a)=>a.indexOf(t)===i).map(t=><g><line class="ax-mini-grid" x1={x(t)} x2={x(t)} y1={top} y2={bottom}/><text class="ax-mini-tick" x={x(t)} y="169" text-anchor="middle">{t}′</text></g>)}
+ {paths.map(s=>s.paths.map(path=><path d={path} fill="none" stroke={s.color} stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round" class="ax-mini-line" />))}
+ {goals.map(m=>first[m]?.activity!=null?<circle cx={x(m)} cy={y(first[m].activity!)} r="4" fill="#ff739a" stroke="#fff0f3" stroke-width="1.5"/>:null)}
+</svg>

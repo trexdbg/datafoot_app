@@ -1,4 +1,8 @@
 /* Profil de match DataFoot — SVG calculé, responsive, sans animation trompeuse. */
+.mw-report{max-width:1100px}
+.mw-links{display:flex;gap:15px;flex-wrap:wrap;padding-bottom:12px}
+.mw-links a{display:inline-block;padding:8px 12px;border:1px solid #2e5f85;border-radius:8px;background:#0b2942;color:#afe2ff;font-size:11px;font-weight:750}
+.mw-links a:hover{color:#f0fcff;border-color:#68caff}
 .mw-root{padding:28px 0 95px;background:radial-gradient(ellipse at 50% 10%,#103254 0,transparent 52%)}
 .mw-heading{padding-bottom:12px}
 .mw-back{display:inline-block;text-decoration:none;font-size:11px;font-weight:800;letter-spacing:.09em;color:#a8cbd9;margin-bottom:12px}

@@ -3,13 +3,17 @@ on:
   pull_request:
     paths:
       - 'src/pages/matchs/**'
-      - 'src/pages/joueurs/**'
       - 'src/lib/pass-wars-engine.*'
       - 'src/styles/pass-wars.css'
       - 'src/data/players/**'
       - 'public/data/players/**'
       - 'src/data/matches/**'
       - 'src/lib/match-activity.*'
+      - 'src/lib/explorer-data.mjs'
+      - 'src/pages/joueurs/**'
+      - 'src/pages/equipes/**'
+      - 'src/components/ActivityMiniChart.astro'
+      - 'src/styles/match-explorer.css'
       - 'public/data/matches/**'
       - 'src/styles/match-weather.css'
       - 'src/styles/messi-constellation.css'
@@ -33,7 +37,8 @@ jobs:
           node --input-type=module <<'JS'
           import assert from 'node:assert/strict';
           import fs from 'node:fs';
-          import { computeActivity, actionImpact } from './src/lib/match-activity.mjs';
+          import { computeActivity, computeMatchProfiles, actionImpact, smoothVisual } from './src/lib/match-activity.mjs';
+          import { games, playerList, commonScale } from './src/lib/explorer-data.mjs';
           const path = 'src/data/matches/2022-final-mbappe.json';
           const data = JSON.parse(fs.readFileSync(path, 'utf8'));
           const publicData = JSON.parse(fs.readFileSync('public/data/matches/2022-final-mbappe.json','utf8'));
@@ -66,6 +71,25 @@ jobs:
           assert.equal(actionImpact({kind:'Dribble',outcome:'Complete'}),5);
           assert.equal(actionImpact({kind:'Shot',outcome:'Goal'}),45);
           assert.equal(computeActivity([],125).timeline[125].activity,0);
+          assert.equal(games.length,7);
+          assert.equal(playerList.length,24);
+          assert.ok(commonScale>=150);
+          for (const game of games) {
+            assert.equal(game.team.length,game.duration+1);
+            assert.ok(game.profiles.length>=11);
+            assert.ok(game.team.every((point,i)=>point.activity>=0 && point.players>0 && Number.isFinite(point.activity)));
+            const playerIds=new Set(game.players.map(p=>p.id));
+            assert.ok(game.actions.every(a=>playerIds.has(a.p) && a.m>=0 && a.m<=game.duration));
+            assert.equal(game.profiles.filter(p=>p.player.id===3009).length,1);
+            for(const profile of game.profiles) {
+              assert.equal(profile.timeline.length,game.duration+1);
+              assert.equal(profile.timeline[profile.player.entry].activity>=50,true);
+              if(profile.player.entry>0)assert.equal(profile.timeline[profile.player.entry-1].activity,null);
+              const display=smoothVisual(profile.timeline);
+              assert.equal(display.length,profile.timeline.length);
+              assert.ok(display.every((p,i)=>p.activity==null || p.activity>=0));
+            }
+          }
           const messiFile = 'src/data/matches/2022-final-messi-passes.json';
           if (fs.existsSync(messiFile)) {
             const network = JSON.parse(fs.readFileSync(messiFile,'utf8'));
