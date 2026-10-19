@@ -46,11 +46,19 @@ export const PULSE_RULES = Object.freeze({
 
 export function pulseWeight(action) {
   const kind = action.kind, complete = action.outcome === 'Complete';
-  if (kind === 'Pass') return {activity:complete?1:0.45, impact:complete?0.5:0};
+  if (kind === 'Pass') {
+    // Distance de progression en coordonnées normalisées StatsBomb (terrain 120x80).
+    // Un bonus heuristique, surtout pas une probabilité de créer un but.
+    const progress=Array.isArray(action.location)&&Array.isArray(action.endLocation)
+      ? Math.max(0,action.endLocation[0]-action.location[0]):0;
+    return {activity:complete?1:0.45,impact:complete?Number((0.5+Math.min(2.4,progress/18)).toFixed(2)):0};
+  }
   if (kind === 'Dribble') return {activity:complete?5:2.5, impact:complete?3.2:0};
-  if (kind === 'Shot') return action.outcome === 'Goal'
-    ? {activity:5.5, impact:10}
-    : {activity:4, impact:action.outcome === 'Blocked'?0.6:2};
+  if (kind === 'Shot') {
+    const xg=Number.isFinite(action.xg)?Math.min(1,Math.max(0,action.xg)):null;
+    if(action.outcome==='Goal')return {activity:5.5,impact:xg==null?10:Number((8.5+1.5*xg).toFixed(2))};
+    return {activity:4,impact:xg==null?(action.outcome==='Blocked'?0.6:2):Number((1.2+7*xg).toFixed(2))};
+  }
   if (kind === 'Ball Recovery' || kind === 'Interception') return {activity:2, impact:1};
   if (kind === 'Duel') return {activity:1.4, impact:0.45};
   if (kind === 'Pressure') return {activity:0.8, impact:0.25};
@@ -153,7 +161,8 @@ export function smoothVisual(timeline, sigma = 1.55) {
 export function computeMatchProfiles(match) {
   const profiles = match.players.map(player => {
     const actions = match.actions.filter(a=>a.p===player.id).map(a=>({
-      minute:a.m,second:a.s,kind:a.k,outcome:a.o,playerId:a.p
+      minute:a.m,second:a.s,kind:a.k,outcome:a.o,playerId:a.p,
+      location:a.l,endLocation:a.e,xg:a.xg
     }));
     const {timeline} = computePulse(actions,match.duration,{entry:player.entry,exit:player.exit??match.duration+1});
     return {player,actions,timeline};
