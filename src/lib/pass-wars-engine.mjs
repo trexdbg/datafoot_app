@@ -57,7 +57,7 @@ export function bootPassWars(){
   const source=root.dataset.base+'/data/players/';
   const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   let meta,original=[],filtered=[],events=[],players=[],positions=new Map(),counts=new Map(),palette=new Map();
-  const colorOf=id=>palette.get(id)||colorOf(id);
+  const colorOf=id=>palette.get(id)||playerColor(id);
   let cursor=0,position=0,prev=0,lastText=0,playing=false,battle=false,speed=28,focus=null,sort='total';
   let balls=[],ripples=[];
   // Toile de peinture persistante : une passe laisse une éclaboussure à l'impact.
