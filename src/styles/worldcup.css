@@ -198,3 +198,11 @@
 .wc-match-board .wc-flag{width:34px;height:24px}
 .wc-card-title .wc-flag{width:24px;height:17px}
 @media(max-width:750px){.wc-match-board .wc-flag{width:28px;height:20px}}
+
+
+/* Petit graphique : lecture de la régularité, sans rajouter une note. */
+.wc-wave-presence{padding:8px 10px 9px;background:#0b3141;border-top:1px solid #326d71;
+ color:#a6d9d1;font-size:11px;line-height:1.45;font-weight:650}
+.wc-wave-presence strong{color:#bdf5db;font-weight:900;font-size:16px;margin-right:3px}
+.wc-wave-presence span{color:#8fbcbf;font-weight:750}
+.wc-wave-shell .wc-wave-line{filter:drop-shadow(0 0 2px #83dec63b)}
