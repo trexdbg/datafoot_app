@@ -124,3 +124,6 @@
 .wc-country-shortcuts span{color:#8cb5cd;font-size:11px;font-weight:800;margin-right:8px}
 .wc-country-shortcuts a{color:#b8e9ff;background:#173c55;border:1px solid #386782;border-radius:8px;padding:9px 12px;font-size:12px;font-weight:780;text-decoration:none}
 .wc-country-shortcuts a:hover{border-color:#84dbff;color:white}
+
+.wc-wave-action-summary{font-size:10px!important;line-height:1.5!important;min-height:22px;margin:0!important;padding:7px 10px 10px!important;color:#acd4e6!important;background:#0c2941;border-top:1px solid #204863}
+.wc-wave-shell.is-inspecting .wc-wave-action-summary{color:#e0f4ff!important}
