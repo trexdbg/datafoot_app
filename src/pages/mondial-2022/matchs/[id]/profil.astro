@@ -124,7 +124,7 @@ const initialEventCount=initial.actions.filter(a=>a.minute===initialMinute).leng
  a.kind==='Dribble'?(a.outcome==='Complete'?'Dribble réussi':'Dribble non réussi'):
  a.kind==='Shot'?((a.outcome==='Goal'?'BUT':'Tir · '+a.outcome)+(Number.isFinite(a.xg)?' · xG '+Number(a.xg).toFixed(2):'')):
  (a.kind==='Duel'?(a.subtype==='Tackle'?'Tacle':'Duel')+(a.outcome==='Won'||a.outcome==='Won In Play'?' gagné':' · '+a.outcome):({Carry:'Conduite de balle','Ball Receipt*':'Réception','Ball Recovery':'Récupération',Pressure:'Pressing',Interception:'Interception',Clearance:'Dégagement',Block:'Contre','Goal Keeper':a.outcome?'Gardien · '+a.outcome:'Action du gardien',Miscontrol:'Contrôle manqué','Foul Committed':'Faute commise'})[a.kind]||a.kind);
- const value=a=>' · +'+Number(a.gain||0).toLocaleString('fr-FR',{maximumFractionDigits:2})+' imp.'+(a.penalty>0?' / −'+a.penalty.toFixed(2):'');
+ const formatImpulse=a=>' · +'+Number(a.gain||0).toLocaleString('fr-FR',{maximumFractionDigits:2})+' imp.'+(a.penalty>0?' / −'+a.penalty.toFixed(2):'');
  const kind=a=>a.kind==='Shot'&&a.outcome==='Goal'?'goal':a.goalAssist?'assist':a.penalty>0?'negative':['Shot','Dribble','Pass','Ball Recovery','Interception'].includes(a.kind)?'positive':'quiet';
  const svgEl=(tag,attributes,title)=>{const el=document.createElementNS(ns,tag);for(const [key,value] of Object.entries(attributes))el.setAttribute(key,String(value));if(title){const t=document.createElementNS(ns,'title');t.textContent=title;el.append(t);}return el;};
  const points=()=>player.timeline;
@@ -176,14 +176,14 @@ const initialEventCount=initial.actions.filter(a=>a.minute===initialMinute).leng
   tipTitle.textContent=minute+'′ · '+(selectedScore==null?'Hors terrain':selectedScore<25?'Rythme discret':selectedScore>75?'Temps fort':'Dans le jeu');
   tipNumbers.textContent='Activité '+(p.activity==null?'—':Math.round(p.activity)+'/100')+' · Impact '+(p.impact==null?'—':Math.round(p.impact)+'/100')+' · '+events.length+' action'+(events.length===1?'':'s')+(p.penaltyGain>0?' · malus léger −'+p.penaltyGain.toFixed(2):'');
   tipActions.replaceChildren();
-  for(const action of events.slice(0,5)){const badge=document.createElement('span');badge.className='wc-tip-action '+kind(action);badge.textContent=String(action.second).padStart(2,'0')+'″ '+label(action)+value(action);tipActions.append(badge);}
+  for(const action of events.slice(0,5)){const badge=document.createElement('span');badge.className='wc-tip-action '+kind(action);badge.textContent=String(action.second).padStart(2,'0')+'″ '+label(action)+formatImpulse(action);tipActions.append(badge);}
   if(events.length>5){const more=document.createElement('span');more.textContent='+'+(events.length-5)+' autres actions';tipActions.append(more);}
   if(!events.length){const empty=document.createElement('span');empty.textContent=p.activity==null?'Hors terrain':'Pas d’action : l’activité s’atténue.';tipActions.append(empty);}
   tooltip.hidden=false;
   tooltip.style.borderColor=color;
 
   if(!events.length){const node=document.createElement('span');node.className='wc-no-action';node.textContent=p.activity==null?'Joueur hors du terrain.':'Aucune action enregistrée : les impulsions précédentes diminuent.';chips.append(node);return;}
-  for(const e of events){const node=document.createElement('span');node.className='wc-event-chip '+kind(e);node.textContent=String(e.second).padStart(2,'0')+'″ · '+label(e)+value(e);chips.append(node);}
+  for(const e of events){const node=document.createElement('span');node.className='wc-event-chip '+kind(e);node.textContent=String(e.second).padStart(2,'0')+'″ · '+label(e)+formatImpulse(e);chips.append(node);}
  }
  function peakFor(metric){let best=null;for(let m=0;m<points().length;m++){const value=points()[m][metric];if(value!=null&&(!best||value>best.value))best={m,value};}return best;}
  function renderMoments(){
