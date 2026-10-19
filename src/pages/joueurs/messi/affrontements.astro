@@ -1,0 +1,87 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import '../../../styles/messi-encounters.css';
+const base=import.meta.env.BASE_URL.replace(/\/$/,'');
+---
+<BaseLayout
+  title="Messi Rival Wars — dribbles, tirs et buts | DataFoot"
+  description="Les défenseurs dribblés, les gardiens confrontés aux tirs de Messi et ses buts par club en Liga et C1, en paintball sur des événements StatsBomb attribuables."
+>
+  <main class="me-page" data-messi-encounters data-base={base}>
+    <section class="shell me-hero">
+      <div class="me-eyebrow"><a href={base + '/joueurs/messi/paintball/'}>← MESSI PAINTBALL V3</a> <span>/</span> EXPÉRIENCE 004 <span>/</span> SOURCES STATSBOMB</div>
+      <p class="me-overline">LE FACE-À-FACE EN ÉVÉNEMENTS</p>
+      <h1>MESSI <em>RIVAL WARS.</em></h1>
+      <p class="me-desc">Qui Messi a-t-il dribblé ? Quels gardiens ont affronté ses tirs ? Contre quelles équipes a-t-il marqué ? Trois batailles paintball, avec les adversaires réellement attribuables.</p>
+      <p class="me-limit">Attention : données ouvertes <strong>partielles</strong> — échantillon de Liga et trois finales de C1 (2009, 2011, 2015). Ce ne sont pas des statistiques exhaustives de carrière.</p>
+    </section>
+    <section class="shell me-board">
+      <div class="me-tabs" role="group" aria-label="Choisir une statistique de Messi">
+        <button type="button" data-me-mode="defenders" aria-pressed="true" class="active"><span>01</span> DÉFENSEURS DRIBBLÉS <small>TOP 20</small></button>
+        <button type="button" data-me-mode="goalkeepers" aria-pressed="false"><span>02</span> GARDIENS AFFRONTÉS <small>TOP 20</small></button>
+        <button type="button" data-me-mode="clubs" aria-pressed="false"><span>03</span> BUTS PAR ÉQUIPE <small>LIGA + C1</small></button>
+      </div>
+      <div class="me-filters">
+        <label>COMPÉTITION
+          <select id="me-competition"><option value="">TOUTES</option></select>
+        </label>
+        <label>SAISON
+          <select id="me-season"><option value="">TOUTES</option></select>
+        </label>
+        <span id="me-sample">ÉCHANTILLON EN CHARGEMENT</span>
+      </div>
+      <div class="me-columns">
+        <div class="me-main">
+          <div class="me-topline"><span id="me-mode-label">DÉFENSEURS DRIBBLÉS</span><span id="me-subtitle">CHARGEMENT…</span></div>
+          <div class="me-canvas-wrap">
+            <div class="me-calendar"><small>MOIS / ANNÉE</small><strong id="me-date">--/----</strong></div>
+            <canvas id="me-canvas" width="1200" height="780" role="img" aria-label="Messi et ses adversaires, paintballs multicolores pour les dribbles, tirs et buts. Aucun trait de connexion."></canvas>
+          </div>
+          <div class="me-chrono">
+            <div class="me-chrono-head"><span>REMONTÉE DES ÉVÉNEMENTS</span><span>GLISSER POUR CHANGER DE MOIS</span></div>
+            <input id="me-month" type="range" min="0" max="1" step="1" value="0" disabled aria-label="Naviguer par mois et année"/>
+            <div class="me-chrono-labels"><span id="me-from">--/----</span><span id="me-to">--/----</span></div>
+          </div>
+          <div class="me-legend">UNE COULEUR PAR ADVERSAIRE <span>•</span> IMPACTS DE PEINTURE <span>•</span> AUCUN TRAIT FIXE</div>
+        </div>
+        <aside class="me-side">
+          <div class="me-sidehead">SCOREBOARD <span>TOP 20</span></div>
+          <p>ÉVÉNEMENTS AFFICHÉS</p><strong class="me-total" id="me-total">0</strong>
+          <p>PARMI EUX, BUTS IDENTIFIÉS</p><strong class="me-goals" id="me-goals">0</strong>
+          <div class="me-coverage" id="me-coverage">CHARGEMENT DES DONNÉES…</div>
+          <div class="me-focus" id="me-focus">TOUS LES ADVERSAIRES</div>
+          <div class="me-rank-head">CLASSEMENT DES ADVERSAIRES <span>ÉVÉNEMENTS</span></div>
+          <div id="me-rank" class="me-rank"></div>
+        </aside>
+      </div>
+      <div class="me-controls">
+        <div class="me-buttons">
+          <button id="me-play" type="button" aria-label="Lecture">▶</button>
+          <button id="me-reset" type="button" aria-label="Réinitialiser">↺</button>
+          <button id="me-battle" type="button">⚡ BATTLE</button>
+        </div>
+        <strong id="me-events-count">0 / 0</strong>
+        <label>VITESSE
+          <select id="me-speed">
+            <option value="3">×1</option><option value="6">×2</option>
+            <option value="10" selected>×4</option><option value="25">×8</option>
+          </select>
+        </label>
+      </div>
+      <div class="me-message" id="me-message" role="status" aria-live="polite">Chargement des événements publics…</div>
+    </section>
+    <section class="shell me-method">
+      <h2>CE QUI EST <em>MESURÉ.</em></h2>
+      <div class="me-methods">
+        <article><h3>01 · Défenseurs</h3><p>Dribbles réussis de Messi avec un événement « Dribbled Past » relié à un joueur adverse positionné comme défenseur. Un dribble sans victime identifiable n'est pas compté.</p></article>
+        <article><h3>02 · Gardiens</h3><p>Tirs de Messi directement associés à l'événement d'un gardien identifié. Un tir non relié à un gardien reste hors de ce classement. Les buts parmi ces tirs sont indiqués séparément.</p></article>
+        <article><h3>03 · Clubs</h3><p>Buts de Messi par adversaire en Liga et Ligue des champions, uniquement dans les matchs de l'échantillon StatsBomb. Les tirs au but d'une séance sont exclus.</p></article>
+      </div>
+      <p>Source : <a href="https://github.com/hudl/open-data" target="_blank" rel="noopener noreferrer">StatsBomb Open Data / Hudl ↗</a>. <a href={base+'/data/players/messi-encounters.json'}>Consulter les données dérivées et la liste des matchs couverts ↗</a>. Cette expérience ne prétend pas couvrir toute la carrière de Messi.</p>
+    </section>
+  </main>
+</BaseLayout>
+<script>
+  import {bootMessiEncounters} from '../../../lib/messi-encounters-engine.mjs';
+  bootMessiEncounters();
+</script>

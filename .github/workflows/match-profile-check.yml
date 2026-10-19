@@ -4,6 +4,9 @@ on:
     paths:
       - 'src/pages/matchs/**'
       - 'src/lib/pass-wars-engine.*'
+      - 'src/lib/messi-encounters-engine.*'
+      - 'tests/messi-encounters.test.mjs'
+      - 'src/styles/messi-encounters.css'
       - 'src/lib/messi-player-profiles.mjs'
       - 'tests/pass-wars.test.mjs'
       - 'src/styles/pass-wars.css'
@@ -167,5 +170,7 @@ jobs:
         run: npm run data:worldcup
       - name: Verify World Cup extraction rules
         run: npm run test:worldcup
+      - name: Verify Messi Rival Wars game rules
+        run: node --test tests/messi-encounters.test.mjs
       - name: Astro typecheck and static build
         run: npm run build
