@@ -9,7 +9,7 @@ export declare function pulseWeight(action:Pick<MatchAction,'kind'|'outcome'> & 
 export declare function computePulse(events:MatchAction[],duration?:number,options?:{entry?:number;exit?:number}):{timeline:PulsePoint[];byMinute:MatchAction[][]};
 export declare const ACTIVITY_RULES: Readonly<{start: number; decay: number; pass: number; dribble: number; goal: number; floor: number}>;
 export declare function actionImpact(action: Pick<MatchAction, 'kind' | 'outcome'>): number;
-export declare function actionLabel(action: Pick<MatchAction, 'kind' | 'outcome'>): string;
+export declare function actionLabel(action: Pick<MatchAction, 'kind' | 'outcome'> & Pick<Partial<MatchAction>, 'goalAssist' | 'shotAssist'>): string;
 export declare function computeActivity(events: MatchAction[], duration?: number, options?: {entry?: number; exit?: number}): {timeline: ActivityPoint[]; byMinute: MatchAction[][]};
 export declare function monotonePath(points: {x:number;y:number}[]): string;
 
