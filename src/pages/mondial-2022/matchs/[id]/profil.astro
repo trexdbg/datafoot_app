@@ -90,7 +90,7 @@ const initialEventCount=initial.actions.filter(a=>a.minute===initialMinute).leng
    </div>
    <div class="wc-log-rows" id="wc-log"></div>
   </section>
-  <aside class="wc-profile-note"><p class="wc-eyebrow">LE MODÈLE PULSE</p><h2>Observer le rythme, pas attribuer une note.</h2><p>Les actions créent des impulsions qui s’atténuent avec une mémoire courte de 3 minutes et une mémoire longue de 10 minutes. L’axe 0–100 est fixe pour comparer les matchs, sans ajouter une courbe d’équipe au profil individuel.</p><p><strong>Impact indicatif :</strong> indicateur éditorial fondé sur les types d’actions et leur résultat. Ce n’est pas un xT ou un VAEP validé.</p><a href={playerUrl(base,initial.player.id)} id="wc-other-games">↗ Tous les matchs de ce joueur</a><a href={matchUrl(base,game.id)}>← Retour aux deux équipes</a></aside>
+  <aside class="wc-profile-note"><p class="wc-eyebrow">LE MODÈLE PULSE</p><h2>Observer le rythme, pas attribuer une note.</h2><p>Les actions créent des impulsions qui s’atténuent avec une mémoire courte de 3 minutes et une mémoire longue de 10 minutes. L’axe 0–100 est fixe pour comparer les matchs, sans ajouter une courbe d’équipe au profil individuel.</p><p><strong>Impact indicatif :</strong> indicateur éditorial tenant compte du type d’action, du xG des tirs et de la progression des passes quand ces données sont disponibles. Ce n’est pas un xT ou un VAEP validé.</p><a href={playerUrl(base,initial.player.id)} id="wc-other-games">↗ Tous les matchs de ce joueur</a><a href={matchUrl(base,game.id)}>← Retour aux deux équipes</a></aside>
  </div>
  <p class="wc-footnote">Source de l’ensemble des événements : <a href={game.source} target="_blank" rel="noopener noreferrer">StatsBomb Open Data / Hudl ↗</a> · <a href={base+'/data/worldcup-2022/matches/'+game.id+'.json'}>Télécharger les actions du match (JSON) ↗</a>. Pas de données inventées ni de suivi GPS. La séance de tirs au but ne fait pas partie de la courbe ; temps additionnel et prolongations sont conservés.</p>
 </div></div>
@@ -107,7 +107,7 @@ const initialEventCount=initial.actions.filter(a=>a.minute===initialMinute).leng
  let player,mode='activity',minute=0,filter='all';
  const label=a=>a.kind==='Pass'?(a.outcome==='Complete'?'Passe réussie':'Passe non réussie'):
  a.kind==='Dribble'?(a.outcome==='Complete'?'Dribble réussi':'Dribble non réussi'):
- a.kind==='Shot'?(a.outcome==='Goal'?'BUT':('Tir · '+a.outcome)):
+ a.kind==='Shot'?((a.outcome==='Goal'?'BUT':'Tir · '+a.outcome)+(Number.isFinite(a.xg)?' · xG '+Number(a.xg).toFixed(2):'')):
  ({Carry:'Conduite de balle','Ball Receipt*':'Réception','Ball Recovery':'Récupération',Pressure:'Pressing',Duel:'Duel',Interception:'Interception',Miscontrol:'Contrôle manqué','Foul Committed':'Faute commise'})[a.kind]||a.kind;
  const kind=a=>a.kind==='Shot'&&a.outcome==='Goal'?'goal':['Shot','Dribble','Pass','Ball Recovery','Interception'].includes(a.kind)?'positive':'quiet';
  const svgEl=(tag,attributes,title)=>{const el=document.createElementNS(ns,tag);for(const [key,value] of Object.entries(attributes))el.setAttribute(key,String(value));if(title){const t=document.createElementNS(ns,'title');t.textContent=title;el.append(t);}return el;};
@@ -162,6 +162,8 @@ const initialEventCount=initial.actions.filter(a=>a.minute===initialMinute).leng
  function renderMoments(){
   const moments=[];
   for(const a of player.events.filter(a=>a.kind==='Shot'&&a.outcome==='Goal'))moments.push({minute:a.minute,label:'⚽ But · '+a.minute+'′',type:'goal'});
+  const bestShot=player.events.filter(a=>a.kind==='Shot'&&Number.isFinite(a.xg)).sort((a,b)=>b.xg-a.xg)[0];
+  if(bestShot&&bestShot.xg>=0.15)moments.push({minute:bestShot.minute,label:'🎯 Occasion xG '+bestShot.xg.toFixed(2)+' · '+bestShot.minute+'′',type:'shot'});
   for(const key of ['activity','impact']){const p=peakFor(key);if(p)moments.push({minute:p.m,label:(key==='activity'?'↗ Pic activité':'✦ Pic impact')+' · '+p.m+'′',type:key});}
   minutes.replaceChildren();
   for(const m of moments.filter((v,i,a)=>a.findIndex(x=>x.minute===v.minute)===i)){const b=document.createElement('button');b.type='button';b.className=m.type==='goal'?'goal':'';b.textContent=m.label;b.addEventListener('click',()=>setMinute(m.minute));minutes.append(b);}
@@ -199,7 +201,7 @@ const initialEventCount=initial.actions.filter(a=>a.minute===initialMinute).leng
  document.querySelectorAll('[data-mode]').forEach(button=>button.addEventListener('click',()=>{
   mode=button.dataset.mode;for(const b of document.querySelectorAll('[data-mode]')){const active=b===button;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));}
   document.getElementById('wc-mode-title').textContent=mode==='activity'?'Activité dans le match.':'Impact indicatif des actions.';
-  document.getElementById('wc-mode-desc').textContent=mode==='activity'?'Une impulsion pour chaque action : l’activité progresse puis diminue lors des périodes plus calmes.':'Valeur éditoriale estimée des actions, indépendante de l’activité. Ce n’est pas un modèle xT.';
+  document.getElementById('wc-mode-desc').textContent=mode==='activity'?'Une impulsion pour chaque action : l’activité progresse puis diminue lors des périodes plus calmes.':'Impact éditorial expérimental : tient compte de la progression des passes et des xG des tirs lorsque disponibles. Ce n’est pas un modèle xT.';
   chart();setMinute(minute);
  }));
  slider.addEventListener('input',()=>setMinute(slider.value));
