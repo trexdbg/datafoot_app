@@ -71,6 +71,36 @@ export function pulseWeight(action) {
   return {activity:0.3, impact:0};
 }
 
+// Bandes visuelles : niveaux de l'indice, pas pente mathématique de la courbe.
+export const PULSE_BANDS = Object.freeze({
+  low: Object.freeze({max:25,color:'#a695ff',label:'Faible activité'}),
+  steady: Object.freeze({min:25,max:75,color:'#73ddff',label:'Activité modérée'}),
+  high: Object.freeze({min:75,color:'#ffb368',label:'Forte activité'})
+});
+export function pulseBand(value) {
+  if(value == null) return 'off';
+  if(value < 25) return 'low';
+  if(value > 75) return 'high';
+  return 'steady';
+}
+
+/**
+ * Les erreurs sont de petites résistances, pas des pénalités de performance.
+ * Une tentative ratée reste de l'activité : le malus NE remplace PAS son impulsion.
+ * Un seul malus par événement (pas de double comptage).
+ */
+export function pulsePenalty(action) {
+  if(action.kind==='Pass' && action.outcome!=='Complete') return 0.15;
+  if(action.kind==='Dribble' && action.outcome!=='Complete') return 0.65;
+  if(action.kind==='Shot' && action.outcome!=='Goal') return action.outcome==='Blocked'?0.12:0.2;
+  if(action.kind==='Miscontrol') return 0.3;
+  if(action.kind==='Dispossessed') return 0.45;
+  if(action.kind==='Foul Committed') return 0.3;
+  if(action.kind==='Dribbled Past') return 0.3;
+  if(action.kind==='Duel' && (action.outcome==='Lost'||action.outcome==='Lost In Play')) return 0.25;
+  return 0;
+}
+
 const pulseIndex = (value, scale) => Number((100 * (1 - Math.exp(-Math.max(0,value)/scale))).toFixed(1));
 
 /**
@@ -88,16 +118,19 @@ export function computePulse(events, duration = 125, {entry = 0, exit = duration
   const fastDecay=Math.pow(2,-1/rules.shortHalfLife);
   const slowDecay=Math.pow(2,-1/rules.longHalfLife);
   let activityFast=0,activitySlow=0,impactFast=0,impactSlow=0;
+  let penaltyFast=0,penaltySlow=0;
   const timeline=byMinute.map((all,minute)=>{
-    if(minute<entry || minute>=exit) return {minute,activity:null,impact:null,gain:0,impactGain:0,actions:0,events:[]};
+    if(minute<entry || minute>=exit) return {minute,activity:null,impact:null,gain:0,penaltyGain:0,impactGain:0,actions:0,events:[]};
     if(minute>entry){
       activityFast*=fastDecay; activitySlow*=slowDecay;
       impactFast*=fastDecay; impactSlow*=slowDecay;
+      penaltyFast*=fastDecay; penaltySlow*=slowDecay;
     }
     const items=all.filter(event=>event.minute>=entry && event.minute<exit);
-    let gain=0, impactGain=0;
+    let gain=0, penaltyGain=0, impactGain=0;
     for(const event of items){
       const weight=pulseWeight(event);
+      const penalty=pulsePenalty(event);
       // À l'intérieur de la minute, un événement plus tôt a légèrement plus décru.
       const elapsed=1-Math.max(0,Math.min(59,Number(event.second)||0))/60;
       const a=Math.pow(2,-elapsed/rules.shortHalfLife);
@@ -106,15 +139,19 @@ export function computePulse(events, duration = 125, {entry = 0, exit = duration
       activitySlow+=weight.activity*b;
       impactFast+=weight.impact*a;
       impactSlow+=weight.impact*b;
+      penaltyFast+=penalty*a;
+      penaltySlow+=penalty*b;
+      penaltyGain+=penalty;
       gain+=weight.activity;
       impactGain+=weight.impact;
     }
     const mix=rules.shortMix;
+    const activityEnergy=Math.max(0,mix*(activityFast-penaltyFast)+(1-mix)*(activitySlow-penaltySlow));
     return {
       minute,
-      activity:pulseIndex(mix*activityFast+(1-mix)*activitySlow,rules.activityScale),
+      activity:pulseIndex(activityEnergy,rules.activityScale),
       impact:pulseIndex(mix*impactFast+(1-mix)*impactSlow,rules.impactScale),
-      gain:Number(gain.toFixed(2)),impactGain:Number(impactGain.toFixed(2)),
+      gain:Number(gain.toFixed(2)),penaltyGain:Number(penaltyGain.toFixed(2)),impactGain:Number(impactGain.toFixed(2)),
       actions:items.length,events:items
     };
   });
