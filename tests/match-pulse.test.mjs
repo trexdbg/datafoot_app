@@ -19,7 +19,7 @@ test('les secondes influencent la contribution à la fin de minute',()=>{
  const pass=(second)=>computePulse([{minute:10,second,kind:'Pass',outcome:'Complete'}],90).timeline;
  assert.ok(pass(59)[10].activity>pass(0)[10].activity);
  assert.ok(pass(0)[9].activity>0 && pass(0)[9].activity<50);
- assert.equal(pass(0)[10].gain,1);
+ assert.equal(pass(0)[10].gain,0.8);
 });
 
 test('un but lance un temps fort mais l’activité revient progressivement à la normale',()=>{
@@ -70,7 +70,7 @@ test('au coup d’envoi et à chaque entrée, chaque joueur commence à 50, puis
  assert.ok(sub[71].activity<50);
  assert.equal(sub[84].activity,null);
 });
-test('un geste raté conserve une impulsion d’activité mais subit un faible malus',()=>{
+test('un geste raté conserve une faible impulsion mais subit un malus perceptible',()=>{
  assert.equal(pulsePenalty({kind:'Pass',outcome:'Incomplete'}),2);
  assert.equal(pulsePenalty({kind:'Dribble',outcome:'Incomplete'}),4.5);
  assert.equal(pulsePenalty({kind:'Dispossessed',outcome:''}),5);
