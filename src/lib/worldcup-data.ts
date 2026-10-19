@@ -35,11 +35,11 @@ const translations:Record<string,string>={
 };
 const flags:Record<string,string>={
  Argentina:'🇦🇷',Australia:'🇦🇺',Belgium:'🇧🇪',Brazil:'🇧🇷',Cameroon:'🇨🇲',Canada:'🇨🇦',
- 'Costa Rica':'🇨🇷',Croatia:'🇭🇷',Denmark:'🇩🇰',Ecuador:'🇪🇨',England:'🏴',France:'🇫🇷',
+ 'Costa Rica':'🇨🇷',Croatia:'🇭🇷',Denmark:'🇩🇰',Ecuador:'🇪🇨',England:'🏴󠁧󠁢󠁥󠁮󠁧󠁿',France:'🇫🇷',
  Germany:'🇩🇪',Ghana:'🇬🇭',Iran:'🇮🇷',Japan:'🇯🇵',Mexico:'🇲🇽',Morocco:'🇲🇦',
  Netherlands:'🇳🇱',Poland:'🇵🇱',Portugal:'🇵🇹',Qatar:'🇶🇦','Saudi Arabia':'🇸🇦',
  Senegal:'🇸🇳',Serbia:'🇷🇸','South Korea':'🇰🇷',Spain:'🇪🇸',Switzerland:'🇨🇭',
- Tunisia:'🇹🇳','United States':'🇺🇸',Uruguay:'🇺🇾',Wales:'🏴'
+ Tunisia:'🇹🇳','United States':'🇺🇸',Uruguay:'🇺🇾',Wales:'🏴󠁧󠁢󠁷󠁬󠁳󠁿'
 };
 const stageLabels:Record<string,string>={
  'Group Stage':'Phase de groupes','Round of 16':'Huitième de finale','Quarter-finals':'Quart de finale',
@@ -48,6 +48,17 @@ const stageLabels:Record<string,string>={
 export const labelCountry=(name:string)=>translations[name]||name;
 export const countries=[...new Set(fixtures.flatMap(m=>[m.home,m.away]))].sort((a,b)=>labelCountry(a).localeCompare(labelCountry(b),'fr'));
 export const flag=(name:string)=>flags[name]||'⚽';
+// ISO 3166 codes, with dedicated subdivisions for the England and Wales squads.
+const flagCodes:Record<string,string>={
+ Argentina:'ar',Australia:'au',Belgium:'be',Brazil:'br',Cameroon:'cm',Canada:'ca',
+ 'Costa Rica':'cr',Croatia:'hr',Denmark:'dk',Ecuador:'ec',England:'gb-eng',
+ France:'fr',Germany:'de',Ghana:'gh',Iran:'ir',Japan:'jp',Mexico:'mx',
+ Morocco:'ma',Netherlands:'nl',Poland:'pl',Portugal:'pt',Qatar:'qa',
+ 'Saudi Arabia':'sa',Senegal:'sn',Serbia:'rs','South Korea':'kr',Spain:'es',
+ Switzerland:'ch',Tunisia:'tn','United States':'us',Uruguay:'uy',Wales:'gb-wls'
+};
+export const flagSrc=(country:string)=>flagCodes[country]?'https://flagcdn.com/'+flagCodes[country]+'.svg':'';
+
 export const stageLabel=(stage:string)=>stageLabels[stage]||stage;
 export const slug=(name:string)=>name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 export const countryOfSlug=(value:string)=>countries.find(c=>slug(c)===value);
