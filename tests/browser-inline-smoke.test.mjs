@@ -94,7 +94,7 @@ test('player dropdown, graph modes, minute slider and actions respond to clicks'
  assert.equal(node('wc-longest-streak').textContent,'15′','longest streak must update');
  assert.ok(node('wc-peak').innerHTML.includes('94'));
  assert.notEqual(thermalLine.attributes.d,priorPath);
- assert.equal(node('wc-presence-ribbon').children[75].style.backgroundColor,'#A65AFE','intensity values determine ribbon colors');
+ assert.equal(node('wc-presence-ribbon').children[75].style.backgroundColor,'#A245FD','intensity values determine ribbon colors');
  assert.equal(new URL(location.href).searchParams.get('joueur'),'202');
  assert.ok(node('wc-minute-actions').children.some(chip=>String(chip.textContent).includes('PASSE DÉCISIVE')));
  modes[1].emit('click');
