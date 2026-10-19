@@ -57,7 +57,8 @@ export function pulseWeight(action) {
   if (kind === 'Dribble') return {activity:complete?5:2.5, impact:complete?3.2:0};
   if (kind === 'Shot') {
     const xg=Number.isFinite(action.xg)?Math.min(1,Math.max(0,action.xg)):null;
-    if(action.outcome==='Goal')return {activity:5.5,impact:xg==null?10:Number((8.5+1.5*xg).toFixed(2))};
+    // Un but est un temps fort majeur d'activité (impulsion courte qui redescend).
+    if(action.outcome==='Goal')return {activity:28,impact:xg==null?10:Number((8.5+1.5*xg).toFixed(2))};
     return {activity:4,impact:xg==null?(action.outcome==='Blocked'?0.6:2):Number((1.2+7*xg).toFixed(2))};
   }
   if (kind === 'Ball Recovery' || kind === 'Interception') return {activity:2, impact:1};
@@ -74,9 +75,9 @@ export function pulseWeight(action) {
 
 // Bandes visuelles : niveaux de l'indice, pas pente mathématique de la courbe.
 export const PULSE_BANDS = Object.freeze({
-  low: Object.freeze({max:25,color:'#a695ff',label:'Faible activité'}),
-  steady: Object.freeze({min:25,max:75,color:'#73ddff',label:'Activité modérée'}),
-  high: Object.freeze({min:75,color:'#ffb368',label:'Forte activité'})
+  low: Object.freeze({max:25,color:'#8A9DB8',label:'Rythme discret'}),
+  steady: Object.freeze({min:25,max:75,color:'#52D3EF',label:'Dans le jeu'}),
+  high: Object.freeze({min:75,color:'#B8F27C',label:'Temps fort'})
 });
 export function pulseBand(value) {
   if(value == null) return 'off';
