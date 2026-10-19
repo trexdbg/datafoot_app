@@ -58,6 +58,33 @@ Le build est vérifié par \`.github/workflows/match-profile-check.yml\`
 sur les PR concernées. Le lien est présent sur l'accueil et dans la navigation.
 
 
+## Atlas Mondial 2022 — module phare
+
+Le nouvel explorateur global de 2022 est le point d'entrée principal :
+`/datafoot_app/mondial-2022/`. Il ne met en avant ni Mbappé ni la France par défaut.
+
+- **Par match** (`/mondial-2022/`) : les **64 rencontres** de la Coupe du monde 2022, filtrables par pays, phase et texte. Chaque match possède deux courbes collectives autonomes et une sélection des joueurs des deux équipes (`/mondial-2022/matchs/<id>/`).
+- **Par pays** (`/mondial-2022/pays/`) : les **32 sélections**, leur parcours match par match, et tous les joueurs observés (`/mondial-2022/pays/<slug>/`).
+- **Par joueur** (`/mondial-2022/joueurs/`) : annuaire alphabétique de tous les participants recensés, avec recherche par nom/pays et une fiche par joueur (`/mondial-2022/joueurs/<id>/`).
+- **Analyse détaillée** (`/mondial-2022/matchs/<id>/profil/?joueur=<player-id>`) : une seule page par match, sélecteur entre tous les joueurs, bascule activité / impact indicatif, points d'action sous l'axe X, moments clés, inspection minute par minute et journal filtrable. Les courbes individuelles ne superposent jamais le collectif.
+- **Accès direct aux données** : `/data/worldcup-2022/index.json`, `/data/worldcup-2022/players.json` et `/data/worldcup-2022/matches/<id>.json` (préfixés de `/datafoot_app`).
+
+### Provenance, génération et indicateurs
+
+La génération reproductible est dans `scripts/build-worldcup-2022.mjs` (`npm run data:worldcup`). Elle télécharge les 64 fichiers événementiels et la liste des matchs **StatsBomb Open Data**, compétition `43`, saison `106`. Les données sont générées avant la compilation Astro dans GitHub Actions, puis mises en cache. Les fichiers détaillés produits dans `src/data/worldcup/2022` et leur version publique ne sont pas committés manuellement. Pour travailler en local après un clone neuf :
+
+```bash
+npm install
+npm run data:worldcup
+npm run test:worldcup
+npm run test:pulse
+npm run build
+```
+
+Pulse est un **indice éditorial** d'activité à deux mémoires (3 et 10 minutes), pas une mesure GPS, de course ou une note de performance. La lecture « impact » est un indicateur heuristique de valeur des types d'actions, **pas** un xT/VAEP validé. Les événements sont horodatés et les remplacements / cartons rouges interrompent le profil. Le résultat final de séance de tirs au but n'entre pas dans le graphique. La source StatsBomb/Hudl est explicitement indiquée dans l'interface.
+
+Les anciens parcours centrés sur la France (`/equipes/france/`, `/joueurs/mbappe/`, `/matchs/coupe-du-monde-2022/...`) restent accessibles par compatibilité, mais ne sont plus le chemin principal.
+
 ## Explorateur des matchs — DataFoot Pulse V3 / France 2022
 
 - `/equipes/france/` : sept profils collectifs autonomes, un par match. Chaque vue du collectif représente la moyenne des joueurs présents, **sans superposition** avec Mbappé.
