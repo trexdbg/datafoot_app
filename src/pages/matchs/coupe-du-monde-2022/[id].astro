@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import ActivityMiniChart from '../../../components/ActivityMiniChart.astro';
-import {games,commonScale,mbappeId,getProfile,matchHref,playerHref,formattedDate,matchTitle,opposingTeam,country,playerGoals,teamGoals} from '../../../lib/explorer-data.mjs';
+import {games,matchComparisonScale,mbappeId,getProfile,matchHref,playerHref,formattedDate,matchTitle,opposingTeam,country,playerGoals,teamGoals} from '../../../lib/explorer-data.mjs';
 import '../../../styles/match-explorer.css';
 export function getStaticPaths(){
  return games.map(game=>({params:{id:String(game.id)},props:{matchId:game.id}}));
@@ -11,6 +11,7 @@ const {matchId}=Astro.props;
 const base=import.meta.env.BASE_URL.replace(/\/$/,'');
 const game=games.find(g=>g.id===matchId)!;
 const selected=getProfile(game,mbappeId);
+const sharedScale=matchComparisonScale(game);
 const players=[...game.profiles].sort((a,b)=>a.player.id===mbappeId?-1:b.player.id===mbappeId?1:a.player.name.localeCompare(b.player.name,'fr'));
 const index=games.findIndex(g=>g.id===game.id);
 const prev=games[index-1],next=games[index+1];
@@ -30,13 +31,13 @@ const prev=games[index-1],next=games[index+1];
   <section class="ax-feature-card">
    <p class="ax-eyebrow">MOYENNE DE L’ÉQUIPE</p><h2>France · collectif</h2>
    <p>Indice moyen des joueurs présents sur le terrain, recalculé à chaque minute.</p>
-   <ActivityMiniChart duration={game.duration} maxScale={commonScale} series={[{label:'France',timeline:game.team,color:'#59caff'}]} goals={teamGoals(game)} caption={'Moyenne de l’équipe de France contre '+opposingTeam(game)} />
+   <ActivityMiniChart duration={game.duration} maxScale={sharedScale} series={[{label:'France',timeline:game.team,color:'#59caff'}]} goals={teamGoals(game)} caption={'Moyenne de l’équipe de France contre '+opposingTeam(game)} />
    <div class="ax-feature-info"><span class="ax-dot blue"></span> Moyenne d’équipe · score évolutif</div>
   </section>
   {selected && <section class="ax-feature-card">
    <p class="ax-eyebrow">COMPARAISON DIRECTE</p><h2>Mbappé · individuel</h2>
    <p>Ses actions uniquement, sur la même échelle que l’équipe.</p>
-   <ActivityMiniChart duration={game.duration} maxScale={commonScale} series={[{label:'Mbappé',timeline:selected.timeline,color:'#fc8ab9'},{label:'France',timeline:game.team,color:'#5ac9ff'}]} goals={playerGoals(game,mbappeId)} caption={'Mbappé comparé à la France contre '+opposingTeam(game)} />
+   <ActivityMiniChart duration={game.duration} maxScale={sharedScale} series={[{label:'Mbappé',timeline:selected.timeline,color:'#fc8ab9'},{label:'France',timeline:game.team,color:'#5ac9ff'}]} goals={playerGoals(game,mbappeId)} caption={'Mbappé comparé à la France contre '+opposingTeam(game)} />
    <div class="ax-feature-info"><span class="ax-dot pink"></span> Mbappé <span class="ax-dot blue"></span> France <a href={playerHref(base,mbappeId)+'#match-'+game.id}>Ses autres matchs →</a></div>
   </section>}
  </div>
@@ -50,7 +51,7 @@ const prev=games[index-1],next=games[index+1];
    <div class="ax-card-kicker">{profile.player.entry===0?'TITULAIRE':'ENTRÉE À '+profile.player.entry+'′'} · {profile.actions.length} ACTIONS</div>
    <a href={playerHref(base,profile.player.id)+'#match-'+game.id} class="ax-match-title">{profile.player.name} <span>↗</span></a>
    <p class="ax-card-meta">{passed} passes réussies · {goals.length} but{goals.length>1?'s':''}</p>
-   <ActivityMiniChart duration={game.duration} maxScale={commonScale} series={[{label:profile.player.name,timeline:profile.timeline,color:'#fc8ab9'},{label:'France',timeline:game.team,color:'#5ac9ff'}]} goals={goals} caption={'Activité de '+profile.player.name+' comparée à la moyenne de France'} />
+   <ActivityMiniChart duration={game.duration} maxScale={sharedScale} series={[{label:profile.player.name,timeline:profile.timeline,color:'#fc8ab9'},{label:'France',timeline:game.team,color:'#5ac9ff'}]} goals={goals} caption={'Activité de '+profile.player.name+' comparée à la moyenne de France'} />
    <div class="ax-card-footer"><a href={playerHref(base,profile.player.id)+'#match-'+game.id}>Voir tous ses matchs <span>→</span></a></div>
   </article>;
  })}
