@@ -39,6 +39,7 @@ jobs:
           path: |
             src/data/worldcup/2022/
             src/data/worldcup/2022-players.json
+            public/data/worldcup-2022/
           key: worldcup-2022-v2-${{ hashFiles('scripts/build-worldcup-2022.mjs') }}
 
       - name: Generate all 64 World Cup games
