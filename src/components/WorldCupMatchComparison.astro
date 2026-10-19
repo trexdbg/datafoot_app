@@ -1,6 +1,6 @@
 ---
 import CountryFlag from './CountryFlag.astro';
-import {monotonePath,actionLabel} from '../lib/match-activity.mjs';
+import {monotonePath, actionLabel} from '../lib/match-activity.mjs';
 
 interface Point {minute:number;activity:number|null;actions?:number;events?:Array<{kind:string;outcome:string;playerName?:string}>}
 interface GoalMarker {minute:number;team:string;label?:string;kind?:string}
@@ -13,120 +13,132 @@ interface Props {
 }
 const {home,away,homeCountry,awayCountry,homeScore,awayScore,first,second,duration,goals=[],stats=[]}=Astro.props;
 const COLORS={first:'#58D8F6',second:'#FF638A'};
-const left=55,right=1065,top=36,mid=190,bottom=344,amplitude=143;
-const X=(minute:number)=>left+Math.max(0,Math.min(duration,minute))/Math.max(1,duration)*(right-left);
-const Y=(value:number,team:number)=>mid+(team===0?-1:1)*Math.max(0,Math.min(100,value))/100*amplitude;
-const valid=(points:Point[])=>points.filter(p=>p.activity!=null);
-const paths=[first,second].map((series,team)=>{
- const points=valid(series);
- const line=points.length?monotonePath(points.map(p=>({x:X(p.minute),y:Y(p.activity??0,team)}))):'';
- const area=points.length?line+' L '+X(points.at(-1)!.minute)+' '+mid+' L '+X(points[0].minute)+' '+mid+' Z':'';
- return {line,area};
+const left=48, right=1090, top=43, bottom=254, width=right-left;
+const X=(minute:number)=>left+Math.max(0,Math.min(duration,minute))/Math.max(1,duration)*width;
+const Y=(value:number)=>bottom-Math.max(0,Math.min(100,value))/100*(bottom-top);
+const paths=[first,second].map(series=>{
+ const parts:Point[][]=[];
+ let part:Point[]=[];
+ for(const point of series){
+  if(point.activity==null){if(part.length)parts.push(part);part=[];}
+  else part.push(point);
+ }
+ if(part.length)parts.push(part);
+ return parts.map(points=>monotonePath(points.map(p=>({x:X(p.minute),y:Y(p.activity??0)}))));
 });
-const ticks=Array.from({length:Math.floor(duration/15)+1},(_,i)=>i*15).filter(t=>t===0||duration-t>7);
+const ticks=Array.from({length:Math.floor(duration/15)+1},(_,i)=>i*15)
+ .filter(t=>t===0||duration-t>7);
 if(!ticks.includes(duration))ticks.push(duration);
 const markers=goals.filter(goal=>goal.minute>=0&&goal.minute<=duration).sort((a,b)=>a.minute-b.minute);
-const sample=JSON.stringify([first,second].map(series=>series.map(p=>[
- p.activity??null,p.actions??0,
- (p.events??[]).slice(0,3).map(e=>(e.playerName?e.playerName+' · ':'')+actionLabel(e))
-])));
+const leadBands:Array<{minute:number;winner:number}>=[];
+for(let minute=0;minute<duration;minute++){
+ const a=first[minute]?.activity, b=second[minute]?.activity;
+ if(typeof a==='number'&&typeof b==='number'&&Math.abs(a-b)>.5)leadBands.push({minute,winner:a>b?0:1});
+}
+const sample=JSON.stringify([first,second].map(series=>Array.from({length:duration+1},(_,minute)=>{
+ const point=series.find(p=>p.minute===minute);
+ return [point?.activity??null,point?.actions??0,(point?.events??[]).slice(0,3).map(e=>(e.playerName?e.playerName+' · ':'')+actionLabel(e))];
+})));
 const formatValue=(value:number,format?:string)=>format==='decimal'?value.toFixed(1).replace('.',','):String(value);
 ---
-<section class="wc-duel wc-duel-mirror" aria-label={'Comparaison des rythmes : '+home+' contre '+away} data-wc-duel data-duration={duration} data-series={sample}>
- <div class="wc-duel-scoreline">
-  <div class="wc-duel-side wc-duel-side-home">
-   <CountryFlag country={homeCountry} />
-   <div><strong>{home}</strong><span>ÉQUIPE 1</span></div>
-   <i style={'background:'+COLORS.first} aria-hidden="true"></i>
+<section class="match-flow" aria-label={'Activité du match '+home+' contre '+away} data-wc-duel data-duration={duration} data-series={sample}>
+ <div class="flow-intro"><span>DÉROULÉ DU MATCH</span><span>INDICE PULSE <b>0—100</b></span></div>
+ <header class="flow-scoreboard">
+  <div class="flow-team flow-team-home">
+   <CountryFlag country={homeCountry}/>
+   <strong>{home}</strong>
+   <i aria-hidden="true"></i>
   </div>
-  <div class="wc-duel-result" aria-label={'Score : '+home+' '+homeScore+', '+away+' '+awayScore}>
-   <div class="wc-duel-score-numbers"><strong>{homeScore}</strong><span>–</span><strong>{awayScore}</strong></div>
-   <small>MINUTES COUVERTES · {duration}′</small>
+  <div class="flow-score" aria-label={'Score final : '+home+' '+homeScore+', '+away+' '+awayScore}>
+   <span>{homeScore}</span><em>:</em><span>{awayScore}</span>
   </div>
-  <div class="wc-duel-side wc-duel-side-away">
-   <i style={'background:'+COLORS.second} aria-hidden="true"></i>
-   <div><strong>{away}</strong><span>ÉQUIPE 2</span></div>
-   <CountryFlag country={awayCountry} />
+  <div class="flow-team flow-team-away">
+   <i aria-hidden="true"></i>
+   <strong>{away}</strong>
+   <CountryFlag country={awayCountry}/>
   </div>
+ </header>
+ <div class="flow-chart-head">
+  <div class="flow-keys">
+   <span class="flow-key flow-key-home"><i aria-hidden="true"></i>{home}</span>
+   <span class="flow-key flow-key-away"><i aria-hidden="true"></i>{away}</span>
+  </div>
+  <span class="flow-chart-hint">Deux équipes. Une même échelle.</span>
  </div>
- <div class="wc-duel-chart" tabindex="0" aria-label="Faire défiler le graphique horizontalement sur petit écran">
-  <svg class="wc-duel-svg" viewBox="0 0 1120 389" role="img" tabindex="0" aria-label={'Indices Pulse par minute, '+home+' au-dessus de la ligne centrale et '+away+' en dessous. Chaque indice reste compris entre 0 et 100 ; le côté inférieur ne représente pas des valeurs négatives. Survol, toucher ou flèches pour explorer.'}>
-   <defs>
-    <linearGradient id="wc-duel-fill-first" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#58D8F6" stop-opacity=".38"/><stop offset="100%" stop-color="#58D8F6" stop-opacity=".035"/></linearGradient>
-    <linearGradient id="wc-duel-fill-second" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#FF638A" stop-opacity=".04"/><stop offset="100%" stop-color="#FF638A" stop-opacity=".34"/></linearGradient>
-   </defs>
-   <rect width="1120" height="389" rx="12" fill="#071725"/>
-   <rect x={left} y={top} width={right-left} height={mid-top} fill="#58D8F6" opacity=".028"/>
-   <rect x={left} y={mid} width={right-left} height={bottom-mid} fill="#FF638A" opacity=".024"/>
-   {[50,100].map(n=><g>
-    <line class="wc-duel-grid" x1={left} x2={right} y1={Y(n,0)} y2={Y(n,0)}/>
-    <line class="wc-duel-grid" x1={left} x2={right} y1={Y(n,1)} y2={Y(n,1)}/>
-    <text class="wc-duel-axis" x={left-13} y={Y(n,0)+4} text-anchor="end">{n}</text>
-    <text class="wc-duel-axis" x={left-13} y={Y(n,1)+4} text-anchor="end">{n}</text>
+ <div class="flow-chart-scroll" aria-label="Chronologie interactive du match, défilement horizontal sur petit écran">
+  <svg class="flow-chart" viewBox="0 0 1120 316" role="img" tabindex="0" aria-label={'Activité minute par minute de '+home+' et '+away+' entre 0 et 100 sur une même échelle. La bande inférieure montre quelle équipe est la plus active. Survoler, toucher ou utiliser les flèches pour explorer.'}>
+   <rect width="1120" height="316" fill="#081b29"/>
+   {duration>45&&<rect x={X(45)} y={top} width={X(Math.min(90,duration))-X(45)} height={bottom-top} fill="#fff" opacity=".018"/>}
+   {duration>90&&<rect x={X(90)} y={top} width={right-X(90)} height={bottom-top} fill="#fff" opacity=".032"/>}
+   {[0,25,50,75,100].map(n=><g>
+    <line class:list={['flow-grid-line',n===50?'emphasis':'']} x1={left} x2={right} y1={Y(n)} y2={Y(n)}/>
+    {(n===0||n===50||n===100)&&<text class="flow-axis" x={left-12} y={Y(n)+4} text-anchor="end">{n}</text>}
    </g>)}
    {ticks.map(minute=><g>
-    <line class="wc-duel-grid vertical" x1={X(minute)} x2={X(minute)} y1={top} y2={bottom}/>
-    <text class="wc-duel-axis" x={X(minute)} y="366" text-anchor="middle">{minute}′</text>
+    <line class="flow-time-line" x1={X(minute)} x2={X(minute)} y1={top} y2={bottom}/>
+    <text class="flow-axis" x={X(minute)} y="302" text-anchor="middle">{minute}′</text>
    </g>)}
-   {duration>90&&<line x1={X(90)} x2={X(90)} y1={top} y2={bottom} stroke="#b7d0e0" stroke-opacity=".53" stroke-dasharray="6 5"/>}
-   <text class="wc-duel-lane-label wc-duel-lane-first" x={left+13} y={top+19}>{home.toUpperCase()}</text>
-   <text class="wc-duel-lane-label wc-duel-lane-second" x={left+13} y={bottom-11}>{away.toUpperCase()}</text>
-   <text class="wc-duel-axis" x={left-13} y={mid+4} text-anchor="end">0</text>
-   <path d={paths[0].area} fill="url(#wc-duel-fill-first)"/>
-   <path d={paths[1].area} fill="url(#wc-duel-fill-second)"/>
-   <path d={paths[0].line} fill="none" stroke={COLORS.first} stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" class="wc-duel-line first"/>
-   <path d={paths[1].line} fill="none" stroke={COLORS.second} stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" class="wc-duel-line second"/>
-   <line x1={left} x2={right} y1={mid} y2={mid} stroke="#cceaf6" stroke-opacity=".65" stroke-width="1.7"/>
-   <rect data-duel-hit x={left} y={top} width={right-left} height={bottom-top} fill="transparent"/>
+   {duration>45&&<line class="flow-break-line" x1={X(45)} x2={X(45)} y1={top} y2={bottom}/>}
+   {duration>90&&<line class="flow-break-line" x1={X(90)} x2={X(90)} y1={top} y2={bottom}/>}
+   {paths[0].map(line=><path d={line} class="flow-curve flow-curve-home"/>)}
+   {paths[1].map(line=><path d={line} class="flow-curve flow-curve-away"/>)}
+   {leadBands.map(({minute,winner})=><rect x={X(minute)} y="268" width={width/Math.max(1,duration)+.3} height="5" fill={winner===0?COLORS.first:COLORS.second} opacity=".74"/>)}
    {markers.map(goal=>{
-    const team=goal.team===home?0:1;
-    const point=(team===0?first:second)[goal.minute];
-    return <g class="wc-duel-goal-marker" transform={'translate('+X(goal.minute)+' '+Y(point?.activity??0,team)+')'}>
-     <circle r="11.5" fill="#0b2439" stroke={team===0?COLORS.first:COLORS.second} stroke-width="2.7"/>
-     <text y="5" font-size="15" text-anchor="middle" fill="#fff">⚽</text>
+    const isHome=goal.team===home;
+    const color=isHome?COLORS.first:COLORS.second;
+    return <g class="flow-goal-mark" transform={'translate('+X(goal.minute)+' 0)'}>
+     <line x1="0" x2="0" y1={top} y2={bottom} stroke={color} stroke-width="1" stroke-dasharray="3 5" stroke-opacity=".48"/>
+     <circle cy="32" r="6" fill="#081b29" stroke={color} stroke-width="2.5"/>
      <title>{goal.minute}′ · {goal.label??'But'} · {goal.team}</title>
     </g>;
    })}
-   <line data-duel-cursor x1={left} x2={left} y1={top} y2={bottom} stroke="#eaf9ff" stroke-width="1.5" stroke-dasharray="5 6" visibility="hidden" pointer-events="none"/>
-   <circle data-duel-dot="0" cx={left} cy={mid} r="6.5" fill="#071725" stroke={COLORS.first} stroke-width="3" visibility="hidden" pointer-events="none"/>
-   <circle data-duel-dot="1" cx={left} cy={mid} r="6.5" fill="#071725" stroke={COLORS.second} stroke-width="3" visibility="hidden" pointer-events="none"/>
+   <rect x={left} y={top} width={width} height={bottom-top} fill="transparent" data-duel-hit/>
+   <line data-duel-cursor x1={left} x2={left} y1={top} y2={bottom} stroke="#d5e4ec" stroke-width="1" stroke-dasharray="3 5" visibility="hidden" pointer-events="none"/>
+   <circle data-duel-dot="0" cx={left} cy={bottom} r="6" fill="#081b29" stroke={COLORS.first} stroke-width="3" visibility="hidden" pointer-events="none"/>
+   <circle data-duel-dot="1" cx={left} cy={bottom} r="6" fill="#081b29" stroke={COLORS.second} stroke-width="3" visibility="hidden" pointer-events="none"/>
   </svg>
  </div>
- <div class="wc-duel-events" aria-label="Buts du match">
-  {markers.length?markers.map(goal=><button type="button" class:list={['wc-duel-event',goal.team===home?'first':'second']} data-duel-jump={goal.minute} aria-label={'Voir '+goal.minute+'ème minute : '+(goal.label??'But')+' de '+goal.team}>
-   <span class="wc-duel-event-icon">⚽</span><span class="wc-duel-event-label"><strong>{goal.minute}′ · {goal.label??'But'}</strong><small>{goal.team}{goal.kind==='own-goal'?' · CSC':''}</small></span>
-  </button>):<span class="wc-duel-no-events">Aucun but dans cette rencontre</span>}
- </div>
- <div class="wc-duel-inspection" aria-live="off">
-  <div class="wc-duel-inspection-time"><span>MINUTE</span><strong data-duel-minute>—</strong><small>Survole ou touche la courbe</small></div>
-  <div class="wc-duel-inspection-team" style={'--duel-accent:'+COLORS.first}>
-   <span><CountryFlag country={homeCountry} /> {home}</span><strong data-duel-score="0">—</strong><small data-duel-actions="0">Activité moyenne</small><p data-duel-events="0"></p>
+ <div class="flow-chart-caption"><span><i class="flow-caption-swatch" aria-hidden="true"></i> Bande d'ascendant · équipe la plus active à chaque minute</span><span>{duration} minutes analysées</span></div>
+ <div class="flow-inspection" aria-live="off">
+  <div class="flow-inspection-minute"><small>MINUTE EXPLORÉE</small><strong data-duel-minute>—</strong></div>
+  <div class="flow-inspection-side" style={'--flow-accent:'+COLORS.first}>
+   <div class="flow-inspection-top"><span>{home}</span><strong data-duel-score="0">—</strong></div>
+   <small data-duel-actions="0">—</small><p data-duel-events="0"></p>
   </div>
-  <div class="wc-duel-inspection-team" style={'--duel-accent:'+COLORS.second}>
-   <span><CountryFlag country={awayCountry} /> {away}</span><strong data-duel-score="1">—</strong><small data-duel-actions="1">Activité moyenne</small><p data-duel-events="1"></p>
+  <div class="flow-inspection-side" style={'--flow-accent:'+COLORS.second}>
+   <div class="flow-inspection-top"><span>{away}</span><strong data-duel-score="1">—</strong></div>
+   <small data-duel-actions="1">—</small><p data-duel-events="1"></p>
   </div>
  </div>
- {stats.length>0&&<div class="wc-duel-stats" aria-label="Statistiques comparées issues des événements du match">
+ {markers.length>0&&<div class="flow-goals" aria-label="Buts du match">
+  <span class="flow-goals-label">BUTS</span>
+  <div class="flow-goals-list">
+   {markers.map(goal=><button type="button" class:list={['flow-goal-chip',goal.team===home?'home':'away']} data-duel-jump={goal.minute} aria-label={'Aller à la '+goal.minute+'e minute, but de '+(goal.label??goal.team)}>
+    <strong>{goal.minute}′</strong><span>{goal.label??'But'}{goal.kind==='own-goal'?' (CSC)':''}</span>
+   </button>)}
+  </div>
+ </div>}
+ {stats.length>0&&<div class="flow-stats" aria-label="Statistiques des deux équipes">
   {stats.map(stat=>{
-   const max=Math.max(stat.first,stat.second,1);
-   return <div class="wc-duel-stat">
-    <span>{stat.label}</span>
-    <div class="wc-duel-stat-values"><strong style={'color:'+COLORS.first}>{formatValue(stat.first,stat.format)}</strong><strong style={'color:'+COLORS.second}>{formatValue(stat.second,stat.format)}</strong></div>
-    <div class="wc-duel-stat-bars" aria-hidden="true">
-     <div class="wc-duel-stat-half first"><i style={'width:'+(stat.first/max*100)+'%'}></i></div>
-     <div class="wc-duel-stat-half second"><i style={'width:'+(stat.second/max*100)+'%'}></i></div>
+   const total=stat.first+stat.second;
+   const share=total>0?stat.first/total*100:50;
+   return <div class="flow-stat">
+    <span class="flow-stat-title">{stat.label}</span>
+    <div class="flow-stat-numbers"><strong>{formatValue(stat.first,stat.format)}</strong><strong>{formatValue(stat.second,stat.format)}</strong></div>
+    <div class="flow-stat-track" aria-hidden="true">
+     {total>0&&<><i class="home" style={'width:'+share+'%'}></i><i class="away" style={'width:'+(100-share)+'%'}></i></>}
     </div>
    </div>;
   })}
  </div>}
- <p class="wc-duel-footnote">Indice d'activité Pulse / 100 : moyenne des joueurs sur le terrain, représentée en miroir sur la même échelle. Les valeurs du bas ne sont pas négatives. Sources : événements StatsBomb, sans données inventées.</p>
+ <p class="flow-source">Pulse : activité moyenne des joueurs présents, sur 100. Courbes et statistiques établies à partir des événements StatsBomb.</p>
 </section>
 <script>
 (() => {
  const init=()=>{
   document.querySelectorAll<HTMLElement>('[data-wc-duel]').forEach(root=>{
    if(root.dataset.ready)return;
-   const svg=root.querySelector<SVGSVGElement>('.wc-duel-svg');
+   const svg=root.querySelector<SVGSVGElement>('.flow-chart');
    const cursor=root.querySelector<SVGLineElement>('[data-duel-cursor]');
    const dots=[...root.querySelectorAll<SVGCircleElement>('[data-duel-dot]')];
    const time=root.querySelector<HTMLElement>('[data-duel-minute]');
@@ -140,10 +152,9 @@ const formatValue=(value:number,format?:string)=>format==='decimal'?value.toFixe
    let minute=0;
    const inspect=(raw:number)=>{
     minute=Math.max(0,Math.min(duration,Math.round(raw)));
-    const x=55+minute/Math.max(1,duration)*1010;
+    const x=48+minute/Math.max(1,duration)*1042;
     cursor.setAttribute('x1',String(x));cursor.setAttribute('x2',String(x));cursor.setAttribute('visibility','visible');
     time.textContent=minute+'′';
-    root.classList.add('is-inspecting');
     for(let i=0;i<2;i++){
      const [score,actions,names]=data[i]?.[minute]||[null,0,[]];
      scores[i].textContent=score==null?'—':Math.round(score)+'/100';
@@ -152,14 +163,14 @@ const formatValue=(value:number,format?:string)=>format==='decimal'?value.toFixe
      const dot=dots[i];
      if(score==null){dot.setAttribute('visibility','hidden');continue;}
      dot.setAttribute('cx',String(x));
-     dot.setAttribute('cy',String(190+(i===0?-1:1)*Math.max(0,Math.min(100,score))/100*143));
+     dot.setAttribute('cy',String(254-Math.max(0,Math.min(100,score))/100*211));
      dot.setAttribute('visibility','visible');
     }
    };
    const fromPointer=(event:PointerEvent)=>{
     const rect=svg.getBoundingClientRect();
     const x=(event.clientX-rect.left)/rect.width*1120;
-    inspect((x-55)/1010*duration);
+    inspect((x-48)/1042*duration);
    };
    svg.addEventListener('pointermove',fromPointer);
    svg.addEventListener('pointerdown',fromPointer);
@@ -172,6 +183,7 @@ const formatValue=(value:number,format?:string)=>format==='decimal'?value.toFixe
    root.querySelectorAll<HTMLButtonElement>('[data-duel-jump]').forEach(button=>{
     button.addEventListener('click',()=>{
      inspect(Number(button.dataset.duelJump||0));
+     svg.focus({preventScroll:true});
     });
    });
    inspect(Math.min(45,duration));
@@ -180,3 +192,101 @@ const formatValue=(value:number,format?:string)=>format==='decimal'?value.toFixe
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
 </script>
+<style>
+.match-flow{--flow-home:#58d8f6;--flow-away:#ff638a;margin:16px 0 24px;padding:23px 26px 17px;background:#0a1d2c;border:1px solid #335064;border-radius:9px;color:#ecf6fb}
+.flow-intro{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-bottom:18px;border-bottom:1px solid #294456;color:#96b4c7;font-size:10px;font-weight:800;letter-spacing:.16em}
+.flow-intro b{color:#dae6ef;font-weight:850;letter-spacing:.07em}
+.flow-scoreboard{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:16px;padding:18px 0 24px}
+.flow-team{display:flex;align-items:center;gap:12px;min-width:0}
+.flow-team :global(.wc-flag){width:33px;height:24px;object-fit:cover}
+.flow-team strong{color:#f4f8fa;font-size:clamp(15px,2vw,24px);font-weight:850;letter-spacing:-.035em;line-height:1.1}
+.flow-team i{width:16px;height:3px;background:var(--flow-home);flex:none}
+.flow-team-away{justify-content:flex-end;text-align:right}
+.flow-team-away i{background:var(--flow-away)}
+.flow-score{display:flex;gap:15px;align-items:baseline;justify-content:center;font-size:clamp(36px,4.8vw,59px);line-height:1;color:#f5fbff;font-weight:850;letter-spacing:-.065em;font-variant-numeric:tabular-nums}
+.flow-score em{font-style:normal;color:#667f90;font-weight:450;font-size:.52em}
+.flow-chart-head{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:11px 3px 14px;border-top:1px solid #294456}
+.flow-keys{display:flex;flex-wrap:wrap;gap:22px;align-items:center}
+.flow-key{display:inline-flex;align-items:center;gap:8px;color:#e3eff5;font-size:12px;font-weight:800}
+.flow-key i{width:19px;height:3px;background:var(--flow-home);display:block}
+.flow-key-away i{background:var(--flow-away)}
+.flow-chart-hint{font-size:11px;color:#8facbf}
+.flow-chart-scroll{overflow-x:auto;overscroll-behavior-x:contain;background:#081b29;border:1px solid #2b465a;border-radius:4px}
+.flow-chart{display:block;width:100%;min-width:660px;height:auto;touch-action:pan-y;cursor:crosshair;outline:none}
+.flow-chart:focus-visible{outline:2px solid #d9ecf7;outline-offset:-3px}
+.flow-grid-line{stroke:#819bad;stroke-width:1;stroke-opacity:.12}
+.flow-grid-line.emphasis{stroke-opacity:.27;stroke-dasharray:3 5}
+.flow-time-line{stroke:#7e9caf;stroke-opacity:.11;stroke-width:1}
+.flow-break-line{stroke:#aac3d1;stroke-opacity:.34;stroke-width:1.3;stroke-dasharray:4 5}
+.flow-axis{fill:#88a6b8;font-size:12px;font-weight:700;font-variant-numeric:tabular-nums}
+.flow-curve{fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:3.4}
+.flow-curve-home{stroke:var(--flow-home)}
+.flow-curve-away{stroke:var(--flow-away)}
+.flow-chart-caption{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;color:#8babbc;font-size:10px;padding:8px 3px 15px}
+.flow-caption-swatch{display:inline-block;width:13px;height:4px;background:linear-gradient(90deg,var(--flow-home) 50%,var(--flow-away) 50%);vertical-align:middle;margin-right:5px}
+.flow-inspection{display:grid;grid-template-columns:130px minmax(0,1fr) minmax(0,1fr);border-block:1px solid #355267;background:#0d2535}
+.flow-inspection>div{min-width:0;padding:13px 18px}
+.flow-inspection>div+div{border-left:1px solid #355267}
+.flow-inspection-minute{display:flex;flex-direction:column;justify-content:center;gap:6px}
+.flow-inspection-minute small{font-size:9px;color:#93b5c7;font-weight:850;letter-spacing:.1em}
+.flow-inspection-minute strong{color:#fff;font-size:30px;line-height:1;letter-spacing:-.055em;font-variant-numeric:tabular-nums}
+.flow-inspection-side{border-top:2px solid var(--flow-accent);display:flex;flex-direction:column;gap:5px}
+.flow-inspection-top{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.flow-inspection-top span{font-size:12px;font-weight:820;color:#e2eef6}
+.flow-inspection-top strong{font-size:22px;letter-spacing:-.04em;color:var(--flow-accent);font-variant-numeric:tabular-nums;white-space:nowrap}
+.flow-inspection-side>small{font-size:10px;color:#99baca}
+.flow-inspection-side>p{font-size:10px;color:#a5bfce;margin:0;line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere;min-height:2.9em}
+.flow-goals{display:flex;align-items:flex-start;gap:20px;padding:16px 1px;border-bottom:1px solid #294456}
+.flow-goals-label{padding-top:8px;color:#9bb9c9;letter-spacing:.14em;font-size:10px;font-weight:850;flex:none}
+.flow-goals-list{display:flex;gap:7px;flex-wrap:wrap;min-width:0}
+.flow-goal-chip{display:flex;gap:8px;align-items:center;padding:7px 10px;border:1px solid #2a4658;border-radius:3px;background:#0b2537;color:#eaf5fa;cursor:pointer;font-family:inherit;font-size:11px;transition:border-color .15s,background .15s}
+.flow-goal-chip:hover,.flow-goal-chip:focus-visible{outline:2px solid #a7d1e5;outline-offset:1px;background:#17374a}
+.flow-goal-chip strong{font-weight:850;font-variant-numeric:tabular-nums;color:var(--flow-home)}
+.flow-goal-chip.away strong{color:var(--flow-away)}
+.flow-goal-chip span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:175px}
+.flow-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-bottom:1px solid #294456}
+.flow-stat{padding:18px 20px 17px;min-width:0}
+.flow-stat+ .flow-stat{border-left:1px solid #294456}
+.flow-stat-title{font-size:11px;color:#aac4d2;font-weight:750}
+.flow-stat-numbers{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:7px 0 13px;line-height:1}
+.flow-stat-numbers strong{font-size:24px;font-weight:830;font-variant-numeric:tabular-nums;letter-spacing:-.04em;color:var(--flow-home)}
+.flow-stat-numbers strong:last-child{color:var(--flow-away)}
+.flow-stat-track{height:3px;width:100%;display:flex;gap:2px;background:#244054}
+.flow-stat-track i{height:100%;display:block}
+.flow-stat-track i.home{background:var(--flow-home)}
+.flow-stat-track i.away{background:var(--flow-away)}
+.flow-source{margin:12px 1px 0;color:#8caabb;font-size:10px;line-height:1.5}
+@media(max-width:760px){
+ .match-flow{padding:16px 12px 13px}
+ .flow-intro{padding-bottom:12px;font-size:9px}
+ .flow-scoreboard{gap:8px;padding:18px 0}
+ .flow-team{gap:6px}
+ .flow-team i{display:none}
+ .flow-team :global(.wc-flag){width:26px;height:20px}
+ .flow-score{gap:8px}
+ .flow-chart-hint{display:none}
+ .flow-inspection{grid-template-columns:1fr 1fr}
+ .flow-inspection-minute{grid-column:1/-1;flex-direction:row;justify-content:flex-start;align-items:center;padding:9px 12px!important;gap:14px;border-bottom:1px solid #355267}
+ .flow-inspection-minute strong{font-size:22px}
+ .flow-inspection>div:nth-child(2){border-left:none}
+ .flow-inspection>div{padding:12px}
+ .flow-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .flow-stat:nth-child(3){border-left:0;border-top:1px solid #294456}
+ .flow-stat:nth-child(4){border-top:1px solid #294456}
+ .flow-stat{padding:13px}
+}
+@media(max-width:440px){
+ .flow-team{flex-direction:column;align-items:flex-start}
+ .flow-team-away{flex-direction:column-reverse;align-items:flex-end}
+ .flow-team strong{font-size:13px}
+ .flow-score{font-size:35px}
+ .flow-chart-caption{font-size:9px}
+ .flow-inspection-top{align-items:flex-start;flex-direction:column;gap:4px}
+ .flow-inspection-top strong{font-size:20px}
+ .flow-goals{gap:10px}
+ .flow-goals-list{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:thin}
+ .flow-goal-chip{flex:none}
+ .flow-stat-numbers strong{font-size:21px}
+}
+@media(prefers-reduced-motion:reduce){.flow-goal-chip{transition:none}}
+</style>
