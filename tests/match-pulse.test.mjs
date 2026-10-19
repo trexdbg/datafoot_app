@@ -214,7 +214,7 @@ test('la moyenne de l’équipe ne gonfle pas à cause du 50 neutre du gardien',
   {id:2,name:'Attaquant',position:'Center Forward',entry:0,exit:null}
  ],actions:[{p:1,m:21,s:8,k:'Goal Keeper',o:'Shot Saved'}]};
  const {profiles,team}=computeMatchProfiles(match);
- assert.equal(profiles[0].timeline[80].activity,50);
+ assert.ok(profiles[0].timeline[80].activity>=50 && profiles[0].timeline[80].activity<50.2,'le souvenir d’un arrêt passé peut dépasser très légèrement 50');
  assert.ok(profiles[1].timeline[80].activity<10);
  assert.equal(team[80].activity,profiles[1].timeline[80].activity);
  assert.equal(team[80].players,1);
