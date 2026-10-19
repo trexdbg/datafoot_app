@@ -50,11 +50,10 @@ test('player dropdown, graph modes, minute slider and actions respond to clicks'
  const modes=['activity','impact'].map(mode=>Object.assign(new Element('button'),{dataset:{mode}}));
  const filters=['all','assist','other'].map(filter=>Object.assign(new Element('button'),{dataset:{filter}}));
  const steps=[-1,1].map(step=>Object.assign(new Element('button'),{dataset:{step:String(step)}}));
- const lines=Array.from({length:3},()=>new Element('path'));
+ const thermalLine=node('wc-activity-line'),impactLine=node('wc-impact-line');
  const document={
   getElementById:node,
   querySelectorAll(selector){
-   if(selector.includes('.wc-band-line'))return lines;
    if(selector==='[data-mode]')return modes;
    if(selector==='[data-filter]')return filters;
    if(selector==='[data-step]')return steps;
@@ -79,28 +78,35 @@ test('player dropdown, graph modes, minute slider and actions respond to clicks'
  const location={href:'https://example.test/datafoot_app/mondial-2022/matchs/1/profil/?joueur=101',search:'?joueur=101'};
  const history={replaceState(_state,_title,url){location.href=String(url);location.search=new URL(String(url)).search;}};
  assert.doesNotThrow(()=>new vm.Script(script).runInNewContext({
-  document,location,history,URL,URLSearchParams,players,duration:90,defaultId:101,basePath:'/datafoot_app'
+  document,location,history,URL,URLSearchParams,players,duration:90,defaultId:101,basePath:'/datafoot_app',thermalStops:[{at:0,color:'#F8FCFF'},{at:20,color:'#FFF4BA'},{at:40,color:'#FFD451'},{at:60,color:'#FF9B3D'},{at:75,color:'#FF514F'},{at:90,color:'#BF4DFF'},{at:100,color:'#7739F9'}]
  },{timeout:4000}));
  assert.equal(node('wc-current-name').textContent,'Premier Joueur');
  assert.ok(node('wc-above-share').innerHTML.includes('44'),'regularity is shown for initial player');
  assert.equal(node('wc-presence-ribbon').children.length,91);
  assert.equal(node('wc-sustained-area').attributes.display,'inline','glowing activity area must be visible');
- const priorPath=lines[0].attributes.d;
+ const priorPath=thermalLine.attributes.d;
+ assert.equal(thermalLine.attributes.display,'inline');
+ assert.equal(impactLine.attributes.display,'none');
  const dropdown=node('wc-select-player');
  dropdown.value='202';dropdown.emit('change');
  assert.equal(node('wc-current-name').textContent,'Deuxième Joueur');
  assert.ok(node('wc-above-share').innerHTML.includes('73'),'regularity updates on player selection');
  assert.equal(node('wc-longest-streak').textContent,'15′','longest streak must update');
  assert.ok(node('wc-peak').innerHTML.includes('94'));
- assert.notEqual(lines[0].attributes.d,priorPath);
+ assert.notEqual(thermalLine.attributes.d,priorPath);
+ assert.equal(node('wc-presence-ribbon').children[75].style.backgroundColor,'#A65AFE','intensity values determine ribbon colors');
  assert.equal(new URL(location.href).searchParams.get('joueur'),'202');
  assert.ok(node('wc-minute-actions').children.some(chip=>String(chip.textContent).includes('PASSE DÉCISIVE')));
  modes[1].emit('click');
  assert.match(node('wc-mode-title').textContent,/Impact/,'changing mode updates the title');
+ assert.equal(thermalLine.attributes.display,'none','thermal activity line is hidden in Impact mode');
+ assert.equal(impactLine.attributes.display,'inline','Impact has a distinct single-color line');
  assert.equal(node('wc-sustained-area').attributes.display,'none','activity-only 50 reference must not imply impact baseline');
  assert.equal(node('wc-rhythm-reference').attributes.display,'none');
  modes[0].emit('click');
  assert.equal(node('wc-sustained-area').attributes.display,'inline','activity highlight restores correctly');
+ assert.equal(thermalLine.attributes.display,'inline','activity gradient comes back');
+ assert.equal(impactLine.attributes.display,'none');
  const slider=node('wc-minute-slider');
  slider.value='62';slider.emit('input');
  assert.equal(node('wc-readout').textContent,'62′');
