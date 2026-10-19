@@ -242,7 +242,7 @@ export function bootPassWars(){
     set('pw-coverage',new Set(filtered.map(e=>e.match_id)).size+' MATCHS · '+players.length+' PARTENAIRES (96+ PASSES)');
     $('pw-play').disabled=events.length===0;
     $('pw-battle').disabled=events.length===0;
-    set('pw-dates',(filtered[0]?.date||'—')+' → '+(filtered.at(-1)?.date||'—')+' · '+format(filtered.length)+' PASSES SOURCÉES');
+    set('pw-dates',monthYearLabel(monthOrdinal(filtered[0]?.date))+' → '+monthYearLabel(monthOrdinal(filtered.at(-1)?.date))+' · '+format(filtered.length)+' PASSES SOURCÉES');
     set('pw-message',players.length===0
       ? 'Aucun partenaire avec plus de 95 passes échangées sur cette sélection. Change de saison ou élargis les filtres.'
       : 'StatsBomb Open Data : '+meta.scope.matches_count+' matchs couverts. '+meta.scope.coverage_note+
