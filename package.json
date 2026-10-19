@@ -10,6 +10,7 @@
     "test:worldcup": "node --test tests/worldcup-ingestion.test.mjs",
     "test:browser": "node --test tests/browser-inline-smoke.test.mjs",
     "test:presence": "node --test tests/pulse-presence.test.mjs",
+    "test:temperature": "node --test tests/pulse-temperature.test.mjs",
     "data:worldcup": "node scripts/build-worldcup-2022.mjs",
     "preview": "astro preview",
     "check": "astro check"
