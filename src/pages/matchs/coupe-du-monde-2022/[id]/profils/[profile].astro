@@ -111,7 +111,7 @@ const urlRoot=base+'/matchs/coupe-du-monde-2022/'+game.id+'/profils/';
      {xTicks.map(t=><line class="md-gridline vertical" x1={x(t)} x2={x(t)} y1={top} y2={bottom}/>)}
      <text class="md-svg-label" x={left} y="27">PULSE · INDICE /100</text>
      {game.duration>90&&<g><line x1={x(90)} x2={x(90)} y1={top} y2={bottom} stroke="#b5d5e6" stroke-dasharray="5 7" opacity=".55"/><text x={x(90)+10} y="65" class="md-extension">TEMPS ADDITIONNEL / PROLONGATIONS</text></g>}
-     {(['activity','impact'] as const).map(metric=><g class="md-series" data-series={metric} hidden={metric!=='activity'}>
+     {(['activity','impact'] as const).map(metric=><g class="md-series" data-series={metric} display={metric==='activity'?'inline':'none'}>
       {tracks[metric].map(path=><g><path d={path.area} fill={metric==='activity'?'#63ccff':'#ffd07d'} fill-opacity=".13"/><path d={path.line} fill="none" stroke={metric==='activity'?'#70dcff':'#ffc578'} stroke-width="4.5" stroke-linejoin="round" stroke-linecap="round" class="md-main-line"/></g>)}
       {goals.map(minute=>timeline[minute]?.[metric]!=null?<g><circle cx={x(minute)} cy={y(timeline[minute][metric]!)} r="7" fill="#ff6996" stroke="#fff3f8" stroke-width="2.6"/><title>But à la {minute}′ · repère de l’action</title></g>:null)}
      </g>)}
@@ -200,7 +200,7 @@ const urlRoot=base+'/matchs/coupe-du-monde-2022/'+game.id+'/profils/';
  }
  function setMode(next){
   mode=next;
-  svg.querySelectorAll('[data-series]').forEach(el=>{el.hidden=el.dataset.series!==next;});
+  svg.querySelectorAll('[data-series]').forEach(el=>{el.setAttribute('display',el.dataset.series===next?'inline':'none');});
   document.querySelectorAll('[data-mode]').forEach(button=>{
    const active=button.dataset.mode===next;
    button.classList.toggle('active',active);button.setAttribute('aria-pressed',String(active));
