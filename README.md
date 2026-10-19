@@ -58,13 +58,22 @@ Le build est vérifié par \`.github/workflows/match-profile-check.yml\`
 sur les PR concernées. Le lien est présent sur l'accueil et dans la navigation.
 
 
-## Explorateur des matchs — France 2022
+## Explorateur des matchs — DataFoot Pulse V3 / France 2022
 
-- `/equipes/france/` : les 7 matchs de la France à la Coupe du monde 2022, accessibles par recherche d'adversaire ou de date ; chaque carte compare la moyenne d'équipe et Mbappé sur une **échelle fixe**.
-- `/joueurs/mbappe/` et `/joueurs/<id>/` : tous les matchs **couverts par ce jeu de données** pour chacun des 24 joueurs français, avec courbes comparables.
-- `/matchs/coupe-du-monde-2022/<id>/` : moyenne collective de France, comparaison avec Mbappé et courbes individuelles de tous les participants.
-- Source intégrée : `src/data/matches/france-world-cup-2022.json` (actions des joueurs de France sur les 7 matchs de StatsBomb Open Data). Un score débute à 50 à l'entrée sur le terrain, perd 1 par minute, gagne 5 par passe ou dribble réussi, 45 par but et ne descend pas sous 0. L'équipe représente la moyenne des joueurs présents minute par minute. Interpolation/lissage **visuel uniquement**, score et provenance inchangés.
-- Les données de carrière complète de Mbappé ne figurent pas dans StatsBomb Open Data : **ne pas présenter cette série de 7 rencontres comme l'intégralité de sa carrière**.
+- `/equipes/france/` : sept profils collectifs autonomes, un par match. Chaque vue du collectif représente la moyenne des joueurs présents, **sans superposition** avec Mbappé.
+- `/joueurs/mbappe/` et `/joueurs/<id>/` : courbes d'activité individuelles pour les matchs couverts, **sans moyenne de la France superposée**.
+- `/matchs/coupe-du-monde-2022/<id>/` : tous les joueurs de la rencontre, avec courbes compactes et accès aux profils détaillés.
+- `/matchs/coupe-du-monde-2022/<id>/profils/<player-id>/` : profil individuel détaillé avec bascule *Activité / Impact*, marqueurs sous l'axe X, accès direct aux pics / buts, lecture à la minute et journal filtrable. `/profils/france/` expose une vue collective autonome.
+
+### Méthode (éditoriale, explicable)
+
+Pulse remplace le cumul fixe « 50 points initiaux, -1/min, +5/passe, +45/but » **dans l'explorateur**. L'ancien prototype historique `/matchs/finale-2022/mbappe/` reste archivé en version V2.
+
+Chaque action apporte deux poids définis par `pulseWeight` dans `src/lib/match-activity.mjs` : *activité* (présence dans le jeu) et *impact indicatif* (importance de l'action selon son type et son issue). Les deux indices sont calculés séparément avec une mémoire courte de **3 minutes** (65 %) et une longue de **10 minutes** (35 %), puis transformés par saturation exponentielle dans une échelle stable **0–100**. Les secondes des actions sont prises en compte, aucune action future n'influence une minute passée. Les périodes hors du terrain ne sont pas représentées.
+
+L'impact **n'est pas** un xT, un VAEP ou une probabilité de but : le JSON compact de cette version ne contient pas la position/contextualisation spatiale indispensable à un tel modèle. Les poids sont des hypothèses éditoriales à valider. Le but apparaît comme marqueur ponctuel et n'ajoute pas automatiquement +45 à l'activité.
+
+Les profils ne couvrent actuellement que les **7 matchs de la France au Mondial 2022**, pas la carrière de Mbappé. Données d'événements : StatsBomb Open Data / Hudl, tirs au but de séance finale exclus.
 
 ## Développement local
 
