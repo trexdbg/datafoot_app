@@ -21,7 +21,6 @@ export const games:EnrichedMatch[]=Object.values(files).map(f=>{
  return {...game,...computeMatchProfiles(game)} as EnrichedMatch;
 }).sort((a,b)=>a.date.localeCompare(b.date)||a.id-b.id);
 export const fixtures:Fixture[]=fixturesRaw.matches;
-export const countries=[...new Set(fixtures.flatMap(m=>[m.home,m.away]))].sort((a,b)=>labelCountry(a).localeCompare(labelCountry(b),'fr'));
 export const playerIndex=playersRaw as PlayerIndex[];
 export const gameMap=new Map(games.map(g=>[g.id,g]));
 export const playerMap=new Map(playerIndex.map(p=>[p.id,p]));
@@ -47,6 +46,7 @@ const stageLabels:Record<string,string>={
  'Semi-finals':'Demi-finale','3rd Place Final':'Petite finale',Final:'Finale'
 };
 export const labelCountry=(name:string)=>translations[name]||name;
+export const countries=[...new Set(fixtures.flatMap(m=>[m.home,m.away]))].sort((a,b)=>labelCountry(a).localeCompare(labelCountry(b),'fr'));
 export const flag=(name:string)=>flags[name]||'⚽';
 export const stageLabel=(stage:string)=>stageLabels[stage]||stage;
 export const slug=(name:string)=>name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
