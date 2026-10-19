@@ -7,7 +7,7 @@ const base=import.meta.env.BASE_URL.replace(/\/$/,'');
  <main class="pulse-guide shell">
   <nav class="pulse-guide-breadcrumb"><a href={base+'/mondial-2022/'}>MONDIAL 2022</a> <span>/</span> BARÈME PULSE</nav>
   <header class="pulse-guide-hero">
-   <div><p class="pulse-guide-kicker">DATAFOOT PULSE · GRILLE DES ACTIONS</p><h1>Une action.<br/><em>Un poids selon le poste.</em></h1><p>Un défenseur qui intercepte ou gagne un tacle compte autant qu’un attaquant qui réussit un dribble. Une passe décisive vaut exactement un but, quel que soit le poste.</p></div>
+   <div><p class="pulse-guide-kicker">DATAFOOT PULSE · GRILLE DES ACTIONS</p><h1>Une action.<br/><em>Un poids selon le poste.</em></h1><p>Un défenseur qui intercepte ou gagne un tacle compte autant qu’un attaquant qui réussit un dribble. Un gardien garde un niveau neutre sans sollicitation : ses interventions créent les vrais pics. Une passe décisive vaut exactement un but.</p></div>
    <div class="pulse-guide-equation"><span>ÉQUIVALENCES</span><strong>28 <small>points d’impulsion</small></strong><p>But = passe décisive</p><strong>5 <small>points d’impulsion</small></strong><p>Interception / tacle du défenseur = dribble de l’attaquant</p></div>
   </header>
   <section class="pulse-guide-section" aria-labelledby="pulse-table-title">
@@ -24,9 +24,9 @@ const base=import.meta.env.BASE_URL.replace(/\/$/,'');
    <p class="pulse-guide-source">Source des actions : StatsBomb Open Data / Hudl. Les coefficients sont des choix éditoriaux DataFoot, et non une mesure de performance validée scientifiquement.</p>
   </section>
   <section class="pulse-guide-explain" aria-label="Comment lire le Pulse">
-   <article><span>01 / ACTIVITÉ</span><h2>Départ à 50 sur 100</h2><p>À son entrée, chaque joueur commence à 50. Les impulsions des actions alimentent la courbe ; les périodes calmes la font redescendre. La courbe est bornée à 0–100 et conserve des mémoires de 3 et 10 minutes.</p></article>
+   <article><span>01 / ACTIVITÉ</span><h2>Départ à 50 sur 100</h2><p>À son entrée, chaque joueur commence à 50. Pour les joueurs de champ, les périodes sans action font décroître cet indice. Pour les gardiens, 50 reste le niveau neutre : les pics reviennent progressivement à 50, sans pénalité liée à l’attente.</p></article>
    <article><span>02 / ÉCHECS</span><h2>Des malus légers</h2><p>Une passe ou un dribble manqué reste une action, mais subit une petite résistance : −0,15 pour une passe ratée, −0,65 pour un dribble raté et −0,25 pour un duel perdu. Aucun point n’est soustrait directement à la note finale.</p></article>
-   <article><span>03 / POSITION</span><h2>Le poste réellement déclaré</h2><p>Le modèle utilise la position présente dans les compositions StatsBomb : attaquant, milieu, défenseur ou gardien. Si elle manque, le barème du milieu est appliqué par défaut, sans supposer un poste. Les anciens duels sans sous-type restent des « duels gagnés ».</p></article>
+   <article><span>03 / GARDIENS</span><h2>La tranquillité n’est pas une faute</h2><p>Arrêts, penalties arrêtés, ballons captés, dégagements aux poings et sorties disposent de leur propre barème. Un tir subi ou un but encaissé ne crée ni bonus ni malus automatique : ils ne prouvent pas, seuls, une erreur du gardien. Les moyennes collectives utilisent les joueurs de champ.</p></article>
    <article><span>04 / IMPACT</span><h2>Deux lectures distinctes</h2><p>L’indice d’activité montre le rythme du joueur. L’impact indicatif privilégie les gestes déterminants, et utilise le xG ou la progression des passes lorsque disponibles. Ce n’est ni une note générale, ni un indice xT ou VAEP.</p></article>
   </section>
   <div class="pulse-guide-back"><a href={base+'/mondial-2022/'}>Explorer les matchs du Mondial 2022 ↗</a><a href={base+'/methodologie/'}>Méthodologie et sources →</a></div>
