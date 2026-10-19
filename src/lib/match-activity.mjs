@@ -41,6 +41,7 @@ export function computeActivity(events, duration = 125, {entry = 0, exit = durat
 // Ces poids sont des choix éditoriaux, PAS un modèle xT/VAEP appris.
 export const PULSE_RULES = Object.freeze({
   shortHalfLife: 3, longHalfLife: 10, shortMix: 0.65,
+  entryIndex: 50, entryHalfLife: 25,
   activityScale: 14, impactScale: 8
 });
 
@@ -146,10 +147,17 @@ export function computePulse(events, duration = 125, {entry = 0, exit = duration
       impactGain+=weight.impact;
     }
     const mix=rules.shortMix;
-    const activityEnergy=Math.max(0,mix*(activityFast-penaltyFast)+(1-mix)*(activitySlow-penaltySlow));
+    const activityEnergy=mix*(activityFast-penaltyFast)+(1-mix)*(activitySlow-penaltySlow);
+    // Chaque joueur ENTRE à 50/100. Sans actions ce capital décroît naturellement.
+    // Les impulsions occupent l'espace restant vers 100 ; un excès de malus
+    // peut diminuer légèrement le score même en absence de gestes réussis.
+    const initialEnergy=rules.entryIndex*Math.pow(2,-Math.max(0,minute-entry)/rules.entryHalfLife);
+    const activityIndex=activityEnergy>=0
+      ?initialEnergy+(100-initialEnergy)*(1-Math.exp(-activityEnergy/rules.activityScale))
+      :initialEnergy*Math.exp(activityEnergy/rules.activityScale);
     return {
       minute,
-      activity:pulseIndex(activityEnergy,rules.activityScale),
+      activity:Number(Math.max(0,Math.min(100,activityIndex)).toFixed(1)),
       impact:pulseIndex(mix*impactFast+(1-mix)*impactSlow,rules.impactScale),
       gain:Number(gain.toFixed(2)),penaltyGain:Number(penaltyGain.toFixed(2)),impactGain:Number(impactGain.toFixed(2)),
       actions:items.length,events:items
