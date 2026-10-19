@@ -28,7 +28,12 @@ const base=import.meta.env.BASE_URL.replace(/\/$/,'');
         <label>SAISON
           <select id="me-season"><option value="">TOUTES</option></select>
         </label>
-        <span id="me-sample">ÉCHANTILLON EN CHARGEMENT</span>
+        <span id="me-sample">COUVERTURE EN CHARGEMENT</span>
+        <div class="me-pages" id="me-pages" hidden aria-label="Parcourir les adversaires">
+          <button id="me-prev" type="button" aria-label="Page précédente">←</button>
+          <span id="me-page-label" aria-live="polite">1 / 1</span>
+          <button id="me-next" type="button" aria-label="Page suivante">→</button>
+        </div>
       </div>
       <div class="me-columns">
         <div class="me-main">
@@ -45,9 +50,10 @@ const base=import.meta.env.BASE_URL.replace(/\/$/,'');
           <div class="me-legend">UNE COULEUR PAR ADVERSAIRE <span>•</span> IMPACTS DE PEINTURE <span>•</span> AUCUN TRAIT FIXE</div>
         </div>
         <aside class="me-side">
-          <div class="me-sidehead">SCOREBOARD <span>TOP 20</span></div>
+          <div class="me-sidehead">SCOREBOARD <span>20 PAR PAGE</span></div>
           <p>ÉVÉNEMENTS DE L’ÉCHANTILLON AFFICHÉS</p><strong class="me-total" id="me-total">0</strong>
-          <p>BUTS DANS LES MATCHS COUVERTS</p><strong class="me-goals" id="me-goals">0</strong>
+          <p>BUTS DANS LES MATCHS COUVERTS (PAGE VISIBLE)</p><strong class="me-goals" id="me-goals">0</strong>
+          <div class="me-global-totals" id="me-global-totals">TOTAL EN CHARGEMENT…</div>
           <div class="me-coverage" id="me-coverage">CHARGEMENT DES DONNÉES…</div>
           <div class="me-focus" id="me-focus">TOUS LES ADVERSAIRES</div>
           <div class="me-rank-head">CLASSEMENT DES ADVERSAIRES <span>ÉVÉNEMENTS</span></div>
