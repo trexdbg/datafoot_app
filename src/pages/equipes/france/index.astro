@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import ActivityMiniChart from '../../../components/ActivityMiniChart.astro';
-import {games,commonScale,getProfile,mbappeId,matchHref,playerHref,formattedDate,matchTitle,opposingTeam,teamGoals} from '../../../lib/explorer-data.mjs';
+import {games,commonScale,getProfile,mbappeId,matchHref,playerHref,formattedDate,matchTitle,opposingTeam,teamGoals,matchProfileHref} from '../../../lib/explorer-data.mjs';
 import '../../../styles/match-explorer.css';
 const base=import.meta.env.BASE_URL.replace(/\/$/,'');
 const sorted=[...games].reverse();
@@ -23,7 +23,7 @@ const sorted=[...games].reverse();
       <a class="ax-match-title" href={matchHref(base,game)}>{matchTitle(game)} <span aria-hidden="true">↗</span></a>
       <p class="ax-card-meta">Profil collectif France + Mbappé · {game.duration}′</p>
       <ActivityMiniChart duration={game.duration} maxScale={commonScale} series={[{label:'France',timeline:game.team,color:'#5ac9ff'},{label:'Mbappé',timeline:getProfile(game,mbappeId)?.timeline??[],color:'#fc8ab9'}]} goals={teamGoals(game)} caption={'Comparaison de la France et Mbappé contre '+opposingTeam(game)} />
-      <div class="ax-card-footer"><a href={matchHref(base,game)}>Voir l’équipe et les joueurs <span>→</span></a><a href={playerHref(base,mbappeId)+'#match-'+game.id}>Comparer Mbappé</a></div>
+      <div class="ax-card-footer"><a class="ax-detail-link" href={matchProfileHref(base,game)}>Points et actions France <span>↗</span></a><a href={matchProfileHref(base,game,mbappeId)}>Détail Mbappé ↗</a><a href={matchHref(base,game)}>Tous les joueurs →</a></div>
      </article>)}
    </div>
    <p class="ax-no-results" id="ax-empty" hidden>Aucun match correspondant à cette recherche.</p>
