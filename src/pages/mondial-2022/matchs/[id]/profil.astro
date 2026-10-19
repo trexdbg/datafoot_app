@@ -21,7 +21,7 @@ const clientPlayers=profiles.map(p=>({
  id:p.player.id,name:p.player.name,team:p.player.team,entry:p.player.entry,exit:p.player.exit,
  timeline:p.timeline.map(t=>({activity:t.activity,impact:t.impact,actions:t.actions,penaltyGain:t.penaltyGain})),
  events:p.actions.map(a=>({minute:a.minute,second:a.second,kind:a.kind,outcome:a.outcome,
-  l:(a as any).location??null,e:(a as any).endLocation??null,xg:(a as any).xg??null,penalty:pulsePenalty(a)}))
+  l:(a as any).location??null,e:(a as any).endLocation??null,xg:(a as any).xg??null,goalAssist:a.goalAssist===true,shotAssist:a.shotAssist===true,penalty:pulsePenalty(a)}))
 }));
 const initialMinute=firstPeak?.minute??0;
 const initialEventCount=initial.actions.filter(a=>a.minute===initialMinute).length;
@@ -84,8 +84,8 @@ const initialEventCount=initial.actions.filter(a=>a.minute===initialMinute).leng
     <strong id="wc-tooltip-title">—</strong><span id="wc-tooltip-numbers">—</span><div id="wc-tooltip-actions"></div>
    </aside>
   </div>
-  <div class="wc-profile-zones" aria-label="Seuils de l'indice Pulse"><span><i class="low"></i> Sous 25 · faible</span><span><i class="steady"></i> 25–75 · modérée</span><span><i class="high"></i> Au-dessus de 75 · forte</span><small>50/100 à l'entrée sur le terrain · les malus restent légers</small></div>
-  <div class="wc-profile-legend"><span><i class="quiet"></i>Autres événements</span><span><i class="positive"></i>Actions significatives</span><span><i class="goal"></i>Buts</span><small>Survolez ou sélectionnez les points sous l’axe X.</small></div>
+  <div class="wc-profile-zones" aria-label="Seuils de l'indice Pulse"><span><i class="low"></i> Sous 25 · discret</span><span><i class="steady"></i> 25–75 · dans le jeu</span><span><i class="high"></i> Au-dessus de 75 · temps fort</span><small>50/100 à l'entrée sur le terrain · les malus restent légers</small></div>
+  <div class="wc-profile-legend"><span><i class="quiet"></i>Autres événements</span><span><i class="positive"></i>Actions significatives</span><span><i class="goal"></i>Buts</span><span><i class="assist"></i>Passes décisives</span><small>Survolez ou sélectionnez les points sous l’axe X.</small></div>
   <div class="wc-highlights"><strong>MOMENTS CLÉS</strong><div id="wc-moments"></div></div>
   <div class="wc-minute-reader" id="wc-minute-reader">
    <div class="wc-minute-head"><div><span>MINUTE SÉLECTIONNÉE</span><output id="wc-readout">{initialMinute}′</output></div><div class="wc-readout-numbers"><span>Activité <strong id="wc-now-activity">{initial.timeline[initialMinute]?.activity?.toFixed(0)??0}</strong></span><span>Impact <strong id="wc-now-impact">{initial.timeline[initialMinute]?.impact?.toFixed(0)??0}</strong></span></div></div>
@@ -97,11 +97,11 @@ const initialEventCount=initial.actions.filter(a=>a.minute===initialMinute).leng
  <div class="wc-action-bottom">
   <section class="wc-action-log"><div class="wc-section-head"><div><p class="wc-eyebrow">UN MATCH, ACTION PAR ACTION</p><h2>Le journal.</h2><p>Filtre les événements du joueur et clique sur une action pour retrouver la minute exacte.</p></div></div>
    <div class="wc-log-filters" role="group" aria-label="Filtrer les actions">
-    <button type="button" class="active" data-filter="all" aria-pressed="true">Toutes</button><button type="button" data-filter="Pass" aria-pressed="false">Passes</button><button type="button" data-filter="Dribble" aria-pressed="false">Dribbles</button><button type="button" data-filter="Shot" aria-pressed="false">Tirs</button><button type="button" data-filter="other" aria-pressed="false">Autres</button>
+    <button type="button" class="active" data-filter="all" aria-pressed="true">Toutes</button><button type="button" data-filter="Pass" aria-pressed="false">Passes</button><button type="button" data-filter="Dribble" aria-pressed="false">Dribbles</button><button type="button" data-filter="Shot" aria-pressed="false">Tirs</button><button type="button" data-filter="assist" aria-pressed="false">Passes décisives</button><button type="button" data-filter="other" aria-pressed="false">Autres</button>
    </div>
    <div class="wc-log-rows" id="wc-log"></div>
   </section>
-  <aside class="wc-profile-note"><p class="wc-eyebrow">LE MODÈLE PULSE</p><h2>Observer le rythme, pas attribuer une note.</h2><p>Les actions créent des impulsions qui s’atténuent avec une mémoire courte de 3 minutes et une mémoire longue de 10 minutes. L’axe 0–100 est fixe pour comparer les matchs, sans ajouter une courbe d’équipe au profil individuel.</p><p><strong>Impact indicatif :</strong> indicateur éditorial tenant compte du type d’action, du xG des tirs et de la progression des passes quand ces données sont disponibles. Ce n’est pas un xT ou un VAEP validé.</p><a href={playerUrl(base,initial.player.id)} id="wc-other-games">↗ Tous les matchs de ce joueur</a><a href={matchUrl(base,game.id)}>← Retour aux deux équipes</a></aside>
+  <aside class="wc-profile-note"><p class="wc-eyebrow">LE MODÈLE PULSE</p><h2>Observer le rythme, pas attribuer une note.</h2><p>Les actions créent des impulsions qui s’atténuent avec une mémoire courte de 3 minutes et une mémoire longue de 10 minutes. But et passe décisive déclenchent une forte impulsion : c'est un pic d'activité, pas une note de performance. L’axe 0–100 est fixe pour comparer les matchs, sans ajouter une courbe d’équipe au profil individuel.</p><p><strong>Impact indicatif :</strong> indicateur éditorial tenant compte du type d’action, du xG des tirs et de la progression des passes quand ces données sont disponibles. Ce n’est pas un xT ou un VAEP validé.</p><a href={playerUrl(base,initial.player.id)} id="wc-other-games">↗ Tous les matchs de ce joueur</a><a href={matchUrl(base,game.id)}>← Retour aux deux équipes</a></aside>
  </div>
  <p class="wc-footnote">Source de l’ensemble des événements : <a href={game.source} target="_blank" rel="noopener noreferrer">StatsBomb Open Data / Hudl ↗</a> · <a href={base+'/data/worldcup-2022/matches/'+game.id+'.json'}>Télécharger les actions du match (JSON) ↗</a>. Pas de données inventées ni de suivi GPS. La séance de tirs au but ne fait pas partie de la courbe ; temps additionnel et prolongations sont conservés.</p>
 </div></div>
@@ -117,11 +117,11 @@ const initialEventCount=initial.actions.filter(a=>a.minute===initialMinute).leng
  if(!svg||!select||lines.length!==3||!area||!marks||!goals||!slider||!count||!chips||!readout||!log||!minutes||!tooltip||!tipTitle||!tipNumbers||!tipActions)return;
  const ns='http://www.w3.org/2000/svg',fromX=m=>58+m/duration*1013,fromY=v=>317-v/100*287;
  let player,mode='activity',minute=0,filter='all';
- const label=a=>a.kind==='Pass'?(a.outcome==='Complete'?'Passe réussie':'Passe non réussie'):
+ const label=a=>a.kind==='Pass'?(a.goalAssist?'PASSE DÉCISIVE':a.shotAssist?'Passe créant un tir':a.outcome==='Complete'?'Passe réussie':'Passe non réussie'):
  a.kind==='Dribble'?(a.outcome==='Complete'?'Dribble réussi':'Dribble non réussi'):
  a.kind==='Shot'?((a.outcome==='Goal'?'BUT':'Tir · '+a.outcome)+(Number.isFinite(a.xg)?' · xG '+Number(a.xg).toFixed(2):'')):
  ({Carry:'Conduite de balle','Ball Receipt*':'Réception','Ball Recovery':'Récupération',Pressure:'Pressing',Duel:'Duel',Interception:'Interception',Miscontrol:'Contrôle manqué','Foul Committed':'Faute commise'})[a.kind]||a.kind;
- const kind=a=>a.kind==='Shot'&&a.outcome==='Goal'?'goal':['Shot','Dribble','Pass','Ball Recovery','Interception'].includes(a.kind)?'positive':'quiet';
+ const kind=a=>a.kind==='Shot'&&a.outcome==='Goal'?'goal':a.goalAssist?'assist':a.penalty>0?'negative':['Shot','Dribble','Pass','Ball Recovery','Interception'].includes(a.kind)?'positive':'quiet';
  const svgEl=(tag,attributes,title)=>{const el=document.createElementNS(ns,tag);for(const [key,value] of Object.entries(attributes))el.setAttribute(key,String(value));if(title){const t=document.createElementNS(ns,'title');t.textContent=title;el.append(t);}return el;};
  const points=()=>player.timeline;
  function monotone(points){
@@ -147,15 +147,15 @@ const initialEventCount=initial.actions.filter(a=>a.minute===initialMinute).leng
    const position=stacks.get(a.minute)||0;stacks.set(a.minute,position+1);
    if(position>=10)continue;
    const category=kind(a);
-   const circle=svgEl('circle',{cx:fromX(a.minute),cy:430-position*5.8,r:category==='goal'?4.8:2.7,fill:category==='goal'?'#ff719c':category==='negative'?'#a695ff':category==='positive'?'#83dfff':'#7596b0','data-minute':a.minute,tabindex:0,role:'button','aria-label':a.minute+'′ '+label(a)},a.minute+'′ '+String(a.second).padStart(2,'0')+'″ · '+label(a));
+   const circle=svgEl('circle',{cx:fromX(a.minute),cy:430-position*5.8,r:category==='goal'?4.8:2.7,fill:category==='goal'?'#ff719c':category==='assist'?'#FFE0A3':category==='negative'?'#a695ff':category==='positive'?'#83dfff':'#7596b0','data-minute':a.minute,tabindex:0,role:'button','aria-label':a.minute+'′ '+label(a)},a.minute+'′ '+String(a.second).padStart(2,'0')+'″ · '+label(a));
    const jump=()=>{setMinute(a.minute);document.getElementById('wc-minute-reader')?.scrollIntoView({behavior:'smooth',block:'center'});};
    circle.addEventListener('click',jump);circle.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();jump();}});
    marks.append(circle);
   }
-  for(const a of player.events.filter(a=>a.kind==='Shot'&&a.outcome==='Goal')){
+  for(const a of player.events.filter(a=>(a.kind==='Shot'&&a.outcome==='Goal')||a.goalAssist)){
    const p=points()[a.minute];
    if(!p||p[mode]==null)continue;
-   goals.append(svgEl('circle',{cx:fromX(a.minute),cy:fromY(p[mode]),r:6.5,fill:'#ff699c',stroke:'#ffedf3','stroke-width':2},'BUT · '+a.minute+'′'));
+   goals.append(svgEl('circle',{cx:fromX(a.minute),cy:fromY(p[mode]),r:a.goalAssist?5.5:6.5,fill:a.goalAssist?'#FFE0A3':'#ff699c',stroke:'#fff','stroke-width':2},(a.goalAssist?'PASSE DÉCISIVE':'BUT')+' · '+a.minute+'′'));
   }
  }
  function setMinute(value){
@@ -165,11 +165,11 @@ const initialEventCount=initial.actions.filter(a=>a.minute===initialMinute).leng
   if(p[mode]==null)dot.setAttribute('visibility','hidden');
   else{dot.setAttribute('visibility','visible');dot.setAttribute('cx',cx);dot.setAttribute('cy',fromY(p[mode]));dot.setAttribute('stroke',mode==='activity'?'#79e1ff':'#ffc77e');}
   readout.textContent=minute+'′';currA.textContent=p.activity==null?'—':Math.round(p.activity)+'/100';currI.textContent=p.impact==null?'—':Math.round(p.impact)+'/100';
-  const value=p[mode],color=value==null?'#73ddff':value<25?'#a695ff':value>75?'#ffb368':'#73ddff';
+  const value=p[mode],color=value==null?'#52D3EF':value<25?'#8A9DB8':value>75?'#B8F27C':'#52D3EF';
   dot.setAttribute('stroke',color);
   const events=player.events.filter(a=>a.minute===minute);count.textContent=events.length+' action'+(events.length!==1?'s':'');
   chips.replaceChildren();
-  tipTitle.textContent=minute+'′ · '+(value==null?'Hors terrain':value<25?'Activité faible':value>75?'Forte activité':'Activité modérée');
+  tipTitle.textContent=minute+'′ · '+(value==null?'Hors terrain':value<25?'Rythme discret':value>75?'Temps fort':'Dans le jeu');
   tipNumbers.textContent='Activité '+(p.activity==null?'—':Math.round(p.activity)+'/100')+' · Impact '+(p.impact==null?'—':Math.round(p.impact)+'/100')+' · '+events.length+' action'+(events.length===1?'':'s')+(p.penaltyGain>0?' · malus léger −'+p.penaltyGain.toFixed(2):'');
   tipActions.replaceChildren();
   for(const action of events.slice(0,5)){const badge=document.createElement('span');badge.className='wc-tip-action '+kind(action);badge.textContent=String(action.second).padStart(2,'0')+'″ '+label(action)+(action.penalty>0?' · −'+action.penalty.toFixed(2):'');tipActions.append(badge);}
@@ -186,6 +186,7 @@ const initialEventCount=initial.actions.filter(a=>a.minute===initialMinute).leng
  function renderMoments(){
   const moments=[];
   for(const a of player.events.filter(a=>a.kind==='Shot'&&a.outcome==='Goal'))moments.push({minute:a.minute,label:'⚽ But · '+a.minute+'′',type:'goal'});
+  for(const a of player.events.filter(a=>a.goalAssist))moments.push({minute:a.minute,label:'✦ Passe décisive · '+a.minute+'′',type:'assist'});
   const bestShot=player.events.filter(a=>a.kind==='Shot'&&Number.isFinite(a.xg)).sort((a,b)=>b.xg-a.xg)[0];
   if(bestShot&&bestShot.xg>=0.15)moments.push({minute:bestShot.minute,label:'🎯 Occasion xG '+bestShot.xg.toFixed(2)+' · '+bestShot.minute+'′',type:'shot'});
   for(const key of ['activity','impact']){const p=peakFor(key);if(p)moments.push({minute:p.m,label:(key==='activity'?'↗ Pic activité':'✦ Pic impact')+' · '+p.m+'′',type:key});}
@@ -194,7 +195,7 @@ const initialEventCount=initial.actions.filter(a=>a.minute===initialMinute).leng
  }
  function renderLog(){
   log.replaceChildren();
-  const relevant=player.events.filter(a=>filter==='all'||(filter==='other'?!['Pass','Shot','Dribble'].includes(a.kind):a.kind===filter));
+  const relevant=player.events.filter(a=>filter==='all'||(filter==='assist'?a.goalAssist:filter==='other'?!['Pass','Shot','Dribble'].includes(a.kind):a.kind===filter));
   for(const a of relevant){
    const button=document.createElement('button');button.type='button';button.className='wc-event-row';
    const time=document.createElement('span');time.textContent=a.minute+'′ '+String(a.second).padStart(2,'0')+'″';
