@@ -111,3 +111,25 @@
 .wc-highlights button.assist{background:#493f2d;border-color:#c6a56b;color:#ffe1a5}
 .wc-tip-action.assist,.wc-event-chip.assist{background:#423a2b;color:#ffe1a5;border-color:#b9975e}
 .wc-profile-tooltip{border-radius:9px;box-shadow:0 10px 30px #0008}
+
+/* Le détail des actions est maintenant toujours sous la grande courbe :
+   jamais de popover qui recouvre les pics ou masque les événements. */
+.wc-profile-tooltip{
+  position:relative!important;left:auto!important;top:auto!important;
+  transform:none!important;width:100%!important;max-height:none!important;
+  margin:0!important;box-shadow:none!important;border-radius:0!important;
+  border-width:0 0 1px 4px!important;background:#0b2a42!important;
+  padding:14px 23px!important;display:grid!important;
+  grid-template-columns:auto minmax(180px,1fr);align-items:center;gap:7px 20px;
+  overflow:visible!important;
+}
+.wc-profile-tooltip[hidden]{display:none!important}
+.wc-profile-tooltip>strong{font-size:13px;white-space:nowrap}
+.wc-profile-tooltip>span{font-size:12px;line-height:1.6}
+.wc-profile-tooltip #wc-tooltip-actions{grid-column:1/-1;gap:6px}
+.wc-profile-tooltip .wc-tip-action{font-size:11px;padding:5px 8px}
+#wc-profile-hit{touch-action:pan-y}
+@media(max-width:660px){
+  .wc-profile-tooltip{padding:11px 14px!important;grid-template-columns:1fr;gap:7px}
+  .wc-profile-tooltip #wc-tooltip-actions{grid-column:1}
+}
