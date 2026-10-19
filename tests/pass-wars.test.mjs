@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { eligiblePartners, MIN_PARTNER_PASSES, playerColor, createPlayerPalette, layoutPlayerNodes, monthOrdinal, monthYearLabel, eventCalendarPosition, eventsThroughMonth } from '../src/lib/pass-wars-engine.mjs';
+import { eligiblePartners, MIN_PARTNER_PASSES, playerColor, createPlayerPalette, layoutPlayerNodes, monthOrdinal, monthYearLabel, eventCalendarPosition, eventsThroughMonth, sampleVisualPasses, thinVisualQueue } from '../src/lib/pass-wars-engine.mjs';
 
 const make = (id, direction, name='Joueur '+id)=>({partner_id:id,partner_name:name,direction});
 
@@ -254,6 +254,41 @@ test('la lecture du calendrier progresse à intervalle régulier, même les mois
       'La date ne doit plus recouvrir un joueur');
     assert.ok(html.includes('value="4" selected>×4'));
   }
+});
+
+test('les projectiles sont échantillonnés parmi les vraies passes, sans ajouter de faux événements',()=>{
+  const original=Array.from({length:1000},(_,i)=>({
+    id:'statsbomb-'+i,partner_id:i%17,direction:i%2?'given':'received',date:'2017-08-12'
+  }));
+  const subset=sampleVisualPasses(original,0,original.length,4);
+  assert.equal(subset.length,4);
+  assert.equal(new Set(subset.map(e=>e.id)).size,4);
+  assert.ok(subset.every(e=>original.includes(e)));
+  assert.deepEqual(sampleVisualPasses(original,10,13,4),original.slice(10,13));
+  assert.deepEqual(sampleVisualPasses(original,0,0,8),[]);
+  assert.deepEqual(sampleVisualPasses(original,10,100,0),[]);
+  assert.equal(original.length,1000,'L’échantillonnage ne modifie jamais les données sources');
+  const queue=original.slice(0,900);
+  const sampled=thinVisualQueue(queue,48);
+  assert.equal(sampled.length,48);
+  assert.equal(sampled[0],queue[0]);
+  assert.equal(sampled.at(-1),queue.at(-1));
+  assert.ok(sampled.every(e=>queue.includes(e)));
+  assert.equal(new Set(sampled.map(e=>e.id)).size,48);
+  assert.deepEqual(thinVisualQueue(queue.slice(0,4),48),queue.slice(0,4));
+});
+
+test('pas de rafale de projectiles après une journée très dense ni après une pause',async()=>{
+  const {readFileSync}=await import('node:fs');
+  const engine=readFileSync(new URL('../src/lib/pass-wars-engine.mjs',import.meta.url),'utf8');
+  assert.ok(engine.includes('enqueueVisualInterval(from,cursor)'));
+  assert.ok(engine.includes('launchVisualPass(t)'));
+  assert.ok(engine.includes('visualQueue=thinVisualQueue(visualQueue,MAX_VISUAL_QUEUE)'));
+  assert.ok(engine.includes('const gap=battle?56:VISUAL_GAP_MS'));
+  assert.ok(engine.includes('nextLaunchAt=t+gap'));
+  assert.ok(engine.includes('if(t<nextLaunchAt)return'));
+  assert.ok(engine.includes('while(cursor<events.length)count(events[cursor++],false,t)'));
+  assert.ok(!engine.includes('count(events[cursor++],true,t)'));
 });
 
 test('frise chronologique : uniquement mois/année sans jour ni minute',()=>{
