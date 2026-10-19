@@ -1,0 +1,43 @@
+name: Check match weather module
+on:
+  pull_request:
+    paths:
+      - 'src/pages/matchs/**'
+      - 'src/data/matches/**'
+      - 'public/data/matches/**'
+      - 'src/styles/match-weather.css'
+      - 'src/styles/global.css'
+      - 'src/pages/index.astro'
+      - 'src/layouts/BaseLayout.astro'
+      - '.github/workflows/match-profile-check.yml'
+permissions:
+  contents: read
+jobs:
+  static-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install
+      - name: Validate data source and event timings
+        run: |
+          node --input-type=module <<'JS'
+          import assert from 'node:assert/strict';
+          import fs from 'node:fs';
+          const path = 'src/data/matches/2022-final-mbappe.json';
+          const data = JSON.parse(fs.readFileSync(path, 'utf8'));
+          const publicData = JSON.parse(fs.readFileSync('public/data/matches/2022-final-mbappe.json','utf8'));
+          assert.deepEqual(data, publicData, 'Astro copy and downloadable JSON must match');
+          assert.equal(data.match.id, 3869685);
+          assert.equal(data.player.id, 3009);
+          assert.equal(data.summary.goals, 3);
+          assert.deepEqual(data.goals.filter(g=>g.for_player).map(g=>g.minute), [80,81,118]);
+          assert.equal(data.timeline.length, 126);
+          assert.equal(Math.max(...data.timeline.map(p=>p.activity)), 100);
+          assert.equal(data.methodology.shootout_excluded, true);
+          assert.ok(data.timeline.every(p=>p.activity>=0 && p.activity<=100));
+          JS
+      - name: Astro typecheck and static build
+        run: npm run build
