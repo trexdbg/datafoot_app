@@ -316,6 +316,38 @@ test('une mini-bille par passe et aucune coupe de file : garde les événements 
     'Scrubbing explicite réinitialise correctement la file');
 });
 
+test('simulation haute densité : chacune des 10 000 passes lance une bille sans perte ni gel',async()=>{
+  const {readFileSync}=await import('node:fs');
+  const source=readFileSync(new URL('../src/lib/pass-wars-engine.mjs',import.meta.url),'utf8');
+  const start=source.indexOf('  function launchDuePasses(dt,t){');
+  const end=source.indexOf('  function seek(n,month=null){',start);
+  assert.ok(start>0&&end>start);
+  const scheduler=source.slice(start,end);
+  const runner=new Function('events','passEventSeed',`
+    const ids=[11,22,33,44],positions=new Map(ids.map((id,i)=>[id,{x:130+i*200,y:230}]));
+    const MAX_ACTIVE_BALLS=1200,PARTICLE_RADIUS=1.4;
+    const timelineFirst=24050,timelineLast=24289,speed=4,battle=false,focus=null;
+    let balls=[],cursor=events.length,releaseCursor=0,emitted=0,flightCredit=0;
+    let peak=0,t=0,steps=0;
+    ${scheduler}
+    while((releaseCursor<events.length||balls.length)&&steps<8000){
+      t+=1000/60;
+      balls=balls.filter(b=>t-b.start<b.duration);
+      launchDuePasses(1/60,t);
+      peak=Math.max(peak,balls.length);steps++;
+    }
+    return {emitted,releaseCursor,peak,done:releaseCursor===events.length&&balls.length===0};
+  `);
+  const events=Array.from({length:10000},(_,i)=>({
+    id:'real-'+i,partner_id:[11,22,33,44][i%4],index:i,direction:i%2?'given':'received'
+  }));
+  const simulated=runner(events,passEventSeed);
+  assert.equal(simulated.emitted,10000,'Chaque vraie passe doit produire une bille');
+  assert.equal(simulated.releaseCursor,10000,'Aucune passe perdue par découpage de la file');
+  assert.ok(simulated.peak<=1200,'Aucun freeze par surcharge de Canvas');
+  assert.equal(simulated.done,true,'La lecture doit finir après la dernière bille');
+});
+
 test('frise chronologique : uniquement mois/année sans jour ni minute',()=>{
   assert.equal(monthOrdinal('2004-10-24'),2004*12+9);
   assert.equal(monthOrdinal('2022-12-18'),2022*12+11);
