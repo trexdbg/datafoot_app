@@ -2,10 +2,10 @@
 import CountryFlag from '../../../components/CountryFlag.astro';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import WorldCupNav from '../../../components/WorldCupNav.astro';
-import {countries,playerIndex,labelCountry,flag,playerUrl} from '../../../lib/worldcup-data';
+import {countries,playerIndex,labelCountry,flag,playerUrl,playerName} from '../../../lib/worldcup-data';
 import '../../../styles/worldcup.css';
 const base=import.meta.env.BASE_URL.replace(/\/$/,'');
-const sorted=[...playerIndex].sort((a,b)=>a.name.localeCompare(b.name,'fr'));
+const sorted=[...playerIndex].sort((a,b)=>playerName(a).localeCompare(playerName(b),'fr'));
 ---
 <BaseLayout title="Tous les joueurs du Mondial 2022 | DataFoot Atlas" description="Retrouvez les joueurs des 32 équipes du Mondial 2022 : recherche instantanée par nom et par pays, profils individuels de chaque match." canonicalPath={base+'/mondial-2022/joueurs/'}>
 <div class="wc-root"><div class="shell wc-wrap">
@@ -19,7 +19,7 @@ const sorted=[...playerIndex].sort((a,b)=>a.name.localeCompare(b.name,'fr'));
   <span class="wc-filter-count" id="wc-player-count">{sorted.length} joueurs</span>
  </div>
  <div class="wc-people-grid">
- {sorted.map(player=><a class="wc-person" href={playerUrl(base,player.id)} data-player-name={player.name} data-player-country={player.country}><span class="wc-country-flag"><CountryFlag country={player.country} /></span><div><strong>{player.name}</strong><small>{labelCountry(player.country)} · {player.matches.length} match{player.matches.length>1?'s':''}</small></div><span>↗</span></a>)}
+ {sorted.map(player=><a class="wc-person" href={playerUrl(base,player.id)} data-player-name={player.name+' '+playerName(player)} data-player-country={player.country}><span class="wc-country-flag"><CountryFlag country={player.country} /></span><div><strong title={player.name}>{playerName(player)}</strong><small>{labelCountry(player.country)} · {player.matches.length} match{player.matches.length>1?'s':''}</small></div><span>↗</span></a>)}
  </div>
  <p class="wc-empty" id="wc-player-empty" hidden>Aucun joueur trouvé avec ces critères.</p>
  <p class="wc-footnote">Les fiches incluent les joueurs présents dans les données StatsBomb de la compétition, titulaires ou remplaçants. L'absence d’événement n'est pas assimilée à une mauvaise performance. <a href={base+'/data/worldcup-2022/players.json'}>Données des joueurs en JSON ↗</a></p>
