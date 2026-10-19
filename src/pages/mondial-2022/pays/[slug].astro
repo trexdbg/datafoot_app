@@ -3,14 +3,14 @@ import CountryFlag from '../../../components/CountryFlag.astro';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import WorldCupNav from '../../../components/WorldCupNav.astro';
 import WorldCupWave from '../../../components/WorldCupWave.astro';
-import {countries,slug,labelCountry,flag,countryMatches,countryPlayers,teamTimeline,teamGoals,matchUrl,playerUrl,stageLabel,dateLabel,against,peak} from '../../../lib/worldcup-data';
+import {countries,slug,labelCountry,flag,countryMatches,countryPlayers,playerName,teamTimeline,teamGoals,matchUrl,playerUrl,stageLabel,dateLabel,against,peak} from '../../../lib/worldcup-data';
 import '../../../styles/worldcup.css';
 export function getStaticPaths(){return countries.map(country=>({params:{slug:slug(country)},props:{country}}));}
 interface Props {country:string}
 const {country}=Astro.props;
 const base=import.meta.env.BASE_URL.replace(/\/$/,'');
 const matches=[...countryMatches(country)].sort((a,b)=>a.date.localeCompare(b.date));
-const players=countryPlayers(country).sort((a,b)=>b.matches.length-a.matches.length||a.name.localeCompare(b.name,'fr'));
+const players=countryPlayers(country).sort((a,b)=>b.matches.length-a.matches.length||playerName(a).localeCompare(playerName(b),'fr'));
 const wins=matches.filter(g=>(g.home===country?g.homeScore>g.awayScore:g.awayScore>g.homeScore)).length;
 const goals=matches.reduce((sum,g)=>sum+g.goals.filter(goal=>goal.team===country).length,0);
 ---
@@ -37,7 +37,7 @@ const goals=matches.reduce((sum,g)=>sum+g.goals.filter(goal=>goal.team===country
  </div></section>
  <section><div class="wc-section-head"><div><p class="wc-eyebrow">EFFECTIF RECENSÉ</p><h2>Les joueurs.</h2><p>Retrouve un joueur et ses matchs dans la compétition.</p></div><small>{players.length} joueurs</small></div>
  <div class="wc-people-grid">
- {players.map(player=><a class="wc-person" href={playerUrl(base,player.id)}><span class="wc-country-flag"><CountryFlag country={country} /></span><div><strong>{player.name}</strong><small>{player.matches.length} rencontre{player.matches.length>1?'s':''} · {labelCountry(country)}</small></div><span>↗</span></a>)}
+ {players.map(player=><a class="wc-person" href={playerUrl(base,player.id)}><span class="wc-country-flag"><CountryFlag country={country} /></span><div><strong title={player.name}>{playerName(player)}</strong><small>{player.matches.length} rencontre{player.matches.length>1?'s':''} · {labelCountry(country)}</small></div><span>↗</span></a>)}
  </div></section>
  <p class="wc-footnote">Couverture complète des rencontres de cette sélection au Mondial 2022. Le nombre de victoires considère seulement les scores avant tirs au but. Les profils Pulse reposent sur les événements libres <a href="https://github.com/hudl/open-data" target="_blank" rel="noopener noreferrer">StatsBomb Open Data / Hudl ↗</a>, et non des données GPS.</p>
 </div></div>
