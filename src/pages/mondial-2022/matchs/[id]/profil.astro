@@ -1,7 +1,8 @@
 ---
+import CountryFlag from '../../../../components/CountryFlag.astro';
 import BaseLayout from '../../../../layouts/BaseLayout.astro';
 import {monotonePath,pulsePenalty,PULSE_BANDS} from '../../../../lib/match-activity.mjs';
-import {games,matchUrl,countryUrl,playerUrl,labelCountry,flag,stageLabel,dateLabel,titleMatch,peak,mean} from '../../../../lib/worldcup-data';
+import {games,matchUrl,countryUrl,playerUrl,labelCountry,flag,flagSrc,stageLabel,dateLabel,titleMatch,peak,mean} from '../../../../lib/worldcup-data';
 import '../../../../styles/worldcup.css';
 import '../../../../styles/worldcup-profile.css';
 export function getStaticPaths(){return games.map(game=>({params:{id:String(game.id)},props:{matchId:game.id}}));}
@@ -18,7 +19,7 @@ const y=(score:number)=>bottom-Math.max(0,Math.min(100,score))/100*(bottom-top);
 const firstPoints=initial.timeline.filter(p=>p.activity!==null);
 const firstPath=monotonePath(firstPoints.map(p=>({x:x(p.minute),y:y(p.activity??0)})));
 const clientPlayers=profiles.map(p=>({
- id:p.player.id,name:p.player.name,team:p.player.team,entry:p.player.entry,exit:p.player.exit,
+ id:p.player.id,name:p.player.name,team:p.player.team,teamLabel:labelCountry(p.player.team),flagSrc:flagSrc(p.player.team),entry:p.player.entry,exit:p.player.exit,
  timeline:p.timeline.map(t=>({activity:t.activity,impact:t.impact,actions:t.actions,penaltyGain:t.penaltyGain})),
  events:p.actions.map(a=>({minute:a.minute,second:a.second,kind:a.kind,outcome:a.outcome,
   l:(a as any).location??null,e:(a as any).endLocation??null,xg:(a as any).xg??null,goalAssist:a.goalAssist===true,shotAssist:a.shotAssist===true,penalty:pulsePenalty(a)}))
@@ -29,11 +30,11 @@ const initialEventCount=initial.actions.filter(a=>a.minute===initialMinute).leng
 <BaseLayout title={'Explorer les actions du match '+titleMatch(game)+' | DataFoot Pulse'} description={'Chaque joueur et chaque action de '+titleMatch(game)+', une courbe à la fois, avec recherche par pays ou nom.'} canonicalPath={matchUrl(base,game.id)+'profil/'}>
 <div class="wc-root wc-profile-root"><div class="shell wc-wrap">
  <nav class="wc-crumb"><a href={base+'/mondial-2022/'}>MONDIAL 2022</a><span>/</span><a href={matchUrl(base,game.id)}>{titleMatch(game)}</a><span>/</span>ANALYSE DES JOUEURS</nav>
- <div class="wc-detail-head"><div><p class="wc-eyebrow">DATAFOOT PULSE / {stageLabel(game.stage).toUpperCase()} · {dateLabel(game.date)}</p><h1>Un joueur.<br/><em>Tout son match.</em></h1><p>Choisis n’importe quel participant, passe de l’activité à l’impact indicatif et explore toutes ses actions. Les profils ne sont jamais superposés à la courbe de son pays.</p></div><div class="wc-detail-number"><strong>{profiles.length}</strong><span>PROFILS DISPONIBLES</span></div></div>
- <div class="wc-match-board"><a href={countryUrl(base,game.home)}>{flag(game.home)} {labelCountry(game.home)}</a><strong>{game.homeScore}–{game.awayScore}</strong><a href={countryUrl(base,game.away)}>{labelCountry(game.away)} {flag(game.away)}</a></div>
+ <div class="wc-profile-topline"><span><strong>MONDIAL 2022</strong> · {stageLabel(game.stage)} · {dateLabel(game.date)}</span><span>{profiles.length} joueurs disponibles</span></div>
+ <div class="wc-match-board"><a href={countryUrl(base,game.home)}><CountryFlag country={game.home} /> {labelCountry(game.home)}</a><strong>{game.homeScore}–{game.awayScore}</strong><a href={countryUrl(base,game.away)}>{labelCountry(game.away)} <CountryFlag country={game.away} /></a></div>
  <section class="wc-inspector" aria-label="Analyse individuelle">
   <div class="wc-inspector-head">
-   <div><p class="wc-eyebrow">CHOISIR LE JOUEUR</p><h2 id="wc-current-name">{initial.player.name}</h2><p id="wc-current-info">{flag(initial.player.team)} {labelCountry(initial.player.team)} · {initial.player.entry}′ → {initial.player.exit??game.duration}′</p></div>
+   <div><p class="wc-eyebrow">CHOISIR LE JOUEUR</p><h2 id="wc-current-name">{initial.player.name}</h2><p id="wc-current-info"><CountryFlag country={initial.player.team} id="wc-current-flag" /> <span id="wc-current-label">{labelCountry(initial.player.team)} · {initial.player.entry}′ → {initial.player.exit??game.duration}′</span></p></div>
    <div class="wc-player-chooser"><label for="wc-select-player">Profil individuel</label>
     <select id="wc-select-player" aria-label="Choisir un joueur du match">
      {[game.home,game.away].map(team=><optgroup label={labelCountry(team)}>{profiles.filter(p=>p.player.team===team).map(p=><option value={p.player.id} selected={p.player.id===initial.player.id}>{p.player.name}{p.player.entry>0?' · remplaçant':''}</option>)}</optgroup>)}
@@ -47,7 +48,7 @@ const initialEventCount=initial.actions.filter(a=>a.minute===initialMinute).leng
    <div><span>BUTS</span><strong id="wc-goals">{initial.actions.filter(a=>a.kind==='Shot'&&a.outcome==='Goal').length}</strong><small>hors séance de tirs au but</small></div>
   </div>
   <div class="wc-mode-head">
-   <div><p class="wc-eyebrow">LA SIGNATURE DU JOUEUR</p><h3 id="wc-mode-title">Activité dans le match.</h3><p id="wc-mode-desc">Une impulsion pour chaque action : l’activité progresse, puis diminue quand le joueur se fait plus discret.</p></div>
+   <div class="wc-mode-copy"><p class="wc-eyebrow">PROFIL DU JOUEUR <span id="wc-mode-title">· Activité du match</span></p><p id="wc-mode-desc">L’activité suit les actions et s’atténue pendant les temps calmes.</p></div>
    <div class="wc-mode-tabs" role="group" aria-label="Lecture du graphique">
     <button type="button" data-mode="activity" class="active" aria-pressed="true">◉ Activité</button>
     <button type="button" data-mode="impact" aria-pressed="false">✦ Impact indicatif</button>
@@ -210,7 +211,8 @@ const initialEventCount=initial.actions.filter(a=>a.minute===initialMinute).leng
   select.value=String(player.id);
   if(updateUrl){const url=new URL(location.href);url.searchParams.set('joueur',String(player.id));history.replaceState(null,'',url);}
   document.getElementById('wc-current-name').textContent=player.name;
-  document.getElementById('wc-current-info').textContent=player.team+' · '+player.entry+'′ → '+(player.exit??duration)+'′';
+  document.getElementById('wc-current-label').textContent=player.teamLabel+' · '+player.entry+'′ → '+(player.exit??duration)+'′';
+  document.getElementById('wc-current-flag').src=player.flagSrc;
   document.getElementById('wc-other-games').href=basePath+'/mondial-2022/joueurs/'+player.id+'/';
   const active=points().filter(p=>p.activity!=null),sum=active.reduce((n,p)=>n+p.activity,0),high=peakFor('activity');
   document.getElementById('wc-peak').innerHTML=Math.round(high?.value??0)+'<small>/100</small>';
@@ -224,7 +226,7 @@ const initialEventCount=initial.actions.filter(a=>a.minute===initialMinute).leng
  select.addEventListener('change',()=>choose(select.value));
  document.querySelectorAll('[data-mode]').forEach(button=>button.addEventListener('click',()=>{
   mode=button.dataset.mode;for(const b of document.querySelectorAll('[data-mode]')){const active=b===button;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));}
-  document.getElementById('wc-mode-title').textContent=mode==='activity'?'Activité dans le match.':'Impact indicatif des actions.';
+  document.getElementById('wc-mode-title').textContent=mode==='activity'?'· Activité du match':'· Impact des actions';
   document.getElementById('wc-mode-desc').textContent=mode==='activity'?'Une impulsion pour chaque action : l’activité progresse puis diminue lors des périodes plus calmes.':'Impact éditorial expérimental : tient compte de la progression des passes et des xG des tirs lorsque disponibles. Ce n’est pas un modèle xT.';
   chart();setMinute(minute);
  }));
