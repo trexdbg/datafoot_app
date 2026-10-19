@@ -1,0 +1,209 @@
+---
+import BaseLayout from '../../../../../layouts/BaseLayout.astro';
+import {actionImpact,actionLabel,monotonePath} from '../../../../../lib/match-activity.mjs';
+import {games,getProfile,matchComparisonScale,matchHref,playerHref,mbappeId,matchTitle,formattedDate,teamGoals,playerGoals} from '../../../../../lib/explorer-data.mjs';
+import '../../../../../styles/match-profile-detail.css';
+
+export function getStaticPaths(){
+ return games.flatMap(game=>[
+  {params:{id:String(game.id),profile:'france'},props:{matchId:game.id,profileKey:'france'}},
+  ...game.profiles.map(p=>({params:{id:String(game.id),profile:String(p.player.id)},props:{matchId:game.id,profileKey:String(p.player.id)}}))
+ ]);
+}
+interface Props {matchId:number;profileKey:string}
+const {matchId,profileKey}=Astro.props;
+const base=import.meta.env.BASE_URL.replace(/\/$/,'');
+const game=games.find(g=>g.id===matchId)!;
+const teamView=profileKey==='france';
+const playerId=teamView?null:Number(profileKey);
+const profile=teamView?null:getProfile(game,playerId!);
+const name=teamView?'France · collectif':profile!.player.name;
+const primary=teamView?game.team:profile!.timeline;
+const comparison=teamView?null:game.team;
+const scoreMax=matchComparisonScale(game);
+const left=58,right=1050,top=45,bottom=325;
+const x=(minute:number)=>left+minute/game.duration*(right-left);
+const y=(score:number)=>bottom-Math.max(0,score)/scoreMax*(bottom-top);
+const paths=(timeline:typeof primary)=>{
+ const segments:typeof primary[]=[];
+ let segment:typeof primary=[];
+ for(const point of timeline){
+  if(point.activity==null){if(segment.length)segments.push(segment);segment=[];}
+  else segment.push(point);
+ }
+ if(segment.length)segments.push(segment);
+ return segments.map(points=>monotonePath(points.map(p=>({x:x(p.minute),y:y(p.activity??0)}))));
+};
+const playerPath=paths(primary);
+const teamPath=comparison?paths(comparison):[];
+const axisStep=scoreMax>300?100:50;
+const yTicks=[...new Set([...Array.from({length:Math.floor(scoreMax/axisStep)+1},(_,i)=>i*axisStep),scoreMax])];
+const xTicks=[...new Set([...Array.from({length:Math.floor(game.duration/15)+1},(_,i)=>i*15),game.duration])];
+const names=new Map(game.players.map(p=>[p.id,p.name]));
+const rawEvents=teamView
+ ? game.actions.map(a=>({minute:a.m,second:a.s,kind:a.k,outcome:a.o,playerId:a.p}))
+ : profile!.actions.map(a=>({minute:a.minute,second:a.second,kind:a.kind,outcome:a.outcome,playerId:profile!.player.id}));
+const events=rawEvents.map(a=>({...a,label:actionLabel(a),impact:actionImpact(a),playerName:names.get(a.playerId)||'Joueur'}))
+ .sort((a,b)=>a.minute-b.minute||a.second-b.second);
+const goals=teamView?teamGoals(game):playerGoals(game,playerId!);
+const passes=events.filter(a=>a.kind==='Pass'&&a.outcome==='Complete').length;
+const dribbles=events.filter(a=>a.kind==='Dribble'&&a.outcome==='Complete').length;
+const stacks=new Map<number,number>();
+const dots=events.flatMap(a=>{
+ const stack=stacks.get(a.minute)||0;
+ stacks.set(a.minute,stack+1);
+ if(teamView&&stack>=8)return [];
+ return [{
+  minute:a.minute,
+  offset:Math.floor(stack/8)*2.8,
+  cy:415-(stack%8)*5.5,
+  kind:a.kind==='Shot'&&a.outcome==='Goal'?'goal':a.impact>0?'positive':'neutral',
+  title:a.minute+'′ '+String(a.second).padStart(2,'0')+'″ · '+(teamView?a.playerName+' · ':'')+a.label+(a.impact?' · +'+a.impact:'')
+ }];
+});
+const start=teamView?Math.min(game.duration,45):Math.min(game.duration,Math.max(profile!.player.entry,goals[0]??45));
+const startScore=primary[start]?.activity;
+const firstAvailable=primary.find(p=>p.activity!=null)?.minute??0;
+const initialMinute=startScore==null?firstAvailable:start;
+const initialScore=primary[initialMinute].activity;
+const durationLabel=teamView?game.duration+'′':profile!.player.entry+'′ – '+(profile!.player.exit==null?game.duration+'′ (fin)':profile!.player.exit+'′');
+const timelineForClient=primary.map(p=>({minute:p.minute,activity:p.activity,players:'players' in p?p.players:null}));
+const eventsForClient=events.map(a=>({minute:a.minute,second:a.second,label:a.label,impact:a.impact,playerName:teamView?a.playerName:null}));
+const detailHref=base+'/matchs/coupe-du-monde-2022/'+game.id+'/profils/';
+---
+<BaseLayout title={name+' · profil détaillé · '+matchTitle(game)+' | DataFoot'} description={'Courbe minute par minute, repères des actions sous l’axe X et journal événementiel de '+name+' pendant '+matchTitle(game)+'.'} canonicalPath={detailHref+profileKey+'/'}>
+ <div class="md-root">
+  <main class="shell md-wrap">
+   <nav class="md-breadcrumb" aria-label="Fil d’Ariane">
+    <a href={base+'/equipes/france/'}>France · 2022</a><span>/</span>
+    <a href={matchHref(base,game)}>{matchTitle(game)}</a><span>/</span>
+    <span>Profil détaillé</span>
+   </nav>
+   <div class="md-header">
+    <div><p class="md-kicker">DATAFOOT / PROFIL DE MATCH / {formattedDate(game.date)}</p>
+     <h1>{teamView?'Profil collectif':'Profil de joueur'}<br/><em>{name}</em></h1>
+     <p>{matchTitle(game)} · Les actions enregistrées et leur influence sur l’indice d’activité, minute par minute.</p>
+    </div>
+    <div class="md-head-stats"><strong>{events.length}</strong><span>ACTIONS RECENSÉES</span><small>{durationLabel} · {goals.length} but{goals.length>1?'s':''}</small></div>
+   </div>
+   <div class="md-links"><a href={matchHref(base,game)}>← Tous les joueurs du match</a>{!teamView&&<a href={playerHref(base,playerId!)}>Tous les matchs du joueur →</a>}{teamView&&<a href={playerHref(base,mbappeId)}>Tous les matchs de Mbappé →</a>}{!teamView&&playerId===mbappeId&&game.id===3869685&&<a href={base+'/matchs/finale-2022/mbappe/'}>Premier prototype détaillé ↗</a>}</div>
+
+   <section class="md-report" aria-labelledby="md-chart-heading">
+    <div class="md-report-top">
+     <div><p class="md-kicker">COURBE D’ACTIVITÉ</p><h2 id="md-chart-heading">{name}</h2><p>{teamView?'Moyenne des joueurs français présents sur le terrain':'Profil individuel en rose · moyenne française en bleu'}</p></div>
+     <div class="md-key"><span><i class="md-key-swatch primary"></i>{teamView?'France':name}</span>{!teamView&&<span><i class="md-key-swatch compare"></i>France · moyenne</span>}<span><i class="md-key-dot"></i> But</span></div>
+    </div>
+    <div class="md-chart-scroll" tabindex="0" aria-label="Graphique défilable horizontalement sur petit écran">
+     <svg id="md-chart" viewBox="0 0 1110 455" role="img" aria-labelledby="md-svg-title md-svg-description">
+      <title id="md-svg-title">Profil d’activité de {name} · {matchTitle(game)}</title>
+      <desc id="md-svg-description">Les points sous l’axe horizontal correspondent aux événements enregistrés. La courbe indique le score calculé à chaque minute. Sélectionner une minute révèle les actions et les points.</desc>
+      <defs>
+       <linearGradient id="md-area" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color={teamView?'#51c8ff':'#ff83b7'} stop-opacity=".24"/><stop offset="1" stop-color={teamView?'#51c8ff':'#ff83b7'} stop-opacity=".01"/></linearGradient>
+      </defs>
+      <rect width="1110" height="455" rx="10" fill="#081b30"/>
+      {yTicks.map(t=><g><line class="md-gridline" x1={left} x2={right} y1={y(t)} y2={y(t)}/><text class="md-y-tick" x={left-12} y={y(t)+4} text-anchor="end">{t}</text></g>)}
+      {xTicks.map(t=><line class="md-gridline vertical" x1={x(t)} x2={x(t)} y1={top} y2={bottom}/>)}
+      <text class="md-svg-label" x={left} y="28">SCORE D’ACTIVITÉ</text>
+      {game.duration>90&&<g><line x1={x(90)} x2={x(90)} y1={top} y2={bottom} stroke="#7caccd" stroke-dasharray="7 5" stroke-opacity=".65"/><text class="md-extension" x={x(90)+8} y={top+15}>PROLONGATION</text></g>}
+      {teamPath.map(path=><path d={path} fill="none" stroke="#58c9ff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity=".62"/>)}
+      {playerPath.map(path=><path d={path+' L '+right+' '+bottom+' L '+left+' '+bottom+' Z'} fill="url(#md-area)" opacity={playerPath.length===1?1:0}/>)}
+      {playerPath.map(path=><path d={path} fill="none" stroke={teamView?'#5ac9ff':'#fc8ab9'} stroke-width="4" stroke-linecap="round" stroke-linejoin="round" class="md-primary-path"/>)}
+      {goals.map((minute,i)=>primary[minute]?.activity!=null?<g>
+       <circle cx={x(minute)} cy={y(primary[minute].activity!)} r="7" fill="#ff668f" stroke="#ffe8f0" stroke-width="2.5"/>
+       <title>But à la {minute}′{teamView?' · moyenne d’équipe':' · +45 points'}</title>
+      </g>:null)}
+      <line class="md-axis-line" x1={left} x2={right} y1={bottom} y2={bottom}/>
+      {xTicks.map(t=><g><line class="md-axis-tick" x1={x(t)} x2={x(t)} y1={bottom} y2={bottom+8}/><text class="md-x-tick" x={x(t)} y="355" text-anchor="middle">{t}′</text></g>)}
+      <text class="md-rail-label" x={left} y="378">{teamView?'REPÈRES DES MINUTES AVEC ACTIONS · 8 POINTS MAX. / MIN':'ÉVÉNEMENTS · UN POINT PAR ACTION'}</text>
+      <line x1={left} x2={right} y1="420" y2="420" stroke="#90b8d4" stroke-opacity=".3"/>
+      {dots.map(dot=><circle class:list={['md-action-dot',dot.kind]} cx={x(dot.minute)+dot.offset} cy={dot.cy} r={dot.kind==='goal'?4.2:2.45} data-minute={dot.minute}><title>{dot.title}</title></circle>)}
+      <line id="md-cursor" x1={x(initialMinute)} x2={x(initialMinute)} y1={top} y2={bottom} stroke="#d8f2ff" stroke-dasharray="5 6" stroke-width="1.4" opacity=".8" pointer-events="none"/>
+      <circle id="md-cursor-dot" cx={x(initialMinute)} cy={y(initialScore??0)} r="7" fill="#fff" stroke={teamView?'#5ac9ff':'#fc8ab9'} stroke-width="3" pointer-events="none"/>
+      <rect id="md-hit" x={left} y={top} width={right-left} height={bottom-top} fill="transparent" tabindex="0" aria-label="Explorer la courbe à la souris ou avec les flèches du clavier"/>
+     </svg>
+    </div>
+    <div class="md-rail-help">Les points sont <strong>sous l’axe X</strong> : gris = autre action, vert = passe ou dribble réussi, rose = but. Sur la moyenne collective, les repères sont limités à huit par minute pour rester lisibles. Cliquer sur un point affiche toutes les actions de sa minute.</div>
+    <div class="md-inspector" id="md-inspector">
+     <div class="md-readout"><div><span>MINUTE SÉLECTIONNÉE</span><output id="md-readout">{initialMinute}′ · {initialScore==null?'Hors du terrain':'Score '+initialScore}</output></div><p id="md-action-count">Sélectionne une minute pour voir ses actions.</p></div>
+     <input id="md-minute" aria-label="Choisir la minute à examiner" type="range" min="0" max={game.duration} step="1" value={initialMinute}/>
+     <div class="md-minute-actions" id="md-minute-actions" aria-live="polite"></div>
+    </div>
+    <div class="md-rule-row"><span>Départ <strong>50</strong></span><span>Passe réussie <strong>+5</strong></span><span>Dribble réussi <strong>+5</strong></span><span>But <strong>+45</strong></span><span>Temps <strong>−1/min</strong></span><span>Plancher <strong>0</strong></span></div>
+   </section>
+
+   <div class="md-stat-row">
+    <div><strong>{goals.length}</strong><span>BUT{goals.length>1?'S':''}</span></div>
+    <div><strong>{passes}</strong><span>PASSES RÉUSSIES</span></div>
+    <div><strong>{dribbles}</strong><span>DRIBBLES RÉUSSIS</span></div>
+    <div><strong>{events.length}</strong><span>ACTIONS TRACÉES</span></div>
+   </div>
+   <details class="md-log" id="md-event-log">
+    <summary>Journal complet des {events.length} actions <span>minute · seconde · action · impact</span></summary>
+    <div class="md-log-list">
+     {events.map(a=><button type="button" class="md-log-row" data-jump-minute={a.minute}>
+      <span>{a.minute}′ {String(a.second).padStart(2,'0')}″</span>
+      <span>{teamView&&<small>{a.playerName}</small>}{a.label}</span>
+      <strong class={a.impact>0?'is-positive':''}>{a.impact?'+'+a.impact:'0'}</strong>
+     </button>)}
+    </div>
+   </details>
+   <p class="md-method"><strong>Comment lire ce score ?</strong> Il s’agit d’un indice éditorial, pas d’une note officielle ni d’une mesure physique. {teamView?'La courbe française est la moyenne des joueurs présents à chaque minute : les +5 et +45 sont attribués aux joueurs concernés, puis leurs scores sont moyennés.':'La courbe suit uniquement les actions de ce joueur, avec une ligne de comparaison pour la moyenne de la France.'} Les lignes conservent les scores calculés à la minute, sans inventer d’événements entre deux actions. Les tirs au but après le match sont exclus.</p>
+   <p class="md-source">Source : <a href={game.source} target="_blank" rel="noopener noreferrer">StatsBomb Open Data / Hudl ↗</a> · Données événementielles de la France, Coupe du monde 2022.</p>
+  </main>
+ </div>
+ <script is:inline define:vars={{series:timelineForClient, actionEvents:eventsForClient, totalMinutes:game.duration, scoreCeiling:scoreMax, firstMinute:initialMinute, teamMode:teamView}}>
+  (() => {
+   const svg=document.getElementById('md-chart'),hit=document.getElementById('md-hit');
+   const slider=document.getElementById('md-minute'),cursor=document.getElementById('md-cursor'),dot=document.getElementById('md-cursor-dot');
+   const output=document.getElementById('md-readout'),counter=document.getElementById('md-action-count'),list=document.getElementById('md-minute-actions');
+   if(!svg||!hit||!slider||!cursor||!dot||!output||!counter||!list)return;
+   const byMinute=new Map();
+   for(const event of actionEvents){const group=byMinute.get(event.minute)||[];group.push(event);byMinute.set(event.minute,group);}
+   const fmt=value=>String(value).padStart(2,'0');
+   function select(value){
+    const minute=Math.max(0,Math.min(totalMinutes,Math.round(Number(value)||0)));
+    const point=series[minute];
+    const location=58+minute/totalMinutes*992;
+    cursor.setAttribute('x1',String(location));cursor.setAttribute('x2',String(location));
+    if(point?.activity==null){dot.setAttribute('visibility','hidden');}
+    else {dot.setAttribute('visibility','visible');dot.setAttribute('cx',String(location));dot.setAttribute('cy',String(325-point.activity/scoreCeiling*280));}
+    slider.value=String(minute);
+    const value=point?.activity;
+    output.textContent=minute+'′ · '+(value==null?'Hors du terrain':'Score '+(teamMode?Number(value).toLocaleString('fr-FR',{maximumFractionDigits:2}):value));
+    const items=byMinute.get(minute)||[];
+    counter.textContent=items.length+' action'+(items.length>1?'s':'')+' à cette minute'+(teamMode&&point?.players?' · '+point.players+' joueurs sur le terrain':'');
+    list.replaceChildren();
+    if(!items.length){
+     const empty=document.createElement('span');empty.className='md-empty';
+     empty.textContent=value==null?'Joueur hors du terrain à cette minute.':'Aucune action recensée à cette minute · baisse naturelle de 1 point par joueur actif (plancher 0).';
+     list.append(empty);return;
+    }
+    for(const event of items){
+     const chip=document.createElement('span');
+     chip.className='md-action-chip'+(event.impact?' positive':'')+(event.impact===45?' goal':'');
+     chip.textContent=fmt(event.second)+'″ · '+(teamMode?event.playerName+' · ':'')+event.label+(event.impact?' · +'+event.impact:'');
+     list.append(chip);
+    }
+   }
+   function pointer(event){
+    const bounds=svg.getBoundingClientRect();
+    const localX=(event.clientX-bounds.left)/bounds.width*1110;
+    select((localX-58)/992*totalMinutes);
+   }
+   slider.addEventListener('input',()=>select(slider.value));
+   hit.addEventListener('pointermove',pointer);
+   hit.addEventListener('click',pointer);
+   hit.addEventListener('keydown',event=>{
+    if(event.key==='ArrowLeft'||event.key==='ArrowRight'){
+     event.preventDefault();select(Number(slider.value)+(event.key==='ArrowRight'?1:-1));
+    }
+   });
+   svg.querySelectorAll('.md-action-dot').forEach(mark=>mark.addEventListener('click',()=>select(mark.dataset.minute)));
+   document.querySelectorAll('[data-jump-minute]').forEach(button=>button.addEventListener('click',()=>{
+    select(button.dataset.jumpMinute);
+    document.getElementById('md-inspector')?.scrollIntoView({behavior:'smooth',block:'center'});
+   }));
+   select(firstMinute);
+  })();
+ </script>
+</BaseLayout>
