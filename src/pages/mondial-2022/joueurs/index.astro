@@ -1,0 +1,31 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import WorldCupNav from '../../../components/WorldCupNav.astro';
+import {countries,playerIndex,labelCountry,flag,playerUrl} from '../../../lib/worldcup-data';
+import '../../../styles/worldcup.css';
+const base=import.meta.env.BASE_URL.replace(/\/$/,'');
+const sorted=[...playerIndex].sort((a,b)=>a.name.localeCompare(b.name,'fr'));
+---
+<BaseLayout title="Tous les joueurs du Mondial 2022 | DataFoot Atlas" description="Retrouvez les joueurs des 32 équipes du Mondial 2022 : recherche instantanée par nom et par pays, profils individuels de chaque match." canonicalPath={base+'/mondial-2022/joueurs/'}>
+<div class="wc-root"><div class="shell wc-wrap">
+ <nav class="wc-crumb"><a href={base+'/'}>DATAFOOT</a><span>/</span><a href={base+'/mondial-2022/'}>MONDIAL 2022</a><span>/</span>JOUEURS</nav>
+ <header class="wc-hero"><div><p class="wc-eyebrow">WORLD CUP ATLAS / INDEX DES JOUEURS</p><h1>Chaque joueur.<br/><em>Chaque match.</em></h1><p>Des centaines de profils, un seul outil de recherche. Sélectionne un pays ou tape un nom pour suivre ses courbes sur toute la compétition.</p></div><div class="wc-hero-side"><div><strong>{playerIndex.length}</strong><span>JOUEURS</span></div><div><strong>32</strong><span>PAYS</span></div><div><strong>64</strong><span>MATCHS</span></div></div></header>
+ <WorldCupNav active="players"/>
+ <div class="wc-section-head"><div><p class="wc-eyebrow">ANNUAIRE DES PROFILS</p><h2>Trouver un joueur.</h2><p>Ordre alphabétique, aucune tête d’affiche imposée. Chaque fiche contient ses matchs et son activité minute par minute.</p></div></div>
+ <div class="wc-toolbar">
+  <label for="wc-player-find">NOM</label><input id="wc-player-find" type="search" placeholder="Rechercher un nom…" autocomplete="off"/>
+  <label for="wc-player-team">PAYS</label><select id="wc-player-team"><option value="">Tous les pays</option>{countries.map(country=><option value={country}>{flag(country)} {labelCountry(country)}</option>)}</select>
+  <span class="wc-filter-count" id="wc-player-count">{sorted.length} joueurs</span>
+ </div>
+ <div class="wc-people-grid">
+ {sorted.map(player=><a class="wc-person" href={playerUrl(base,player.id)} data-player-name={player.name} data-player-country={player.country}><span class="wc-country-flag">{flag(player.country)}</span><div><strong>{player.name}</strong><small>{labelCountry(player.country)} · {player.matches.length} match{player.matches.length>1?'s':''}</small></div><span>↗</span></a>)}
+ </div>
+ <p class="wc-empty" id="wc-player-empty" hidden>Aucun joueur trouvé avec ces critères.</p>
+ <p class="wc-footnote">Les fiches incluent les joueurs présents dans les données StatsBomb de la compétition, titulaires ou remplaçants. L'absence d’événement n'est pas assimilée à une mauvaise performance.</p>
+</div></div>
+<script is:inline>
+(()=>{const query=document.getElementById('wc-player-find'),country=document.getElementById('wc-player-team');if(!query)return;const cards=[...document.querySelectorAll('[data-player-name]')],count=document.getElementById('wc-player-count'),empty=document.getElementById('wc-player-empty');const norm=s=>String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+function filter(){const text=norm(query.value.trim()),team=country.value;let n=0;for(const card of cards){const visible=(!text||norm(card.dataset.playerName).includes(text))&&(!team||card.dataset.playerCountry===team);card.hidden=!visible;if(visible)n++;}count.textContent=n+' joueur'+(n!==1?'s':'');empty.hidden=n>0;}
+[query,country].forEach(element=>element.addEventListener('input',filter));})();
+</script>
+</BaseLayout>
