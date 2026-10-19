@@ -308,14 +308,17 @@ export function bootPassWars(){
     $('pw-battle').classList.toggle('active',battle);
     $('pw-battle').setAttribute('aria-pressed',String(battle));
   }
-  function count(e,animate,t){
+  function count(e){
     const q=counts.get(e.partner_id)||empty();q[e.direction]++;q.total++;counts.set(e.partner_id,q);
   }
   function enqueueVisualInterval(start,end){
     if(end<=start)return;
-    // À vitesse normale, 4 passages représentatifs au maximum par frame.
-    // Les 100+ autres événements du lot sont bien comptés au scoreboard.
-    visualQueue.push(...sampleVisualPasses(events,start,end,battle?8:4));
+    // À vitesse normale, 4 projectiles représentatifs au maximum par frame.
+    // Lorsqu'un joueur est isolé, ne lancer que ses propres passes.
+    // Les autres événements restent comptés au scoreboard global.
+    const due=focus===null?events.slice(start,end):
+      events.slice(start,end).filter(e=>e.partner_id===focus);
+    visualQueue.push(...sampleVisualPasses(due,0,due.length,battle?8:4));
     if(visualQueue.length>MAX_VISUAL_QUEUE)
       visualQueue=thinVisualQueue(visualQueue,MAX_VISUAL_QUEUE);
   }
@@ -339,7 +342,7 @@ export function bootPassWars(){
     playing=false;cursor=0;counts=new Map();balls=[];ripples=[];
     visualQueue=[];nextLaunchAt=0;
     paint.clearRect(0,0,W,H);
-    while(cursor<end)count(events[cursor++],false,0);
+    while(cursor<end)count(events[cursor++]);
     // État visuel après scrubbing : un condensé des impacts précédents,
     // calculé à partir des vrais compteurs (aucun événement inventé).
     for(const p of players){
@@ -366,7 +369,9 @@ export function bootPassWars(){
     for(const el of $('pw-leader').querySelectorAll('[data-count]'))el.textContent=format(score(Number(el.dataset.count)).total);
   }
   function selectPlayer(id){
-    focus=focus===id?null:id;renderBoard();
+    focus=focus===id?null:id;
+    if(focus!==null)visualQueue=visualQueue.filter(e=>e.partner_id===focus);
+    renderBoard();
     $('pw-leader').querySelectorAll('[data-partner]').forEach(el=>{
       el.classList.toggle('chosen',Number(el.dataset.partner)===focus);
     });
@@ -578,9 +583,9 @@ export function bootPassWars(){
       calendarPosition=Math.min(end,calendarPosition+dt*(battle?24:speed));
       while(cursor<events.length &&
             eventCalendarPosition(events[cursor].date)<calendarPosition)
-        count(events[cursor++],false,t);
+        count(events[cursor++]);
       if(calendarPosition>=end){
-        while(cursor<events.length)count(events[cursor++],false,t);
+        while(cursor<events.length)count(events[cursor++]);
       }
       enqueueVisualInterval(from,cursor);
       launchVisualPass(t);
