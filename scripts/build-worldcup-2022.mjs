@@ -8,6 +8,7 @@ import path from 'node:path';
 
 const ROOT='https://raw.githubusercontent.com/hudl/open-data/master/data';
 const DIR='src/data/worldcup';
+const PUBLIC='public/data/worldcup-2022';
 async function loadJson(url) {
   let error;
   for(let attempt=0;attempt<4;attempt++) {
@@ -110,13 +111,16 @@ async function main() {
     .sort((a,b)=>a.date.localeCompare(b.date)||a.id-b.id);
   if(fixtures.length!==64)throw new Error('Expected 64 fixtures, got '+fixtures.length);
   await mkdir(path.join(DIR,'2022'),{recursive:true});
+  await mkdir(path.join(PUBLIC,'matches'),{recursive:true});
   const teams=[...new Set(fixtures.flatMap(f=>[f.home,f.away]))];
   if(teams.length!==32)throw new Error('Expected 32 teams, got '+teams.length);
-  await writeFile(path.join(DIR,'2022-matches.json'),JSON.stringify({
+  const fixtureIndex={
     version:2,source:'StatsBomb Open Data / Hudl',competition:'2022 FIFA World Cup',
     totalMatches:64,totalCountries:32,
     coverage:'Both teams; periods 1–4 only; penalty shootout excluded',matches:fixtures
-  }));
+  };
+  await writeFile(path.join(DIR,'2022-matches.json'),JSON.stringify(fixtureIndex));
+  await writeFile(path.join(PUBLIC,'index.json'),JSON.stringify(fixtureIndex));
   const directory=new Map();
   let count=0;
   // Controlled network fanout: lower risk of GitHub rate limits than 64 simultaneous requests.
@@ -125,7 +129,9 @@ async function main() {
     const matches=await Promise.all(group.map(async(fixture)=>{
       const events=await loadJson(ROOT+'/events/'+fixture.id+'.json');
       const match=compactMatch(fixture,events);
-      await writeFile(path.join(DIR,'2022',fixture.id+'.json'),JSON.stringify(match));
+      const data=JSON.stringify(match);
+      await writeFile(path.join(DIR,'2022',fixture.id+'.json'),data);
+      await writeFile(path.join(PUBLIC,'matches',fixture.id+'.json'),data);
       return match;
     }));
     for(const match of matches) {
@@ -138,7 +144,9 @@ async function main() {
     }
     console.log('Processed',count,'/',fixtures.length,'matches');
   }
-  await writeFile(path.join(DIR,'2022-players.json'),JSON.stringify([...directory.values()].sort((a,b)=>a.name.localeCompare(b.name))));
+  const directoryJson=JSON.stringify([...directory.values()].sort((a,b)=>a.name.localeCompare(b.name)));
+  await writeFile(path.join(DIR,'2022-players.json'),directoryJson);
+  await writeFile(path.join(PUBLIC,'players.json'),directoryJson);
   console.log('Full WC 2022:',fixtures.length,'matches,',teams.length,'countries,',directory.size,'players');
 }
 if(process.argv[1]&&import.meta.url===new URL('file://'+path.resolve(process.argv[1])).href)
