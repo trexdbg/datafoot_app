@@ -170,7 +170,7 @@ Le fichier réel `src/data/matches/2022-final-messi-passes.json` est construit d
 
 ## Messi Pass Wars — réseau de passes multi-saisons
 
-Page : `/datafoot_app/joueurs/messi/pass-wars/`. Elle exploite exclusivement les **vraies passes réussies** issues de `datafoot.messi_pass_wars` (StatsBomb Open Data), dans un **échantillon multi-saisons** : ce n’est pas un bilan exhaustif de carrière. Jusqu’à 30 partenaires, uniquement ceux ayant **strictement plus de 95 passes** échangées dans la sélection (96 au minimum). Le top se recalcule avec les filtres équipe, saison, compétition : couleur par joueur, positions aléatoires à chaque chargement, stables pendant la lecture et sans chevauchement, ni ordre d'horloge ni traits, projectiles paintball, éclaboussures, Battle et classement. Aucune statistique simulée en cas de source absente : un message d’erreur explicite s’affiche.
+Page : `/datafoot_app/joueurs/messi/pass-wars/`. Elle exploite les **vraies passes réussies** issues du collecteur unifié `datafoot.messi_full_open_data` (StatsBomb Open Data), pour tous les matchs de Messi identifiés dans les données publiques à chaque exécution : ce n’est pas un bilan exhaustif de carrière. Jusqu’à 30 partenaires, uniquement ceux ayant **strictement plus de 95 passes** échangées dans la sélection (96 au minimum). Le top se recalcule avec les filtres équipe, saison, compétition : couleur par joueur, positions aléatoires à chaque chargement, stables pendant la lecture et sans chevauchement, ni ordre d'horloge ni traits, projectiles paintball, éclaboussures, Battle et classement. Aucune statistique simulée en cas de source absente : un message d’erreur explicite s’affiche.
 
 Les fichiers `src/data/players/messi-pass-wars*.json` et `public/data/players/messi-pass-wars*.json` sont produits par le workflow hebdomadaire `datafoot/.github/workflows/pass-wars.yml`, qui peut aussi être lancé manuellement. Les événements raw StatsBomb ne sont pas copiés sur GitHub Pages : seul le JSON dérivé utile à l’animation est exposé. Credits StatsBomb/Hudl visibles.
 
@@ -191,3 +191,23 @@ Le module \`src/lib/messi-player-profiles.mjs\` normalise les noms d'affichage d
 ### Frise mois / année directement sous Messi Paintball
 
 Les deux pages Messi Paintball affichent désormais un indicateur **MM/AAAA** dans l'aire du graphique et un curseur mensuel immédiatement dessous, au-dessus de la légende. La piste parcourt les vrais mois du premier au dernier événement observé (2004–2022 sur l'échantillon courant). Le glissement recalcule les passes cumulées et les taches au dernier événement du mois choisi, y compris les mois sans match couvert. Pendant l'animation, chaque mois occupe désormais la même durée, même sans match, et les passes arrivent selon la vraie date des événements. Les graduations sont proportionnelles aux mois calendaires. L'encart MM/AAAA est placé hors du Canvas pour ne plus masquer un portrait. Lecture, pause et vitesse restent dans les commandes habituelles. La période affichée sur le tableau latéral passe aussi au format mois/année. Tests dans tests/pass-wars.test.mjs.
+
+
+## StatsBomb Open Data : toutes les rencontres de Messi disponibles
+
+La publication des quatre jeux dérivés est désormais assurée par le workflow
+`trexdbg/datafoot/.github/workflows/pass-wars.yml`, en exploitant le
+**catalogue complet des saisons publiques**, sans prélèvement arbitraire de
+trois matchs par saison :
+
+- `messi-pass-wars.json` : partenaires et agrégats ;
+- `messi-pass-wars-events.json` : toutes les passes source identifiées ;
+- `messi-encounters.json` : adversaires, tirs et buts dans les matchs ouverts ;
+- `messi-open-data-coverage.json` : audit de la couverture réelle et des échecs.
+
+Les JSON sont mis à jour **ensemble** et uniquement après vérification
+des résultats. Le serveur public ne distribue pas les milliers de fichiers
+bruts StatsBomb ; ceux-ci restent dans le cache du collecteur. Seuls les
+événements dérivés et les métadonnées nécessaires à la visualisation sont
+publiés. « Tous les matchs ouverts où Messi a été identifié » ne signifie
+jamais « carrière complète ».
