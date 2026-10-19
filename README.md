@@ -116,3 +116,9 @@ src/
 ```
 
 Le site et son build sont entièrement statiques : aucun serveur applicatif n'est nécessaire.
+
+## Réseau de passes animé — Messi, finale 2022
+
+La page `/datafoot_app/matchs/finale-2022/messi/` montre Messi au centre des 10 partenaires avec lesquels il échange le plus de passes réussies pendant la finale de 2022. Les projectiles cyan et orange matérialisent passes données et reçues, et les lignes épaississent selon le cumul. Lecture, pause, accélération, filtre par partenaire, navigation temporelle et prise en charge du mouvement réduit.
+
+Le fichier réel `src/data/matches/2022-final-messi-passes.json` est construit dans le dépôt privé `trexdbg/datafoot` par `python -m datafoot.messi_passes`, puis publié en double dans `public/data/matches`. Quand ce fichier est absent, l'interface affiche **un mode démonstration explicitement fictif**, sans faire passer des nombres simulés pour des statistiques réelles. Dès la publication, le navigateur charge les données réelles de StatsBomb automatiquement. Attribution StatsBomb et lien vers la source sur la page.

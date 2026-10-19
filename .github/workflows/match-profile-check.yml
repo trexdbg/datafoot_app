@@ -7,6 +7,7 @@ on:
       - 'src/lib/match-activity.*'
       - 'public/data/matches/**'
       - 'src/styles/match-weather.css'
+      - 'src/styles/messi-constellation.css'
       - 'src/styles/global.css'
       - 'src/pages/index.astro'
       - 'src/layouts/BaseLayout.astro'
@@ -60,6 +61,20 @@ jobs:
           assert.equal(actionImpact({kind:'Dribble',outcome:'Complete'}),5);
           assert.equal(actionImpact({kind:'Shot',outcome:'Goal'}),45);
           assert.equal(computeActivity([],125).timeline[125].activity,0);
+          const messiFile = 'src/data/matches/2022-final-messi-passes.json';
+          if (fs.existsSync(messiFile)) {
+            const network = JSON.parse(fs.readFileSync(messiFile,'utf8'));
+            const published = JSON.parse(fs.readFileSync('public/data/matches/2022-final-messi-passes.json','utf8'));
+            assert.deepEqual(network,published);
+            assert.equal(network.schema_version,1);
+            assert.equal(network.match.id,3869685);
+            assert.equal(network.selection.completed_only,true);
+            assert.equal(network.players.length,10);
+            assert.ok(network.passes.length>0);
+            assert.equal(network.summary.shown_passes,network.passes.length);
+            assert.equal(network.summary.given+network.summary.received,network.passes.length);
+            assert.ok(network.passes.every(p=>p.partner_id&&['given','received'].includes(p.direction)));
+          }
           JS
       - name: Astro typecheck and static build
         run: npm run build
