@@ -16,9 +16,9 @@ DataFoot sépare volontairement deux responsabilités : le dépôt privé collec
 analyse les données, tandis que ce dépôt public ne contient que les contenus et
 datasets destinés à être publiés.
 
-Chaque article automatisé conserve sa source statistique. Le modèle de langage
-n'a pas pour rôle de calculer un xG, un nombre de tirs ou une performance : il
-reçoit des faits déjà structurés et les transforme en texte.
+Chaque article conserve ses références statistiques et repose sur des indicateurs
+issus de données vérifiables. Les chiffres, les écarts et les comparaisons
+proviennent des jeux de données cités, et non d’estimations rédactionnelles.
 
 ## Ce qui arrive ensuite
 
