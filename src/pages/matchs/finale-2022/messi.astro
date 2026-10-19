@@ -15,7 +15,7 @@ const dataUrl = base + '/data/matches/2022-final-messi-passes.json';
       <div class="orbit-eyebrow">DATAFOOT / L'ATELIER DES VISUALISATIONS / 002</div>
       <a class="orbit-back" href={base + '/joueurs/messi/pass-wars/'}>⚡ NOUVEAU : MESSI PASS WARS — MULTI-SAISONS ↗</a>
       <h1>La constellation <em>de Messi.</em></h1>
-      <p>Les passes comme des éclairs. Les connexions qui durent deviennent des autoroutes lumineuses.</p>
+      <p>Des billes multicolores traversent l'écran et éclaboussent leur destination. Aucun trait entre les joueurs.</p>
       <div class="orbit-match"><span class="orbit-flag">🇦🇷</span> ARGENTINE <b>3 — 3</b> FRANCE <span class="orbit-flag">🇫🇷</span><span class="orbit-match-sub">FINALE · 18 DÉCEMBRE 2022</span></div>
     </section>
     <section class="shell orbit-experience" aria-label="Visualisation interactive des échanges avec Messi">
@@ -25,7 +25,7 @@ const dataUrl = base + '/data/matches/2022-final-messi-passes.json';
       </div>
       <div class="orbit-layout">
         <div class="orbit-map">
-          <canvas id="orbit-canvas" width="1100" height="630" role="img" aria-label="Messi au centre, dix partenaires autour. Les liens bleus représentent les passes données, les liens orange les passes reçues."></canvas>
+          <canvas id="orbit-canvas" width="1100" height="630" role="img" aria-label="Messi au centre, dix partenaires autour. Chaque partenaire a sa couleur : des billes de peinture vont et viennent sans aucun trait de liaison."></canvas>
           <div class="orbit-canvas-tag">MESSI <span>↗ ↙</span> 10 PARTENAIRES</div>
         </div>
         <aside class="orbit-sidebar" aria-label="Statistiques des passes affichées">
@@ -49,9 +49,9 @@ const dataUrl = base + '/data/matches/2022-final-messi-passes.json';
         <label class="orbit-speed" for="orbit-speed">VITESSE <select id="orbit-speed" aria-label="Vitesse de lecture"><option value="3">×1</option><option value="7" selected>×2</option><option value="14">×4</option><option value="28">×8</option></select></label>
       </div>
       <div class="orbit-foot">
-        <span><i class="orbit-swatch blue"></i> PASSE DE MESSI</span>
-        <span><i class="orbit-swatch amber"></i> PASSE VERS MESSI</span>
-        <span>L'ÉPAISSEUR = CUMUL DES PASSES RÉUSSIES</span>
+        <span>🎨 UNE COULEUR PAR PARTENAIRE</span>
+        <span>↗ MESSI → JOUEUR · ↙ JOUEUR → MESSI</span>
+        <span>DES BILLES ET DES IMPACTS · AUCUN TRAIT</span>
       </div>
     </section>
     <section class="shell orbit-notice" id="orbit-data-notice" aria-live="polite">
@@ -60,7 +60,7 @@ const dataUrl = base + '/data/matches/2022-final-messi-passes.json';
     <section class="shell orbit-explainer">
       <div><div class="orbit-eyebrow">UNE AUTRE FAÇON DE LIRE LE JEU</div><h2>Ce ne sont pas<br/>des positions sur <em>un terrain.</em></h2></div>
       <div>
-        <p>Messi occupe le centre de ce réseau : chaque joueur autour de lui représente une connexion, pas sa position sur le terrain. Chaque projectile lumineux correspond à une passe réussie ; plus deux joueurs échangent, plus leur liaison devient épaisse.</p>
+        <p>Messi occupe le centre de ce réseau : chaque joueur autour de lui représente une connexion, pas sa position sur le terrain. Chaque bille de peinture représente une passe réussie ; elle se déplace entre Messi et son partenaire et éclabousse sa destination. Il n'y a pas de trait de connexion.</p>
         <p>Les dix joueurs sont choisis selon leur <strong>nombre total de passes échangées avec Messi</strong> pendant la finale, prolongation incluse. Les passes impliquant d'autres partenaires ne sont pas dessinées. Les tirs au but sont exclus.</p>
         <p>Lorsque les données réelles sont disponibles, elles proviennent des événements publics <a href="https://github.com/hudl/open-data" target="_blank" rel="noopener noreferrer">StatsBomb Open Data ↗</a> et d'un calcul reproductible dans DataFoot. <a href={dataUrl} id="orbit-download">JSON des passes ↗</a></p>
         <div class="orbit-credit"><span>DONNÉES : STATSBOMB / HUDL</span><a href="https://github.com/hudl/open-data" target="_blank" rel="noopener noreferrer"><img loading="lazy" src="https://raw.githubusercontent.com/hudl/open-data/master/img/SB%20-%20Icon%20Lockup%20-%20Colour%20positive.png" alt="Logo StatsBomb" width="146" /></a></div>
@@ -99,6 +99,28 @@ const dataUrl = base + '/data/matches/2022-final-messi-passes.json';
     let count = new Map();
     let pulses = [];
     let ripples = [];
+    let palette = new Map();
+    const paintLayer=document.createElement('canvas');
+    paintLayer.width=W;paintLayer.height=H;
+    const paint=paintLayer.getContext('2d');
+    if(!paint)return;
+    const colorFor=id=>palette.get(id)||'#85e0ff';
+    function splatter(id,direction,index,opacity=1){
+      const partner=players.find(p=>p.id===id);if(!partner)return;
+      const target=direction==='given'?endpoints(partner):{x:CX,y:CY};
+      let seed=(Math.imul(Number(id)||1,2654435761)+Math.imul(Number(index)||1,374761393))>>>0;
+      const rnd=()=>((seed=(Math.imul(seed,1664525)+1013904223)>>>0)/4294967296);
+      paint.save();paint.fillStyle=colorFor(id);
+      paint.globalAlpha=.21*opacity;
+      const x=target.x+(rnd()-.5)*48,y=target.y+(rnd()-.5)*48;
+      paint.beginPath();paint.arc(x,y,11+rnd()*12,0,Math.PI*2);paint.fill();
+      for(let i=0;i<9;i++){
+        const angle=rnd()*Math.PI*2,dist=13+rnd()*37;
+        paint.globalAlpha=(.17+rnd()*.36)*opacity;
+        paint.beginPath();paint.arc(x+Math.cos(angle)*dist,y+Math.sin(angle)*dist,1+rnd()*4,0,Math.PI*2);paint.fill();
+      }
+      paint.restore();
+    }
     let current = 0;
     let cursor = 0;
     let selected = null;
@@ -115,6 +137,7 @@ const dataUrl = base + '/data/matches/2022-final-messi-passes.json';
     const key = (id, direction) => id+':'+direction;
     function resetState(position=0) {
       current=Math.max(0,Math.min(125,position));cursor=0;count=new Map();pulses=[];ripples=[];
+      paint.clearRect(0,0,W,H);
       while(cursor<events.length && eventAt(events[cursor])<=current) {increase(events[cursor],false);cursor++;}
       updateText();draw(timestamp);
     }
@@ -122,12 +145,14 @@ const dataUrl = base + '/data/matches/2022-final-messi-passes.json';
     function increase(evt, animated) {
       const k=key(evt.partner_id,evt.direction);
       count.set(k,(count.get(k)||0)+1);
-      if (animated) {pulses.push({...evt,born:timestamp}); if(pulses.length>40)pulses.shift();}
+      if (animated) {pulses.push({...evt,born:timestamp}); if(pulses.length>65)pulses.shift();}
+      else splatter(evt.partner_id,evt.direction,evt.index,0.65);
     }
     function pair(id) {return {given:count.get(key(id,'given'))||0,received:count.get(key(id,'received'))||0};}
     function startData(data) {
       if (!data || !Array.isArray(data.players) || !Array.isArray(data.passes)) throw Error('Format réseau invalide');
       players=data.players.slice(0,10).map(p=>({id:p.id,name:String(p.name),total:Number(p.total)||0}));
+      palette=new Map(players.map((p,i)=>[p.id,'hsl('+((15+i*137.50776405)%360).toFixed(3)+' 90% 63%)']));
       const ids=new Set(players.map(p=>p.id));
       events=data.passes.filter(p=>ids.has(p.partner_id) && (p.direction==='given'||p.direction==='received'))
         .map(p=>({...p,minute:Number(p.minute),second:Number(p.second)}))
@@ -152,6 +177,7 @@ const dataUrl = base + '/data/matches/2022-final-messi-passes.json';
         const idx=document.createElement('span');idx.className='orbit-rank-num';idx.textContent=String(i+1).padStart(2,'0');
         const nm=document.createElement('span');nm.textContent=p.name;
         const val=document.createElement('strong');val.dataset.count=String(p.id);val.textContent='0';
+        idx.style.color=colorFor(p.id);b.style.borderLeft='3px solid '+colorFor(p.id);
         b.append(idx,nm,val);b.title='Isoler les passes avec '+p.name;b.addEventListener('click',()=>choose(p.id));rank.append(b);
       });
     }
@@ -185,30 +211,8 @@ const dataUrl = base + '/data/matches/2022-final-messi-passes.json';
       ctx.fillStyle=haze;ctx.fillRect(0,0,W,H);
       for(const star of starfield){ctx.globalAlpha=star.a*(.88+.12*Math.sin(t*.001+star.x));ctx.fillStyle='#b5d9ff';ctx.beginPath();ctx.arc(star.x,star.y,star.r,0,Math.PI*2);ctx.fill();}
       ctx.globalAlpha=1;
-      ctx.save();ctx.setLineDash([2,10]);ctx.strokeStyle='#5c86a625';ctx.lineWidth=1;
-      for(let r=100;r<=440;r+=85){ctx.beginPath();ctx.ellipse(CX,CY,r,r*.64,0,0,2*Math.PI);ctx.stroke();}
-      ctx.beginPath();ctx.moveTo(CX,26);ctx.lineTo(CX,H-26);ctx.moveTo(60,CY);ctx.lineTo(W-60,CY);ctx.stroke();ctx.restore();
       ctx.fillStyle='#88aac1';ctx.font='12px monospace';ctx.fillText('CONNEXIONS / VUE RELATIONNELLE',34,34);
       ctx.textAlign='right';ctx.fillText('TOP 10 · PARTENAIRES DU MATCH',W-34,34);ctx.textAlign='left';
-    }
-    function line(x1,y1,x2,y2,color,width,alpha=1,glow=0) {
-      ctx.save();ctx.globalAlpha=alpha;ctx.strokeStyle=color;ctx.lineWidth=width;ctx.lineCap='round';ctx.shadowBlur=glow;ctx.shadowColor=color;
-      ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();ctx.restore();
-    }
-    function drawEdges() {
-      for(const p of players){
-        const pos=endpoints(p),dx=pos.x-CX,dy=pos.y-CY,len=Math.hypot(dx,dy);
-        const nx=-dy/len*4,ny=dx/len*4,active=selected===null||p.id===selected;
-        const counts=pair(p.id);
-        line(CX,CY,pos.x,pos.y,'#52718a',.8,active?.24:.055);
-        for(const [direction,color,sgn] of [['given','#47e6ff',1],['received','#ffb667',-1]]){
-          const n=counts[direction];if(!n)continue;
-          const width=Math.min(18,.7+Math.sqrt(n)*2.5);
-          line(CX+nx*sgn,CY+ny*sgn,pos.x+nx*sgn,pos.y+ny*sgn,color,width*2.5,active?.11:.018,active?18:0);
-          line(CX+nx*sgn,CY+ny*sgn,pos.x+nx*sgn,pos.y+ny*sgn,color,width,active?.67:.08,active?10:0);
-          line(CX+nx*sgn,CY+ny*sgn,pos.x+nx*sgn,pos.y+ny*sgn,'#ffffff',Math.max(.8,width*.13),active?.38:.035);
-        }
-      }
     }
     function drawPulses(t) {
       pulses=pulses.filter(p=>t-p.born<1050);
@@ -217,22 +221,35 @@ const dataUrl = base + '/data/matches/2022-final-messi-passes.json';
         if(selected!==null&&selected!==p.partner_id)continue;
         const pos=endpoints(players.find(n=>n.id===p.partner_id)),from=p.direction==='given'?{x:CX,y:CY}:pos,to=p.direction==='given'?pos:{x:CX,y:CY};
         const s=Math.min(1,(t-p.born)/790),e=1-(1-s)*(1-s),x=from.x+(to.x-from.x)*e,y=from.y+(to.y-from.y)*e;
-        const c=p.direction==='given'?'#53e9ff':'#ffc07d';
-        const trail=Math.min(.25,e),tx=from.x+(to.x-from.x)*(e-trail),ty=from.y+(to.y-from.y)*(e-trail);
-        line(tx,ty,x,y,c,4,1,18);
-        ctx.save();ctx.fillStyle='#fff';ctx.shadowBlur=21;ctx.shadowColor=c;ctx.beginPath();ctx.arc(x,y,4.1,0,7);ctx.fill();ctx.restore();
-        if(s>=1&&!p.hit){p.hit=true;ripples.push({born:t,x:to.x,y:to.y,color:c});}
+        const c=colorFor(p.partner_id);
+        // Seule la bille est visible : aucune traînée ni connexion.
+        ctx.save();ctx.fillStyle=c;ctx.shadowBlur=23;ctx.shadowColor=c;
+        ctx.beginPath();ctx.arc(x,y,7.5,0,Math.PI*2);ctx.fill();
+        ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(x-1.6,y-1.8,2.4,0,Math.PI*2);ctx.fill();ctx.restore();
+        if(s>=1&&!p.hit){
+          p.hit=true;splatter(p.partner_id,p.direction,p.index);
+          ripples.push({born:t,x:to.x,y:to.y,color:c});
+        }
       }
-      for(const p of ripples){const s=(t-p.born)/720;ctx.save();ctx.strokeStyle=p.color;ctx.globalAlpha=(1-s)*.7;ctx.lineWidth=2;ctx.beginPath();ctx.arc(p.x,p.y,9+22*s,0,7);ctx.stroke();ctx.restore();}
+      for(const p of ripples){
+        const age=(t-p.born)/720;ctx.save();ctx.fillStyle=p.color;ctx.globalAlpha=(1-age)*.62;
+        for(let j=0;j<10;j++){
+          const angle=j*Math.PI*2/10, distance=13+age*(32+j%3*7);
+          ctx.beginPath();ctx.arc(p.x+Math.cos(angle)*distance,p.y+Math.sin(angle)*distance,
+            (2.8+j%3)*(1-age*.65),0,Math.PI*2);ctx.fill();
+        }
+        ctx.restore();
+      }
     }
     function drawNodes(t) {
       for(const p of players){
         const pos=endpoints(p),active=selected===null||selected===p.id,tot=pair(p.id),total=tot.given+tot.received;
         ctx.save();ctx.globalAlpha=active?1:.22;
-        const glow=ctx.createRadialGradient(pos.x,pos.y,4,pos.x,pos.y,40);
-        glow.addColorStop(0,'#50ddff35');glow.addColorStop(1,'#50ddff00');ctx.fillStyle=glow;ctx.beginPath();ctx.arc(pos.x,pos.y,40,0,7);ctx.fill();
-        ctx.fillStyle='#112b46';ctx.strokeStyle=selected===p.id?'#ffffff':'#4a839e';ctx.lineWidth=selected===p.id?2.5:1.5;
-        ctx.beginPath();ctx.arc(pos.x,pos.y,22+Math.min(7,Math.sqrt(total)*.8),0,7);ctx.fill();ctx.stroke();
+        const playerColor=colorFor(p.id);
+        ctx.shadowColor=playerColor;ctx.shadowBlur=20;ctx.fillStyle=playerColor;
+        ctx.beginPath();ctx.arc(pos.x,pos.y,24+Math.min(7,Math.sqrt(total)*.8),0,Math.PI*2);ctx.fill();
+        ctx.shadowBlur=0;ctx.fillStyle='#112b46';
+        ctx.beginPath();ctx.arc(pos.x,pos.y,20+Math.min(7,Math.sqrt(total)*.8),0,Math.PI*2);ctx.fill();
         ctx.fillStyle='#e0f9ff';ctx.textAlign='center';ctx.font='700 15px ui-sans-serif,system-ui';ctx.fillText(String(total),pos.x,pos.y+5);
         const name = p.name.length>21?p.name.slice(0,20)+'…':p.name;
         ctx.font='600 12px ui-sans-serif,system-ui';ctx.fillStyle='#e1e9f8';
@@ -242,12 +259,14 @@ const dataUrl = base + '/data/matches/2022-final-messi-passes.json';
       const glow=ctx.createRadialGradient(CX,CY,10,CX,CY,108);
       glow.addColorStop(0,'#40e4ff45');glow.addColorStop(1,'#40e4ff00');
       ctx.fillStyle=glow;ctx.beginPath();ctx.arc(CX,CY,108,0,7);ctx.fill();
-      ctx.save();ctx.shadowBlur=28;ctx.shadowColor='#5feaff';ctx.fillStyle='#0a324b';ctx.strokeStyle='#6af0ff';ctx.lineWidth=3;
-      ctx.beginPath();ctx.arc(CX,CY,48+Math.sin(t/600)*1.2,0,7);ctx.fill();ctx.stroke();ctx.restore();
+      ctx.save();ctx.shadowBlur=28;ctx.shadowColor='#5feaff';ctx.fillStyle='#6af0ff';
+      ctx.beginPath();ctx.arc(CX,CY,49+Math.sin(t/600)*1.2,0,7);ctx.fill();
+      ctx.shadowBlur=0;ctx.fillStyle='#0a324b';
+      ctx.beginPath();ctx.arc(CX,CY,45+Math.sin(t/600)*1.2,0,7);ctx.fill();ctx.restore();
       ctx.fillStyle='#edfbff';ctx.textAlign='center';ctx.font='800 19px ui-sans-serif,system-ui';ctx.fillText('MESSI',CX,CY+7);
       ctx.fillStyle='#82bfd5';ctx.font='11px monospace';ctx.fillText('N° 10',CX,CY+23);ctx.textAlign='left';
     }
-    function draw(t) {drawBase(t);drawEdges();drawPulses(t);drawNodes(t);}
+    function draw(t) {drawBase(t);ctx.drawImage(paintLayer,0,0);drawPulses(t);drawNodes(t);}
     function frame(t) {
       if(!prev)prev=t;
       const dt=Math.min(.08,Math.max(0,(t-prev)/1000));prev=t;timestamp=t;
