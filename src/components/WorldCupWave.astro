@@ -1,8 +1,8 @@
 ---
 import {monotonePath,actionLabel,pulsePenalty,PULSE_BANDS} from '../lib/match-activity.mjs';
 interface Point {minute:number;activity:number|null;impact?:number|null;actions?:number;penaltyGain?:number;events?:Array<{kind:string;outcome:string;playerName?:string}>}
-interface Props {timeline:Point[];duration:number;goals?:number[];title?:string;accent?:string;metric?:'activity'|'impact';compact?:boolean}
-const {timeline,duration,goals=[],title='Activité sur le match',accent='#66d8ff',metric='activity',compact=false}=Astro.props;
+interface Props {timeline:Point[];duration:number;goals?:number[];assists?:number[];title?:string;accent?:string;metric?:'activity'|'impact';compact?:boolean}
+const {timeline,duration,goals=[],assists=[],title='Activité sur le match',accent='#66d8ff',metric='activity',compact=false}=Astro.props;
 const left=33,right=548,top=19,bottom=156;
 const X=(minute:number)=>left+(minute/duration)*(right-left);
 const Y=(score:number)=>bottom-Math.min(100,Math.max(0,score))/100*(bottom-top);
@@ -37,6 +37,7 @@ const clipPrefix='wc-bands-'+Math.random().toString(36).slice(2,11);
   {duration>90&&<line x1={X(90)} x2={X(90)} y1={top} y2={bottom} stroke="#abd2e8" stroke-dasharray="4 5" opacity=".55"/>}
   {paths.map(path=><g><path d={path.area} fill={accent} opacity=".08"/>{(['low','steady','high'] as const).map(band=><path d={path.line} fill="none" stroke={PULSE_BANDS[band].color} stroke-width="3.7" stroke-linecap="round" stroke-linejoin="round" clip-path={'url(#'+clipPrefix+'-'+band+')'} class="wc-wave-line"/>)}</g>)}
   {goals.map(minute=>timeline[minute]?.[metric]!=null?<circle cx={X(minute)} cy={Y(timeline[minute][metric]??0)} r="5.3" fill="#ff789e" stroke="#fff1f5" stroke-width="1.7"><title>But à la {minute}′</title></circle>:null)}
+  {assists.map(minute=>timeline[minute]?.[metric]!=null?<g><rect x={X(minute)-4} y={Y(timeline[minute][metric]??0)-4} width="8" height="8" transform={'rotate(45 '+X(minute)+' '+Y(timeline[minute][metric]??0)+')'} fill="#FFE7A7" stroke="#fff" stroke-width="1"><title>Passe décisive à la {minute}′</title></rect></g>:null)}
   <text x={left} y="188" class="wc-wave-caption">ÉVÉNEMENTS</text>
   {markers.map(p=><circle cx={X(p.minute)} cy="190" r="2.5" fill="#88acc3" opacity=".88"><title>{p.minute}′ · {p.actions} actions</title></circle>)}
   <line data-wave-cursor x1="33" x2="33" y1={top} y2={bottom} stroke="#d9f5ff" stroke-dasharray="4 4" stroke-width="1.6" visibility="hidden" pointer-events="none"/>
@@ -94,13 +95,13 @@ const clipPrefix='wc-bands-'+Math.random().toString(36).slice(2,11);
    const names=current[3]||[];
    eventList.textContent=names.length?names.join(' · ')+(current[2]>names.length?' · +'+(current[2]-names.length)+' autres':''):current[2]?'Événements collectifs : ouvre le match pour les actions individuelles.':current[0]==null?'Joueur hors du terrain.':'Aucune action enregistrée : les impulsions décroissent.';
    const v=current[metric];
-   const color=v==null?'#73ddff':v<25?'#a695ff':v>75?'#ffb368':'#73ddff';
+   const color=v==null?'#52D3EF':v<25?'#8A9DB8':v>75?'#B8F27C':'#52D3EF';
    point.setAttribute('stroke',color);
    tooltip.hidden=false;
    tooltip.style.left=Math.max(20,Math.min(80,x/580*100))+'%';
    tooltip.style.top=Math.max(5,Math.min(svg.clientHeight-78,(v==null?70:156-v/100*137)/198*svg.clientHeight-81))+'px';
    tooltip.style.borderColor=color;
-   tipMinute.textContent=minute+'′ · '+(v==null?'Hors terrain':v<25?'Activité basse':v>75?'Forte activité':'Activité modérée');
+   tipMinute.textContent=minute+'′ · '+(v==null?'Hors terrain':v<25?'Rythme discret':v>75?'Temps fort':'Dans le jeu');
    tipValues.textContent='Activité '+(current[0]==null?'—':Math.round(current[0])+'/100')+' · Impact '+(current[1]==null?'—':Math.round(current[1])+'/100');
    tipActions.textContent=names.length?names.slice(0,3).join(' · ')+(current[2]>3?' · +'+(current[2]-3)+' autres':''):(current[0]==null?'Hors terrain':current[2]+' action'+(current[2]===1?'':'s')+' à cette minute');
    shell.classList.add('is-inspecting');
