@@ -55,6 +55,9 @@ jobs:
       - name: Test Messi Paintball / chronology
         run: node --test tests/pass-wars.test.mjs
 
+      - name: Verify above-50 activity persistence
+        run: npm run test:presence
+
       - name: Browser interaction smoke tests
         run: npm run test:browser
 
