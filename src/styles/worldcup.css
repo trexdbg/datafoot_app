@@ -106,3 +106,16 @@
 @media(max-width:750px){.wc-root{padding:19px 0 65px}.wc-hero{grid-template-columns:1fr;gap:9px;padding:28px 0}.wc-hero-side{max-width:490px}.wc-country-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.wc-split,.wc-listing{grid-template-columns:1fr}.wc-detail-head{align-items:flex-start;flex-direction:column;gap:8px}.wc-detail-number{border-left:0;border-top:1px solid #3d607d;padding:10px 0;text-align:left}.wc-match-board{padding:18px;gap:7px}.wc-match-board a{font-size:16px;flex-direction:column;align-items:flex-start}.wc-match-board a:last-child{align-items:flex-end}.wc-match-board strong{font-size:32px}.wc-match-board .wc-country-flag{font-size:26px}}
 @media(max-width:520px){.wc-card-grid,.wc-country-grid,.wc-people-grid{grid-template-columns:1fr}.wc-toolbar{align-items:stretch}.wc-toolbar input,.wc-toolbar select{width:100%;max-width:none;flex:1 1 100%}.wc-nav a{flex:1;text-align:center;padding:11px 9px;font-size:12px}.wc-nav-index{display:none}.wc-card{padding:16px}.wc-section-head h2{font-size:29px}.wc-hero-side{padding:13px;gap:8px}.wc-hero-side strong{font-size:27px}.wc-match-board strong{font-size:28px}}
 @media(prefers-reduced-motion:reduce){.wc-card{transition:none;transform:none!important}}
+
+/* Chaque graphe Atlas est manipulable directement dans sa carte. */
+.wc-wave-shell{width:100%;border:1px solid #284f6d;background:#071b30;border-radius:12px;overflow:hidden;min-width:0}
+.wc-wave-shell .wc-wave{border-radius:0;outline:none;touch-action:pan-y;cursor:crosshair}
+.wc-wave-shell .wc-wave:focus-visible{outline:2px solid #9de7ff;outline-offset:-3px}
+.wc-wave-shell.is-inspecting{border-color:#64b4d9;box-shadow:0 0 0 1px #4c9ec234}
+.wc-wave-shell .wc-wave-readout{display:flex;gap:5px 12px;align-items:center;flex-wrap:wrap;padding:8px 10px 10px;border-top:1px solid #2a4d63;color:#92bcd2;font-size:10px;line-height:1.35;min-height:36px}
+.wc-wave-readout [data-wave-minute]{font-weight:900;color:#d7f3ff;min-width:106px}
+.wc-wave-readout strong{color:#d4f2ff;font-size:11px;font-weight:900;margin-left:3px;white-space:nowrap}
+.wc-wave-readout [data-wave-impact] strong{color:#ffcf85}
+.wc-wave-shell:not(.is-inspecting) [data-wave-activity],.wc-wave-shell:not(.is-inspecting) [data-wave-impact],.wc-wave-shell:not(.is-inspecting) [data-wave-events]{display:none}
+.wc-wave-shell.small .wc-wave-readout{font-size:10px}
+@media(max-width:520px){.wc-wave-shell .wc-wave-readout{gap:5px 10px}.wc-wave-readout [data-wave-minute]{min-width:100%}}
