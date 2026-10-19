@@ -87,6 +87,10 @@ export function compactMatch(fixture,raw) {
     const location=Array.isArray(e.location)?e.location.slice(0,2).map(Math.round):null;
     const end=kind==='Pass'&&Array.isArray(e.pass?.end_location)?e.pass.end_location.slice(0,2).map(Math.round):null;
     const a={p:e.player.id,m:minute,s:e.second,k:kind,o:outcome};
+    // Assists de but validées par StatsBomb : aucune inférence par proximité temporelle.
+    // "shot_assist" (passe créant un tir) est une catégorie distincte.
+    if(kind==='Pass'&&e.pass?.goal_assist===true)a.ga=1;
+    else if(kind==='Pass'&&e.pass?.shot_assist===true)a.sa=1;
     if(location)a.l=location;
     if(end)a.e=end;
     if(kind==='Shot'&&Number.isFinite(e.shot?.statsbomb_xg))a.xg=Number(e.shot.statsbomb_xg.toFixed(4));
