@@ -41,7 +41,7 @@ const formatValue=(value:number,format?:string)=>format==='decimal'?value.toFixe
   </div>
   <div class="wc-duel-result" aria-label={'Score : '+home+' '+homeScore+', '+away+' '+awayScore}>
    <div class="wc-duel-score-numbers"><strong>{homeScore}</strong><span>–</span><strong>{awayScore}</strong></div>
-   <small>{duration>90?'APRÈS PROLONGATION':'TEMPS RÉGLEMENTAIRE'} · {duration}′</small>
+   <small>MINUTES COUVERTES · {duration}′</small>
   </div>
   <div class="wc-duel-side wc-duel-side-away">
    <i style={'background:'+COLORS.second} aria-hidden="true"></i>
