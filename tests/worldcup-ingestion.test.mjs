@@ -13,6 +13,8 @@ const sample=[
  starter(10,'Joueur A','Argentina'),
  starter(20,'Joueur B','France'),
  {period:1,minute:12,second:15,type:{name:'Pass'},team:{name:'Argentina'},player:{id:10,name:'Joueur A'},pass:{end_location:[110,45]},location:[50,50]},
+ {period:1,minute:17,second:39,type:{name:'Pass'},team:{name:'Argentina'},player:{id:10,name:'Joueur A'},pass:{goal_assist:true}},
+ {period:1,minute:19,second:10,type:{name:'Pass'},team:{name:'Argentina'},player:{id:10,name:'Joueur A'},pass:{shot_assist:true}},
  {period:1,minute:31,second:2,type:{name:'Substitution'},team:{name:'France'},player:{id:20,name:'Joueur B'},substitution:{replacement:{id:21,name:'Joueur C'}}},
  {period:2,minute:77,second:13,type:{name:'Shot'},team:{name:'France'},player:{id:21,name:'Joueur C'},shot:{outcome:{name:'Goal'},statsbomb_xg:0.6},location:[113,45]},
  {period:2,minute:82,second:11,type:{name:'Bad Behaviour'},team:{name:'Argentina'},player:{id:10,name:'Joueur A'},bad_behaviour:{card:{name:'Second Yellow'}}},
@@ -32,6 +34,10 @@ test('match source generates starters, substitutes, minute and second of events'
  assert.equal(m.actions.find(a=>a.k==='Pass').m,13);
  assert.deepEqual(m.actions.find(a=>a.k==='Pass').l,[50,50]);
  assert.equal(m.actions.find(a=>a.k==='Shot').xg,0.6);
+ assert.equal(m.actions.filter(a=>a.ga).length,1);
+ assert.equal(m.actions.filter(a=>a.sa).length,1);
+ assert.equal(m.actions.find(a=>a.ga).m,18);
+ assert.ok(!m.actions.some(a=>a.ga&&a.sa));
  assert.equal(m.goals.length,1);
  assert.equal(m.goals[0].minute,78);
  assert.equal(m.goals[0].team,'France');
