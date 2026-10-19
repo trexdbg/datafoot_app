@@ -1,6 +1,7 @@
 import fixturesRaw from '../data/worldcup/2022-matches.json';
 import playersRaw from '../data/worldcup/2022-players.json';
 import {computeMatchProfiles} from './match-activity.mjs';
+import {pulseRole} from './pulse-scoring.mjs';
 import {familiarPlayerName} from './player-names.mjs';
 
 export interface Action {p:number;m:number;s:number;k:string;o:string;l?:number[];e?:number[];xg?:number}
@@ -81,7 +82,10 @@ export const mean=(timeline:Point[],key:'activity'|'impact'='activity')=>{
 };
 export const teamTimeline=(game:EnrichedMatch,teamName:string):Point[]=>
  Array.from({length:game.duration+1},(_,minute)=>{
-  const players=game.profiles.filter(p=>p.player.team===teamName&&p.timeline[minute]?.activity!=null);
+  const onPitch=game.profiles.filter(p=>p.player.team===teamName&&p.timeline[minute]?.activity!=null);
+  // Le niveau neutre des gardiens ne gonfle pas la courbe collective.
+  const outfield=onPitch.filter(p=>pulseRole(p.player.position)!=='goalkeeper');
+  const players=outfield.length?outfield:onPitch;
   const active=players.map(p=>p.timeline[minute]);
   const avg=(key:'activity'|'impact')=>active.length?Number((active.reduce((sum,p)=>sum+(p[key]??0),0)/active.length).toFixed(1)):0;
   const events=players.flatMap(p=>(p.timeline[minute].events??[]).map(event=>({kind:event.kind,outcome:event.outcome,playerName:playerName(p.player)})));
