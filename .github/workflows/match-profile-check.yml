@@ -83,9 +83,9 @@ jobs:
           assert.equal(actionImpact({kind:'Shot',outcome:'Goal'}),45);
           assert.equal(computeActivity([],125).timeline[125].activity,0);
           // V4 : le score démarre à 50 sur le terrain, les actions créent des impulsions causales.
-          assert.equal(PULSE_RULES.shortHalfLife,3);
-          assert.equal(PULSE_RULES.longHalfLife,10);
-          assert.deepEqual(pulseWeight({kind:'Pass',outcome:'Complete'}),{activity:1,impact:0.5});
+          assert.equal(PULSE_RULES.shortHalfLife,2.8);
+          assert.equal(PULSE_RULES.longHalfLife,9);
+          assert.deepEqual(pulseWeight({kind:'Pass',outcome:'Complete'}),{activity:0.8,impact:0.5});
           assert.ok(pulseWeight({kind:'Dribble',outcome:'Complete'}).activity>pulseWeight({kind:'Pass',outcome:'Complete'}).activity);
           const pulse=computePulse([{minute:4,second:30,kind:'Dribble',outcome:'Complete'}],30).timeline;
           assert.ok(pulse[3].activity>0 && pulse[3].activity<50);
@@ -96,7 +96,7 @@ jobs:
           assert.ok(computePulse([],90).timeline[90].activity<10);
           assert.ok(pulse.every(p=>p.activity>=0 && p.activity<=100 && p.impact>=0 && p.impact<=100));
           const secondPulse=computePulse([{minute:4,second:0,kind:'Pass',outcome:'Complete'},{minute:4,second:59,kind:'Pass',outcome:'Complete'}],20).timeline;
-          assert.equal(secondPulse[4].gain,2);
+          assert.equal(secondPulse[4].gain,1.6);
           const off=computePulse([{minute:1,second:15,kind:'Pass',outcome:'Complete'}],20,{entry:5,exit:9}).timeline;
           assert.equal(off[4].activity,null);
           assert.equal(off[5].activity,50);

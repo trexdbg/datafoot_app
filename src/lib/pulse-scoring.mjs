@@ -27,13 +27,13 @@ export const PULSE_SCORE_ROWS = Object.freeze([
   row('keeperSweep','Sortie / couverture',1,1.2,1.5,3.5,'Sortie du gardien dans le jeu.'),
   row('keeper','Autre action du gardien',1,1.2,1.5,2.3),
   row('chance','Passe créant un tir',3.2,3.2,2.5,1.5),
-  row('pass','Passe réussie',1,1,1,0.8,'La progression augmente seulement l’indicateur d’impact.'),
-  row('shot','Tir non marqué',4,4,3.5,3),
+  row('pass','Passe réussie',0.8,0.8,0.8,0.7,'La quantité de passes ne doit pas saturer le score.'),
+  row('shot','Tir non marqué',3.5,3.5,3,2.5),
   row('pressure','Pressing',1,1.3,1.5,0.7),
-  row('carry','Conduite de balle',0.65,0.8,0.65,0.5),
-  row('missedDribble','Dribble manqué',2.5,2.5,1.5,1),
-  row('missedPass','Passe manquée',0.45,0.45,0.45,0.4),
-  row('lostDuel','Duel perdu',1.4,1.4,1.4,1.2)
+  row('carry','Conduite de balle',0.45,0.55,0.45,0.35),
+  row('missedDribble','Dribble manqué',0.9,0.9,0.7,0.5,'Tentative valorisée légèrement, mais malus de perte de possession.'),
+  row('missedPass','Passe manquée',0.3,0.3,0.3,0.25,'Le malus dépasse l’impulsion brute.'),
+  row('lostDuel','Duel perdu',0.6,0.6,0.6,0.5,'Le duel perdu provoque un creux temporaire.')
 ]);
 const rules=Object.fromEntries(PULSE_SCORE_ROWS.map(item=>[item.key,item.points]));
 export const pulsePoints=(key,role='midfield')=>(rules[key]??{})[role]??rules[key]?.midfield??0;

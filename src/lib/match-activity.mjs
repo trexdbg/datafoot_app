@@ -39,12 +39,13 @@ export function computeActivity(events, duration = 125, {entry = 0, exit = durat
   return {timeline, byMinute};
 }
 
-// DataFoot Pulse V3 : deux mémoires causales, indices 0–100 à échelle fixe.
+// DataFoot Pulse : impulsions positives et creux brefs causaux, indices 0–100 à échelle fixe.
 // Ces poids sont des choix éditoriaux, PAS un modèle xT/VAEP appris.
 export const PULSE_RULES = Object.freeze({
-  shortHalfLife: 3, longHalfLife: 10, shortMix: 0.65,
-  entryIndex: 50, entryHalfLife: 25, goalkeeperIdleIndex: 50,
-  activityScale: 14, impactScale: 8
+  shortHalfLife: 2.8, longHalfLife: 9, shortMix: 0.7,
+  penaltyHalfLife: 1.5, penaltyLongHalfLife: 4, penaltyMix: 0.82,
+  entryIndex: 50, entryHalfLife: 22, goalkeeperIdleIndex: 50,
+  activityScale: 17.5, impactScale: 8
 });
 
 export function pulseWeight(action, position = '') {
@@ -92,10 +93,10 @@ export function pulseWeight(action, position = '') {
   }
   if(kind==='Pressure')return {activity:pt('pressure'),impact:role==='defense'?0.5:0.25};
   if(kind==='Carry')return {activity:pt('carry'),impact:0.1};
-  if(kind==='Ball Receipt*')return {activity:0.3,impact:0};
-  if(kind==='Miscontrol'||kind==='Foul Committed'||kind==='Dribbled Past')
-    return {activity:0.4,impact:0};
-  return {activity:0.3,impact:0};
+  if(kind==='Ball Receipt*')return {activity:0.1,impact:0};
+  if(kind==='Miscontrol'||kind==='Foul Committed'||kind==='Dribbled Past'||kind==='Dispossessed')
+    return {activity:0,impact:0};
+  return {activity:0.1,impact:0};
 }
 
 // Bandes visuelles : niveaux de l'indice, pas pente mathématique de la courbe.
@@ -112,19 +113,20 @@ export function pulseBand(value) {
 }
 
 /**
- * Les erreurs sont de petites résistances, pas des pénalités de performance.
- * Une tentative ratée reste de l'activité : le malus NE remplace PAS son impulsion.
+ * Les erreurs provoquent des creux visibles et brefs, sans prétendre noter le talent.
+ * Une tentative ratée garde une faible impulsion, distincte de son malus.
+ * La mémoire du malus est plus courte que celle des bonnes actions.
  * Un seul malus par événement (pas de double comptage).
  */
 export function pulsePenalty(action) {
-  if(action.kind==='Pass' && action.outcome!=='Complete') return 0.15;
-  if(action.kind==='Dribble' && action.outcome!=='Complete') return 0.65;
-  if(action.kind==='Shot' && action.outcome!=='Goal') return action.outcome==='Blocked'?0.12:0.2;
-  if(action.kind==='Miscontrol') return 0.3;
-  if(action.kind==='Dispossessed') return 0.45;
-  if(action.kind==='Foul Committed') return 0.3;
-  if(action.kind==='Dribbled Past') return 0.3;
-  if(action.kind==='Duel' && (action.outcome==='Lost'||action.outcome==='Lost In Play')) return 0.25;
+  if(action.kind==='Pass' && action.outcome!=='Complete') return 2;
+  if(action.kind==='Dribble' && action.outcome!=='Complete') return 4.5;
+  if(action.kind==='Shot' && action.outcome!=='Goal') return action.outcome==='Blocked'?0.6:1;
+  if(action.kind==='Miscontrol') return 4;
+  if(action.kind==='Dispossessed') return 5;
+  if(action.kind==='Foul Committed') return 2;
+  if(action.kind==='Dribbled Past') return 4;
+  if(action.kind==='Duel' && !['Won','Won In Play','Success'].includes(action.outcome)) return 3.5;
   return 0;
 }
 
@@ -145,6 +147,8 @@ export function computePulse(events, duration = 125, {entry = 0, exit = duration
   const isGoalkeeper=pulseRole(position)==='goalkeeper';
   const fastDecay=Math.pow(2,-1/rules.shortHalfLife);
   const slowDecay=Math.pow(2,-1/rules.longHalfLife);
+  const penaltyFastDecay=Math.pow(2,-1/rules.penaltyHalfLife);
+  const penaltySlowDecay=Math.pow(2,-1/rules.penaltyLongHalfLife);
   let activityFast=0,activitySlow=0,impactFast=0,impactSlow=0;
   let penaltyFast=0,penaltySlow=0;
   const timeline=byMinute.map((all,minute)=>{
@@ -152,7 +156,7 @@ export function computePulse(events, duration = 125, {entry = 0, exit = duration
     if(minute>entry){
       activityFast*=fastDecay; activitySlow*=slowDecay;
       impactFast*=fastDecay; impactSlow*=slowDecay;
-      penaltyFast*=fastDecay; penaltySlow*=slowDecay;
+      penaltyFast*=penaltyFastDecay; penaltySlow*=penaltySlowDecay;
     }
     const items=all.filter(event=>event.minute>=entry && event.minute<exit);
     let gain=0, penaltyGain=0, impactGain=0;
@@ -167,14 +171,15 @@ export function computePulse(events, duration = 125, {entry = 0, exit = duration
       activitySlow+=weight.activity*b;
       impactFast+=weight.impact*a;
       impactSlow+=weight.impact*b;
-      penaltyFast+=penalty*a;
-      penaltySlow+=penalty*b;
+      penaltyFast+=penalty*Math.pow(2,-elapsed/rules.penaltyHalfLife);
+      penaltySlow+=penalty*Math.pow(2,-elapsed/rules.penaltyLongHalfLife);
       penaltyGain+=penalty;
       gain+=weight.activity;
       impactGain+=weight.impact;
     }
     const mix=rules.shortMix;
-    const activityEnergy=mix*(activityFast-penaltyFast)+(1-mix)*(activitySlow-penaltySlow);
+    const activityEnergy=mix*activityFast+(1-mix)*activitySlow
+      -(rules.penaltyMix*penaltyFast+(1-rules.penaltyMix)*penaltySlow);
     // Joueurs de champ : le capital d'entrée décroît sans action.
     // Gardiens : niveau neutre constant, même après 90 minutes sans tir subi.
     // Seuls les gestes enregistrés créent des pics qui reviennent vers ce niveau.

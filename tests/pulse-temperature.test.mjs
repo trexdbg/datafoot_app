@@ -3,24 +3,26 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {THERMAL_STOPS,THERMAL_GRADIENT,thermalColor,thermalLabel} from '../src/lib/pulse-temperature.mjs';
 
-test('full 0–100 activity spectrum has white cold / yellow / orange / red / violet',()=>{
- assert.deepEqual(THERMAL_STOPS.map(s=>s.at),[0,20,40,60,75,90,100]);
- assert.equal(thermalColor(0),'#F8FCFF');
- assert.equal(thermalColor(20),'#FFF4BA');
- assert.equal(thermalColor(40),'#FFD451');
- assert.equal(thermalColor(60),'#FF9B3D');
- assert.equal(thermalColor(75),'#FF514F');
- assert.equal(thermalColor(90),'#BF4DFF');
- assert.equal(thermalColor(100),'#7739F9');
+test('full 0–100 activity spectrum has blue / cyan / green at 50 / orange / red / violet',()=>{
+ assert.deepEqual(THERMAL_STOPS.map(s=>s.at),[0,20,35,50,63,75,87,95,100]);
+ assert.equal(thermalColor(0),'#4E79EB');
+ assert.equal(thermalColor(20),'#38A8EC');
+ assert.equal(thermalColor(35),'#32BCCD');
+ assert.equal(thermalColor(50),'#50CC86');
+ assert.equal(thermalColor(63),'#D9DA59');
+ assert.equal(thermalColor(75),'#FF9B4A');
+ assert.equal(thermalColor(87),'#F95D69');
+ assert.equal(thermalColor(95),'#BA65E9');
+ assert.equal(thermalColor(100),'#8A50F2');
  assert.match(THERMAL_GRADIENT,/linear-gradient\(90deg/);
 });
 test('colors interpolate between stops instead of jumping between old bands',()=>{
  assert.notEqual(thermalColor(49),thermalColor(50));
  assert.notEqual(thermalColor(50),thermalColor(51));
- assert.equal(thermalColor(94),'#A245FD');
- assert.equal(thermalColor(50),'#FFB847');
- assert.equal(thermalColor(-40),'#F8FCFF');
- assert.equal(thermalColor(200),'#7739F9');
+ assert.notEqual(thermalColor(94),thermalColor(95));
+ assert.equal(thermalColor(50),'#50CC86');
+ assert.equal(thermalColor(-40),'#4E79EB');
+ assert.equal(thermalColor(200),'#8A50F2');
  assert.equal(thermalColor(null),'#34465A');
  assert.equal(thermalLabel(null),'Hors terrain');
  assert.equal(thermalLabel(95),'En feu');

@@ -11,7 +11,7 @@ const base=import.meta.env.BASE_URL.replace(/\/$/,'');
    <div class="pulse-guide-equation"><span>ÉQUIVALENCES</span><strong>28 <small>points d’impulsion</small></strong><p>But = passe décisive</p><strong>5 <small>points d’impulsion</small></strong><p>Interception / tacle du défenseur = dribble de l’attaquant</p></div>
   </header>
   <section class="pulse-guide-section" aria-labelledby="pulse-table-title">
-   <div class="pulse-guide-heading"><div><p class="pulse-guide-kicker">GRILLE DES COEFFICIENTS</p><h2 id="pulse-table-title">Le barème complet</h2></div><p>Les valeurs sont des impulsions d’activité, pas des points directement ajoutés à l’indice sur 100.</p></div>
+   <div class="pulse-guide-heading"><div><p class="pulse-guide-kicker">GRILLE DES COEFFICIENTS</p><h2 id="pulse-table-title">Le barème complet</h2></div><p>Les valeurs sont des impulsions d’activité, pas des points directement ajoutés à l’indice sur 100. Les malus d'erreur sont détaillés plus bas.</p></div>
    <div class="pulse-guide-scroll" tabindex="0" aria-label="Tableau des points d'activité selon le poste">
     <table class="pulse-score-table">
      <thead><tr><th scope="col">Action enregistrée</th>{PULSE_ROLES.map(role=><th scope="col"><span>{role.short}</span><small>{role.label}</small></th>)}</tr></thead>
@@ -25,7 +25,7 @@ const base=import.meta.env.BASE_URL.replace(/\/$/,'');
   </section>
   <section class="pulse-guide-explain" aria-label="Comment lire le Pulse">
    <article><span>01 / ACTIVITÉ</span><h2>Départ à 50 sur 100</h2><p>À son entrée, chaque joueur commence à 50. Pour les joueurs de champ, les périodes sans action font décroître cet indice. Pour les gardiens, 50 reste le niveau neutre : les pics reviennent progressivement à 50, sans pénalité liée à l’attente.</p></article>
-   <article><span>02 / ÉCHECS</span><h2>Des malus légers</h2><p>Une passe ou un dribble manqué reste une action, mais subit une petite résistance : −0,15 pour une passe ratée, −0,65 pour un dribble raté et −0,25 pour un duel perdu. Aucun point n’est soustrait directement à la note finale.</p></article>
+   <article><span>02 / ÉCHECS</span><h2>Des creux visibles après une erreur</h2><p>La tentative garde une petite impulsion, mais une passe ratée crée un malus de −2, un dribble manqué de −4,5, un duel perdu de −3,5 et une perte de balle de −5. Ces malus s'estompent plus vite que les actions positives : la courbe plonge ponctuellement puis peut repartir. Ils agissent sur le calcul de l'indice, pas par une soustraction directe de points sur 100.</p></article>
    <article><span>03 / GARDIENS</span><h2>La tranquillité n’est pas une faute</h2><p>Arrêts, penalties arrêtés, ballons captés, dégagements aux poings et sorties disposent de leur propre barème. Un tir subi ou un but encaissé ne crée ni bonus ni malus automatique : ils ne prouvent pas, seuls, une erreur du gardien. Les moyennes collectives utilisent les joueurs de champ.</p></article>
    <article><span>04 / IMPACT</span><h2>Deux lectures distinctes</h2><p>L’indice d’activité montre le rythme du joueur. L’impact indicatif privilégie les gestes déterminants, et utilise le xG ou la progression des passes lorsque disponibles. Ce n’est ni une note générale, ni un indice xT ou VAEP.</p></article>
   </section>

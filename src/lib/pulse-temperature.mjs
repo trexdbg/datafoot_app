@@ -7,13 +7,15 @@
  * or to style the separate indicative Impact metric.
  */
 export const THERMAL_STOPS=Object.freeze([
- Object.freeze({at:0,color:'#F8FCFF',name:'Blanc froid'}),
- Object.freeze({at:20,color:'#FFF4BA',name:'Jaune pâle'}),
- Object.freeze({at:40,color:'#FFD451',name:'Jaune'}),
- Object.freeze({at:60,color:'#FF9B3D',name:'Orange'}),
- Object.freeze({at:75,color:'#FF514F',name:'Rouge'}),
- Object.freeze({at:90,color:'#BF4DFF',name:'Violet'}),
- Object.freeze({at:100,color:'#7739F9',name:'Violet intense'})
+ Object.freeze({at:0,color:'#4E79EB',name:'Bleu froid'}),
+ Object.freeze({at:20,color:'#38A8EC',name:'Bleu azur'}),
+ Object.freeze({at:35,color:'#32BCCD',name:'Cyan'}),
+ Object.freeze({at:50,color:'#50CC86',name:'Vert équilibré'}),
+ Object.freeze({at:63,color:'#D9DA59',name:'Jaune'}),
+ Object.freeze({at:75,color:'#FF9B4A',name:'Orange'}),
+ Object.freeze({at:87,color:'#F95D69',name:'Rouge'}),
+ Object.freeze({at:95,color:'#BA65E9',name:'Violet'}),
+ Object.freeze({at:100,color:'#8A50F2',name:'Violet intense'})
 ]);
 
 function rgb(hex) {
@@ -32,10 +34,11 @@ export function thermalColor(score) {
 export function thermalLabel(score) {
  if(score==null||!Number.isFinite(score))return 'Hors terrain';
  if(score<20)return 'Froid';
- if(score<40)return 'Réchauffement';
- if(score<60)return 'Actif';
- if(score<75)return 'Chaud';
- if(score<90)return 'Très chaud';
+ if(score<35)return 'Frais';
+ if(score<60)return 'Équilibré';
+ if(score<75)return 'Actif';
+ if(score<87)return 'Chaud';
+ if(score<95)return 'Très chaud';
  return 'En feu';
 }
 export const THERMAL_GRADIENT='linear-gradient(90deg,'+THERMAL_STOPS.map(stop=>stop.color+' '+stop.at+'%').join(',')+')';

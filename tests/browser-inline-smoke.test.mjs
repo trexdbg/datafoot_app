@@ -78,7 +78,7 @@ test('player dropdown, graph modes, minute slider and actions respond to clicks'
  const location={href:'https://example.test/datafoot_app/mondial-2022/matchs/1/profil/?joueur=101',search:'?joueur=101'};
  const history={replaceState(_state,_title,url){location.href=String(url);location.search=new URL(String(url)).search;}};
  assert.doesNotThrow(()=>new vm.Script(script).runInNewContext({
-  document,location,history,URL,URLSearchParams,players,duration:90,defaultId:101,basePath:'/datafoot_app',thermalStops:[{at:0,color:'#F8FCFF'},{at:20,color:'#FFF4BA'},{at:40,color:'#FFD451'},{at:60,color:'#FF9B3D'},{at:75,color:'#FF514F'},{at:90,color:'#BF4DFF'},{at:100,color:'#7739F9'}]
+  document,location,history,URL,URLSearchParams,players,duration:90,defaultId:101,basePath:'/datafoot_app',thermalStops:[{at:0,color:'#4E79EB'},{at:20,color:'#38A8EC'},{at:35,color:'#32BCCD'},{at:50,color:'#50CC86'},{at:63,color:'#D9DA59'},{at:75,color:'#FF9B4A'},{at:87,color:'#F95D69'},{at:95,color:'#BA65E9'},{at:100,color:'#8A50F2'}]
  },{timeout:4000}));
  assert.equal(node('wc-current-name').textContent,'Premier Joueur');
  assert.ok(node('wc-above-share').innerHTML.includes('44'),'regularity is shown for initial player');

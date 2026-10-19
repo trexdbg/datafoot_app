@@ -23,9 +23,9 @@ test('les secondes influencent la contribution à la fin de minute',()=>{
 });
 
 test('un but lance un temps fort mais l’activité revient progressivement à la normale',()=>{
- assert.equal(PULSE_RULES.shortHalfLife,3);
- assert.equal(PULSE_RULES.longHalfLife,10);
- assert.deepEqual(pulseWeight({kind:'Pass',outcome:'Complete'}),{activity:1,impact:0.5});
+ assert.equal(PULSE_RULES.shortHalfLife,2.8);
+ assert.equal(PULSE_RULES.longHalfLife,9);
+ assert.deepEqual(pulseWeight({kind:'Pass',outcome:'Complete'}),{activity:0.8,impact:0.5});
  assert.equal(pulseWeight({kind:'Pass',outcome:'Incomplete'}).impact,0);
  assert.equal(pulseWeight({kind:'Shot',outcome:'Goal'}).activity,28);
  const {timeline}=computePulse([{minute:80,second:5,kind:'Shot',outcome:'Goal'}],90);
@@ -58,10 +58,10 @@ test('la vue équipe est autonome et moyenne seulement les joueurs présents',()
 });
 test('au coup d’envoi et à chaque entrée, chaque joueur commence à 50, puis redescend si le jeu est calme',()=>{
  assert.equal(PULSE_RULES.entryIndex,50);
- assert.equal(PULSE_RULES.entryHalfLife,25);
+ assert.equal(PULSE_RULES.entryHalfLife,22);
  const quiet=computePulse([],90).timeline;
  assert.equal(quiet[0].activity,50);
- assert.equal(quiet[25].activity,25);
+ assert.equal(quiet[22].activity,25);
  assert.ok(quiet[45].activity<25);
  assert.ok(quiet[90].activity>0 && quiet[90].activity<10);
  const sub=computePulse([],90,{entry:61,exit:84}).timeline;
@@ -71,21 +71,21 @@ test('au coup d’envoi et à chaque entrée, chaque joueur commence à 50, puis
  assert.equal(sub[84].activity,null);
 });
 test('un geste raté conserve une impulsion d’activité mais subit un faible malus',()=>{
- assert.equal(pulsePenalty({kind:'Pass',outcome:'Incomplete'}),0.15);
- assert.equal(pulsePenalty({kind:'Dribble',outcome:'Incomplete'}),0.65);
- assert.equal(pulsePenalty({kind:'Dispossessed',outcome:''}),0.45);
+ assert.equal(pulsePenalty({kind:'Pass',outcome:'Incomplete'}),2);
+ assert.equal(pulsePenalty({kind:'Dribble',outcome:'Incomplete'}),4.5);
+ assert.equal(pulsePenalty({kind:'Dispossessed',outcome:''}),5);
  const fail={minute:20,second:30,kind:'Dribble',outcome:'Incomplete'};
  const success={...fail,outcome:'Complete'};
  const missed=computePulse([fail],60).timeline;
  const won=computePulse([success],60).timeline;
  const quiet=computePulse([],60).timeline;
- assert.ok(missed[20].activity>quiet[20].activity,'tenter un dribble reste de l’activité');
- assert.ok(missed[20].activity<won[20].activity,'la réussite a un léger avantage');
- assert.equal(missed[20].penaltyGain,0.65);
+ assert.ok(missed[20].activity<quiet[20].activity,'un dribble raté crée un creux');
+ assert.ok(missed[20].activity<won[20].activity,'la réussite se démarque clairement');
+ assert.equal(missed[20].penaltyGain,4.5);
  assert.equal(missed[19].activity,quiet[19].activity,'aucune fuite vers le passé');
  const dispossessed=computePulse([{minute:20,second:30,kind:'Dispossessed',outcome:''}],60).timeline;
  assert.ok(dispossessed[20].activity<quiet[20].activity,'une perte de balle peut faire légèrement descendre le score');
- assert.ok(dispossessed[20].activity>quiet[20].activity-2,'le malus reste modéré');
+ assert.ok(dispossessed[20].activity<quiet[20].activity-3,'la perte de balle crée une baisse visible');
 });
 test('bandes visuelles stables sur des seuils 25 et 75, tous scores bornés',()=>{
  assert.equal(pulseBand(null),'off');
@@ -107,12 +107,24 @@ test('une séquence de deux buts fait approcher 100 sans imposer le maximum',()=
  assert.ok(t[80].activity>75);
  assert.ok(t[81].activity>90 && t[81].activity<100);
  assert.ok(t[90].activity<t[81].activity);
- assert.equal(t[79].activity,Number((50*Math.pow(2,-79/25)).toFixed(1)));
+ assert.equal(t[79].activity,Number((50*Math.pow(2,-79/22)).toFixed(1)));
 });
 
+test('un ballon perdu cause une chute courte qui se résorbe, sans toucher aux actions passées',()=>{
+ const passes=[{minute:10,second:20,kind:'Pass',outcome:'Complete'}];
+ const mistake={minute:12,second:58,kind:'Dispossessed',outcome:''};
+ const base=computePulse(passes,30).timeline;
+ const loss=computePulse([...passes,mistake],30).timeline;
+ assert.equal(loss[11].activity,base[11].activity);
+ assert.ok(loss[12].activity<=base[12].activity-4);
+ assert.ok(loss[13].activity<base[13].activity);
+ assert.ok(base[17].activity-loss[17].activity<base[12].activity-loss[12].activity);
+ assert.equal(loss[12].penaltyGain,5);
+ assert.equal(PULSE_RULES.penaltyHalfLife,1.5);
+});
 test('une passe décisive vaut exactement un but dans le barème Pulse',()=>{
  const passing={kind:'Pass',outcome:'Complete'};
- assert.deepEqual(pulseWeight(passing),{activity:1,impact:0.5});
+ assert.deepEqual(pulseWeight(passing),{activity:0.8,impact:0.5});
  assert.equal(pulseWeight({...passing,goalAssist:true}).activity,28);
  assert.equal(pulseWeight({...passing,shotAssist:true}).activity,3.2);
  assert.equal(pulseWeight({kind:'Shot',outcome:'Goal'}).activity,28);
