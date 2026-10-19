@@ -21,14 +21,15 @@ test('les secondes influencent la contribution à la fin de minute',()=>{
  assert.equal(pass(0)[10].gain,1);
 });
 
-test('activité et impact sont distincts, et un but ne vaut pas 45 points',()=>{
+test('un but lance un temps fort mais l’activité revient progressivement à la normale',()=>{
  assert.equal(PULSE_RULES.shortHalfLife,3);
  assert.equal(PULSE_RULES.longHalfLife,10);
  assert.deepEqual(pulseWeight({kind:'Pass',outcome:'Complete'}),{activity:1,impact:0.5});
  assert.equal(pulseWeight({kind:'Pass',outcome:'Incomplete'}).impact,0);
- assert.equal(pulseWeight({kind:'Shot',outcome:'Goal'}).activity,5.5);
+ assert.equal(pulseWeight({kind:'Shot',outcome:'Goal'}).activity,28);
  const {timeline}=computePulse([{minute:80,second:5,kind:'Shot',outcome:'Goal'}],90);
- assert.ok(timeline[80].activity>0&&timeline[80].activity<45);
+ assert.ok(timeline[80].activity>60&&timeline[80].activity<100);
+ assert.ok(timeline[83].activity<timeline[80].activity);
  assert.ok(timeline[80].impact>timeline[79].impact);
 });
 
@@ -95,4 +96,15 @@ test('bandes visuelles stables sur des seuils 25 et 75, tous scores bornés',()=
  assert.equal(PULSE_BANDS.high.min,75);
  const pile=Array.from({length:200},(_,i)=>({minute:4,second:i%60,kind:'Dispossessed',outcome:''}));
  assert.ok(computePulse(pile,90).timeline.every(p=>p.activity>=0 && p.activity<=100));
+});
+
+test('une séquence de deux buts fait approcher 100 sans imposer le maximum',()=>{
+ const t=computePulse([
+  {minute:80,second:24,kind:'Shot',outcome:'Goal'},
+  {minute:81,second:59,kind:'Shot',outcome:'Goal'}
+ ],125).timeline;
+ assert.ok(t[80].activity>75);
+ assert.ok(t[81].activity>90 && t[81].activity<100);
+ assert.ok(t[90].activity<t[81].activity);
+ assert.equal(t[79].activity,Number((50*Math.pow(2,-79/25)).toFixed(1)));
 });
