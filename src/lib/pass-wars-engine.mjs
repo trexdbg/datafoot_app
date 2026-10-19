@@ -33,6 +33,21 @@ export function playerColor(id){
   return 'hsl('+hue+' '+saturation+'% '+lightness+'%)';
 }
 
+// La palette générale est figée à partir des partenaires du jeu complet
+// (tous les matchs publiés), et non du filtre en cours. L'espacement
+// angulaire doré assure que Xavi, Busquets, Iniesta, etc. ne se ressemblent
+// pas visuellement comme avec un hash direct de leurs identifiants.
+export function createPlayerPalette(partners){
+  const all=[...partners].sort((a,b)=>b.total-a.total||
+    String(a.name).localeCompare(String(b.name))||a.id-b.id);
+  return new Map(all.map((partner,index)=>{
+    const hue=((15+index*137.50776405)%360).toFixed(3);
+    const saturation=86+(index%3)*4;
+    const lightness=59+(Math.floor(index/3)%3)*3;
+    return [partner.id,'hsl('+hue+' '+saturation+'% '+lightness+'%)'];
+  }));
+}
+
 export function bootPassWars(){
   const root=document.querySelector('[data-pass-wars]');
   if(!root)return;
@@ -41,7 +56,8 @@ export function bootPassWars(){
   const W=1200,H=780,CX=600,CY=385,CYAN='#50e7ff';
   const source=root.dataset.base+'/data/players/';
   const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  let meta,original=[],filtered=[],events=[],players=[],positions=new Map(),counts=new Map();
+  let meta,original=[],filtered=[],events=[],players=[],positions=new Map(),counts=new Map(),palette=new Map();
+  const colorOf=id=>palette.get(id)||colorOf(id);
   let cursor=0,position=0,prev=0,lastText=0,playing=false,battle=false,speed=28,focus=null,sort='total';
   let balls=[],ripples=[];
   // Toile de peinture persistante : une passe laisse une éclaboussure à l'impact.
@@ -158,7 +174,7 @@ export function bootPassWars(){
       const content=document.createElement('div');content.className='pw-partner-main';
       const label=document.createElement('span');label.textContent=p.name;content.append(label);
       const bars=document.createElement('span');bars.className='pw-partner-min';
-      bars.style.setProperty('--player-color',playerColor(p.id));
+      bars.style.setProperty('--player-color',colorOf(p.id));
       for(const key of ['given','received']){
         const bar=document.createElement('i');
         bar.style.width=100*p[key]/p.total+'%';
@@ -169,8 +185,8 @@ export function bootPassWars(){
       details.className='pw-direction-counts';
       details.textContent='↗ '+p.given+'  ·  ↙ '+p.received;
       content.append(details);
-      n.style.color=playerColor(p.id);
-      button.style.setProperty('--player-color',playerColor(p.id));
+      n.style.color=colorOf(p.id);
+      button.style.setProperty('--player-color',colorOf(p.id));
       const total=document.createElement('strong');total.dataset.count=String(p.id);total.textContent='0';
       button.append(n,content,total);button.addEventListener('click',()=>selectPlayer(p.id));list.append(button);
     });
@@ -205,7 +221,7 @@ export function bootPassWars(){
     const target=impactPosition(id,direction);
     if(!target)return;
     const rng=randomSeed((Math.imul(Number(id)||1,2654435761)+Math.imul(Number(index)||0,374761393)+(direction==='given'?101:303))>>>0);
-    const color=playerColor(id);
+    const color=colorOf(id);
     const x=target.x+(rng()-.5)*58,y=target.y+(rng()-.5)*58;
     const radius=12+rng()*16;
     paint.save();paint.translate(x,y);paint.rotate(rng()*Math.PI*2);
@@ -236,7 +252,7 @@ export function bootPassWars(){
       survivors.push(p);
       const from=p.direction==='given'?{x:CX,y:CY}:end;
       const to=p.direction==='given'?end:{x:CX,y:CY};
-      const color=playerColor(p.id);
+      const color=colorOf(p.id);
       if(age>=1 && !p.hit){
         p.hit=true;
         stampPaint(p.id,p.direction,p.index);
@@ -290,8 +306,8 @@ export function bootPassWars(){
       const pos=positions.get(p.id),amount=score(p.id).total,active=focus===null||focus===p.id;
       const r=18+Math.min(8,Math.sqrt(amount)*.7);
       ctx.save();ctx.globalAlpha=active?1:.18;
-      ctx.fillStyle='#12304b';ctx.strokeStyle=focus===p.id?'#ffffff':playerColor(p.id);ctx.lineWidth=focus===p.id?3:2.5;
-      ctx.shadowColor=playerColor(p.id);ctx.shadowBlur=amount?20:7;ctx.beginPath();ctx.arc(pos.x,pos.y,r,0,7);ctx.fill();ctx.stroke();
+      ctx.fillStyle='#12304b';ctx.strokeStyle=focus===p.id?'#ffffff':colorOf(p.id);ctx.lineWidth=focus===p.id?3:2.5;
+      ctx.shadowColor=colorOf(p.id);ctx.shadowBlur=amount?20:7;ctx.beginPath();ctx.arc(pos.x,pos.y,r,0,7);ctx.fill();ctx.stroke();
       ctx.shadowBlur=0;ctx.textAlign='center';ctx.fillStyle='#fff';ctx.font='800 14px system-ui';ctx.fillText(amount,pos.x,pos.y+5);
       ctx.font='600 12px system-ui';ctx.fillStyle='#d7ecfa';
       const nm=p.name.length>17?p.name.split(' ').at(-1):p.name;
@@ -355,6 +371,7 @@ export function bootPassWars(){
          info.summary.total!==stream.events.length||info.scope.complete_career!==false)
         throw Error('Données de provenance ou de structure invalides');
       meta=info;original=stream.events;
+      palette=createPlayerPalette(meta.partners);
       choices('pw-team',meta.filters.teams);choices('pw-season',meta.filters.seasons);
       choices('pw-competition',meta.filters.competitions);
       set('pw-state','● '+meta.scope.matches_count+' MATCHS RÉELS / STATSBOMB');
