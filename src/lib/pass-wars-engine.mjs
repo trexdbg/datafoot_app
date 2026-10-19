@@ -51,33 +51,32 @@ export function createPlayerPalette(partners){
 }
 
 /**
- * Disposition organique reproductible. Le placement ne dépend PAS du rang des
- * passes : chaque joueur reçoit des coordonnées via sa propre graine.
- * Rejet des collisions avec le portrait central et les autres joueurs.
- * Pas de lignes, pas de couronne régulière, pas de classement en horloge.
+ * Disposition organique, indépendante du classement. Le sel de chargement
+ * change le terrain à chaque visite mais reste fixe durant la lecture.
+ * Portraits, capsules et noms restent dans l'arène sans chevauchement.
+ * Aucun trait, aucune couronne régulière ni classement en horloge.
  */
-export function layoutPlayerNodes(players, W=1200, H=780, CX=W/2, CY=H/2){
+export function layoutPlayerNodes(players, W=1200, H=780, CX=W/2, CY=H/2, sessionSeed=0){
   const result=new Map();
   const ids=[...players].sort((a,b)=>Number(a.id)-Number(b.id));
-  const paddingX=92,paddingY=105;
+  const paddingX=105,paddingY=112;
+  const salt=Number(sessionSeed)>>>0;
   for(const p of ids){
-    let seed=(Math.imul(Number(p.id)||1,2654435761)^0x9e3779b9)>>>0;
+    let seed=(Math.imul(Number(p.id)||1,2654435761)^0x9e3779b9^salt)>>>0;
     const random=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;};
-    let best=null,bestDistance=-Infinity;
-    for(let attempt=0;attempt<700;attempt++){
+    let best=null,bestGap=-Infinity;
+    for(let attempt=0;attempt<1800;attempt++){
       const x=paddingX+random()*(W-2*paddingX);
       const y=paddingY+random()*(H-2*paddingY);
-      const dCenter=Math.hypot(x-CX,y-CY);
-      if(dCenter<185)continue;
+      if(Math.hypot(x-CX,y-CY)<195)continue;
       const existing=[...result.values()];
       const closest=existing.length
         ? Math.min(...existing.map(point=>Math.hypot(x-point.x,y-point.y)))
         : 1000;
       const border=Math.min(x-paddingX,W-paddingX-x,y-paddingY,H-paddingY-y);
-      const quality=closest+border*.13;
-      if(quality>bestDistance){bestDistance=quality;best={x,y};}
-      // Première position viable, semée différemment pour chaque ID.
-      if(closest>146&&border>22){best={x,y};break;}
+      const quality=closest+border*.1;
+      if(quality>bestGap){bestGap=quality;best={x,y};}
+      if(closest>=155&&border>17){best={x,y};break;}
     }
     if(best)result.set(p.id,best);
   }
@@ -97,6 +96,15 @@ export function monthYearLabel(ordinal){
   if(ordinal===null||!Number.isInteger(ordinal)||ordinal<0)return '--/----';
   const year=Math.floor(ordinal/12),month=ordinal%12+1;
   return String(month).padStart(2,'0')+'/'+String(year).padStart(4,'0');
+}
+export function eventCalendarPosition(isoDate){
+  const month=monthOrdinal(isoDate);
+  if(month===null)return null;
+  const date=/^\d{4}-\d{2}-(\d{2})$/.exec(String(isoDate));
+  if(!date)return month;
+  const days=new Date(Date.UTC(Math.floor(month/12),month%12+1,0)).getUTCDate();
+  const day=Number(date[1]);
+  return month+Math.max(0,Math.min(1,(day-1)/days));
 }
 export function eventsThroughMonth(events,ordinal){
   if(!Number.isInteger(ordinal))return 0;
@@ -121,7 +129,16 @@ export function bootPassWars(){
   const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   let meta,original=[],filtered=[],events=[],players=[],positions=new Map(),counts=new Map(),palette=new Map();
   const colorOf=id=>palette.get(id)||playerColor(id);
-  let cursor=0,position=0,prev=0,lastText=0,playing=false,battle=false,speed=28,focus=null,sort='total',selectedMonth=null;
+  let cursor=0,calendarPosition=0,timelineFirst=null,timelineLast=null;
+  let prev=0,lastText=0,playing=false,battle=false,speed=4,focus=null,sort='total',selectedMonth=null;
+  // Un nouveau placement par chargement ; un même joueur ne saute pas de place
+  // pendant les filtres, la lecture ou les déplacements dans la chronologie.
+  const layoutSalt=(()=>{
+    const bytes=new Uint32Array(1);
+    if(window.crypto?.getRandomValues)window.crypto.getRandomValues(bytes);
+    else bytes[0]=(Date.now()^Math.floor(Math.random()*0xffffffff))>>>0;
+    return bytes[0];
+  })();
   let balls=[],ripples=[];
   // Photos Commons préchargées une seule fois par joueur ; si erreur réseau,
   // le Canvas et le classement conservent un monogramme coloré.
@@ -186,7 +203,7 @@ export function bootPassWars(){
     for(const value of values){const el=document.createElement('option');el.value=value;el.textContent=value;$(id).append(el);}
   }
   function tally(list){ return eligiblePartners(list); }
-  function locate(){positions=layoutPlayerNodes(players,W,H,CX,CY);}
+  function locate(){positions=layoutPlayerNodes(players,W,H,CX,CY,layoutSalt);}
   function renderMonthTicks(first,last){
     const ticks=$('pw-month-ticks');ticks.replaceChildren();
     if(first===null||last===null){
@@ -200,13 +217,18 @@ export function bootPassWars(){
       Math.round(first+(last-first)*(i/(steps-1||1)))));
     for(const month of ordinals){
       const tick=document.createElement('span');
-      tick.textContent=monthYearLabel(month);ticks.append(tick);
+      tick.textContent=monthYearLabel(month);
+      tick.style.left=(last>first?100*(month-first)/(last-first):0)+'%';
+      ticks.append(tick);
     }
   }
   function configureMonthTimeline(){
     const scrub=$('pw-month-scrub');
-    const first=events[0]?monthOrdinal(events[0].date):null;
-    const last=events.length?monthOrdinal(events.at(-1).date):null;
+    // La période de l'axe vient de TOUS les matchs filtrés, et non
+    // seulement des partenaires ayant atteint le seuil des 96 passes.
+    const first=filtered[0]?monthOrdinal(filtered[0].date):null;
+    const last=filtered.length?monthOrdinal(filtered.at(-1).date):null;
+    timelineFirst=first;timelineLast=last;
     scrub.min=String(first??0);
     scrub.max=String(last??Math.max(1,first??0));
     scrub.value=String(first??0);
@@ -214,9 +236,10 @@ export function bootPassWars(){
     renderMonthTicks(first,last);
   }
   function renderCurrentMonth(){
-    const sourceMonth=cursor>0?monthOrdinal(events[cursor-1].date):
-      events.length?monthOrdinal(events[0].date):null;
-    const month=selectedMonth??sourceMonth;
+    // L'affichage suit le calendrier de façon linéaire, y compris les
+    // mois où les données publiques ne contiennent aucune rencontre.
+    const month=selectedMonth??(timelineFirst===null?null:
+      Math.max(timelineFirst,Math.min(timelineLast,Math.floor(calendarPosition))));
     set('pw-now',monthYearLabel(month));
     const scrub=$('pw-month-scrub');
     if(month!==null){
@@ -249,7 +272,8 @@ export function bootPassWars(){
         ' Seuls les partenaires totalisant plus de 95 passes envoyées + reçues dans cette sélection apparaissent.');
   }
   function reset(){
-    playing=false;cursor=0;position=0;counts=new Map();balls=[];ripples=[];selectedMonth=null;
+    playing=false;cursor=0;calendarPosition=timelineFirst??0;
+    counts=new Map();balls=[];ripples=[];selectedMonth=null;
     paint.clearRect(0,0,W,H);
     updatePlay();renderBoard();renderLeaderboard();
   }
@@ -269,7 +293,9 @@ export function bootPassWars(){
   function seek(n,month=null){
     const end=Math.max(0,Math.min(events.length,Number(n)||0));
     selectedMonth=month;
-    playing=false;position=end;cursor=0;counts=new Map();balls=[];ripples=[];
+    // Le mois sélectionné est entièrement inclus ; lecture suivante = mois suivant.
+    calendarPosition=month===null?(timelineFirst??0):Math.min((timelineLast??month)+1,month+.999);
+    playing=false;cursor=0;counts=new Map();balls=[];ripples=[];
     paint.clearRect(0,0,W,H);
     while(cursor<end)count(events[cursor++],false,0);
     // État visuel après scrubbing : un condensé des impacts précédents,
@@ -293,7 +319,6 @@ export function bootPassWars(){
     const p=players.find(p=>p.id===focus);
     set('pw-focus',p?displayPlayerName(p.id,p.name).toUpperCase()+' — '+score(p.id).given+' ENVOYÉES / '+score(p.id).received+' REÇUES':
       'TOUS LES JOUEURS · CLIQUEZ SUR UN NŒUD OU UN NOM POUR L’ISOLER.');
-    const e=events[Math.max(cursor-1,0)];
     renderCurrentMonth();
     set('pw-progress-text',format(cursor)+' / '+format(events.length)+' PASSES');
     for(const el of $('pw-leader').querySelectorAll('[data-count]'))el.textContent=format(score(Number(el.dataset.count)).total);
@@ -502,11 +527,19 @@ export function bootPassWars(){
   }
   function frame(t){
     const dt=prev?Math.min(.13,Math.max(0,(t-prev)/1000)):0;prev=t;
-    if(playing&&events.length){
+    if(playing&&events.length&&timelineLast!==null){
       selectedMonth=null;
-      position=Math.min(events.length,position+dt*(battle?175:speed));
-      while(cursor<Math.floor(position))count(events[cursor++],true,t);
-      if(cursor>=events.length){playing=false;updatePlay();}
+      // Un mois = toujours la même distance temporelle, même sans passe.
+      // Les événements conservent leur vraie date à l'intérieur du mois.
+      const end=timelineLast+1;
+      calendarPosition=Math.min(end,calendarPosition+dt*(battle?24:speed));
+      while(cursor<events.length &&
+            eventCalendarPosition(events[cursor].date)<calendarPosition)
+        count(events[cursor++],true,t);
+      if(calendarPosition>=end){
+        while(cursor<events.length)count(events[cursor++],true,t);
+        playing=false;updatePlay();
+      }
       if(t-lastText>90){lastText=t;renderBoard();}
     }
     draw(t);requestAnimationFrame(frame);
@@ -519,11 +552,12 @@ export function bootPassWars(){
   ['pw-team','pw-season','pw-competition'].forEach(id=>$(id).addEventListener('change',build));
   $('pw-sort').addEventListener('change',e=>{sort=e.target.value;renderLeaderboard();});
   $('pw-play').addEventListener('click',()=>{
-    if(cursor>=events.length)reset();playing=!playing;updatePlay();
+    if(timelineLast!==null&&calendarPosition>=timelineLast+1)reset();
+    playing=!playing;updatePlay();
   });
   $('pw-reset').addEventListener('click',reset);
   $('pw-battle').addEventListener('click',()=>{
-    battle=!battle;if(battle&&cursor>=events.length)reset();
+    battle=!battle;if(battle&&timelineLast!==null&&calendarPosition>=timelineLast+1)reset();
     if(battle)playing=true;updatePlay();
   });
   $('pw-speed').addEventListener('change',e=>speed=Number(e.target.value));
