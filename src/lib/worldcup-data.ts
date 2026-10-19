@@ -1,6 +1,7 @@
 import fixturesRaw from '../data/worldcup/2022-matches.json';
 import playersRaw from '../data/worldcup/2022-players.json';
 import {computeMatchProfiles} from './match-activity.mjs';
+import {familiarPlayerName} from './player-names.mjs';
 
 export interface Action {p:number;m:number;s:number;k:string;o:string;l?:number[];e?:number[];xg?:number}
 export interface Player {id:number;name:string;team:string;entry:number;exit:number|null;position:string}
@@ -22,6 +23,9 @@ export const games:EnrichedMatch[]=Object.values(files).map(f=>{
 }).sort((a,b)=>a.date.localeCompare(b.date)||a.id-b.id);
 export const fixtures:Fixture[]=fixturesRaw.matches;
 export const playerIndex=playersRaw as PlayerIndex[];
+/** Libellé d'usage affiché partout ; le nom original reste disponible dans les sources. */
+export const playerName=(player:{id:number;name:string;team?:string;country?:string})=>
+ familiarPlayerName(player.id,player.name,player.team??player.country??'');
 export const gameMap=new Map(games.map(g=>[g.id,g]));
 export const playerMap=new Map(playerIndex.map(p=>[p.id,p]));
 const translations:Record<string,string>={
@@ -80,7 +84,7 @@ export const teamTimeline=(game:EnrichedMatch,teamName:string):Point[]=>
   const players=game.profiles.filter(p=>p.player.team===teamName&&p.timeline[minute]?.activity!=null);
   const active=players.map(p=>p.timeline[minute]);
   const avg=(key:'activity'|'impact')=>active.length?Number((active.reduce((sum,p)=>sum+(p[key]??0),0)/active.length).toFixed(1)):0;
-  const events=players.flatMap(p=>(p.timeline[minute].events??[]).map(event=>({kind:event.kind,outcome:event.outcome,playerName:p.player.name})));
+  const events=players.flatMap(p=>(p.timeline[minute].events??[]).map(event=>({kind:event.kind,outcome:event.outcome,playerName:playerName(p.player)})));
   return {minute,activity:avg('activity'),impact:avg('impact'),players:active.length,actions:active.reduce((sum,p)=>sum+(p.actions??0),0),events};
  });
 export const teamPlayers=(game:EnrichedMatch,team:string)=>game.profiles.filter(p=>p.player.team===team);
