@@ -3,7 +3,7 @@ import {layoutPlayerNodes,monthOrdinal,monthYearLabel,eventsThroughMonth} from '
 const TABS={
   goalkeepers:{title:'GARDIENS AFFRONTÉS',label:'TIRS RELIÉS À UN GARDIEN',singular:'TIR',limit:20},
   defenders:{title:'DÉFENSEURS DRIBBLÉS',label:'DRIBBLES RÉUSSIS ATTRIBUÉS',singular:'DRIBBLE',limit:20},
-  clubs:{title:'ÉQUIPES · BUTS DANS LES MATCHS OUVERTS',label:'BUTS PAR ÉQUIPE',singular:'BUT',limit:1000},
+  clubs:{title:'ÉQUIPES · BUTS DANS LES MATCHS OUVERTS',label:'BUTS PAR ÉQUIPE',singular:'BUT',limit:20},
 };
 export const MODE_IDS=Object.keys(TABS);
 // Surnoms et noms usuels par ID StatsBomb : les événements sources gardent
@@ -53,7 +53,7 @@ export function bootMessiEncounters(){
   const $=id=>document.getElementById(id),canvas=$('me-canvas'),ctx=canvas?.getContext('2d');
   if(!ctx)return;
   const W=1200,H=780,CX=600,CY=390;
-  let db=null,mode='defenders',source=[],visible=[],leaders=[],positions=new Map();
+  let db=null,mode='defenders',source=[],visible=[],leaders=[],allLeaders=[],positions=new Map(),page=0;
   let cursor=0,playing=false,battle=false,rate=10,lastFrame=0,progress=0,lastInfo=0,selectedMonth=null;
   let balls=[],paintDots=[],focus=null;
   const stars=Array.from({length:130},(_,i)=>({x:(i*171.23)%W,y:(i*293.43)%H,r:i%7?1:2}));
@@ -84,7 +84,17 @@ export function bootMessiEncounters(){
     const f=filters();
     source=db.modes[mode].events.filter(e=>
       (!f.competition||e.competition===f.competition)&&(!f.season||e.season===f.season));
-    leaders=rankOpponents(source,TABS[mode].limit);
+    // La carrière publique peut dépasser 60 adversaires : afficher 20 nœuds
+    // par page, mais conserver le classement et le total de TOUS les clubs.
+    allLeaders=rankOpponents(source,1000000);
+    const perPage=TABS[mode].limit;
+    const pageCount=Math.max(1,Math.ceil(allLeaders.length/perPage));
+    page=Math.min(page,pageCount-1);
+    leaders=allLeaders.slice(page*perPage,(page+1)*perPage);
+    $('me-pages').hidden=pageCount<=1;
+    $('me-prev').disabled=page<=0;
+    $('me-next').disabled=page>=pageCount-1;
+    say('me-page-label',(page+1)+' / '+pageCount);
     const ids=new Set(leaders.map(x=>x.id));
     visible=source.filter(e=>ids.has(e.target_id));
     positions=layoutPlayerNodes(leaders,W,H,CX,CY);
@@ -94,8 +104,12 @@ export function bootMessiEncounters(){
     $('me-month').min=String(from??0);$('me-month').max=String(to??1);
     $('me-month').step='1';$('me-month').disabled=from===null||from===to;
     say('me-from',monthYearLabel(from));say('me-to',monthYearLabel(to));
-    say('me-subtitle',TABS[mode].label+' · '+leaders.length+' ADVERSAIRES');
-    say('me-coverage',format(new Set(source.map(e=>e.match_id)).size)+' MATCHS AVEC ÉVÉNEMENT LIÉ · '+format(source.length)+' ÉVÉNEMENTS');
+    say('me-subtitle',TABS[mode].label+' · '+leaders.length+' / '+allLeaders.length+' ADVERSAIRES');
+    say('me-coverage',format(new Set(source.map(e=>e.match_id)).size)+
+      ' MATCHS AVEC ÉVÉNEMENT LIÉ · '+format(source.length)+
+      ' ÉVÉNEMENTS SOURCE AU TOTAL'+(pageCount>1?' · PAGE '+(page+1)+'/'+pageCount:''));
+    say('me-global-totals',(mode==='clubs'?'BUTS':'ÉVÉNEMENTS')+
+      ' DANS TOUS LES MATCHS COUVERTS : '+format(source.length));
     $('me-play').disabled=!visible.length;$('me-battle').disabled=!visible.length;
     reset();renderRank();
     say('me-message',visible.length
@@ -104,7 +118,7 @@ export function bootMessiEncounters(){
   }
   function setMode(next){
     if(!TABS[next])return;
-    mode=next;
+    mode=next;page=0;
     document.querySelectorAll('[data-me-mode]').forEach(button=>{
       const active=button.dataset.meMode===mode;
       button.classList.toggle('active',active);button.setAttribute('aria-pressed',String(active));
@@ -156,7 +170,7 @@ export function bootMessiEncounters(){
       const button=document.createElement('button');button.type='button';
       button.className='me-rank-entry';button.style.setProperty('--color',hue(p.id));
       button.title=p.name;button.dataset.meTarget=String(p.id);
-      const num=document.createElement('span');num.className='me-rank-num';num.textContent=String(index+1).padStart(2,'0');
+      const num=document.createElement('span');num.className='me-rank-num';num.textContent=String(page*TABS[mode].limit+index+1).padStart(2,'0');
       const avatar=document.createElement('span');avatar.className='me-avatar';avatar.textContent=initials(p.name);
       const title=document.createElement('span');title.className='me-rank-name';title.textContent=p.name;
       const val=document.createElement('strong');val.dataset.meCount=String(p.id);val.textContent='0';
@@ -258,8 +272,10 @@ export function bootMessiEncounters(){
     if(near){focus=focus===near.id?null:near.id;renderInfo();}
   });
   document.querySelectorAll('[data-me-mode]').forEach(btn=>btn.addEventListener('click',()=>setMode(btn.dataset.meMode)));
-  $('me-competition').addEventListener('change',recompute);
-  $('me-season').addEventListener('change',recompute);
+  $('me-competition').addEventListener('change',()=>{page=0;recompute();});
+  $('me-season').addEventListener('change',()=>{page=0;recompute();});
+  $('me-prev').addEventListener('click',()=>{if(page>0){page--;recompute();}});
+  $('me-next').addEventListener('click',()=>{if((page+1)*TABS[mode].limit<allLeaders.length){page++;recompute();}});
   $('me-month').addEventListener('input',ev=>seekMonth(Number(ev.target.value)));
   $('me-play').addEventListener('click',()=>{
     if(cursor>=visible.length)reset();playing=!playing;
