@@ -108,3 +108,31 @@ test('une séquence de deux buts fait approcher 100 sans imposer le maximum',()=
  assert.ok(t[90].activity<t[81].activity);
  assert.equal(t[79].activity,Number((50*Math.pow(2,-79/25)).toFixed(1)));
 });
+
+test('une passe décisive est un vrai temps fort, sans égaler un but',()=>{
+ const passing={kind:'Pass',outcome:'Complete'};
+ assert.deepEqual(pulseWeight(passing),{activity:1,impact:0.5});
+ assert.equal(pulseWeight({...passing,goalAssist:true}).activity,20);
+ assert.equal(pulseWeight({...passing,shotAssist:true}).activity,3.2);
+ assert.equal(pulseWeight({kind:'Shot',outcome:'Goal'}).activity,28);
+ const event={minute:35,second:44,...passing};
+ const regular=computePulse([event],90).timeline;
+ const assist=computePulse([{...event,goalAssist:true}],90).timeline;
+ const key=computePulse([{...event,shotAssist:true}],90).timeline;
+ const goal=computePulse([{minute:35,second:44,kind:'Shot',outcome:'Goal'}],90).timeline;
+ assert.ok(assist[35].activity>key[35].activity);
+ assert.ok(key[35].activity>regular[35].activity);
+ assert.ok(goal[35].activity>assist[35].activity);
+ assert.ok(assist[36].activity<assist[35].activity);
+ assert.ok(assist.every(p=>p.activity==null||p.activity<=100));
+});
+test('le profil des joueurs conserve le statut de passe décisive depuis les données brutes',()=>{
+ const source={duration:50,players:[{id:3,name:'Passeur',entry:0,exit:null}],actions:[
+  {p:3,m:35,s:44,k:'Pass',o:'Complete',ga:1},
+  {p:3,m:36,s:2,k:'Pass',o:'Complete',sa:1}
+ ]};
+ const {profiles}=computeMatchProfiles(source);
+ assert.equal(profiles[0].actions[0].goalAssist,true);
+ assert.equal(profiles[0].actions[1].shotAssist,true);
+ assert.ok(profiles[0].timeline[35].activity>75);
+});
