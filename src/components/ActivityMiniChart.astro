@@ -22,6 +22,6 @@ const first=series[0]?.timeline||[];
  <rect width="500" height="174" fill="url(#ax-glow)" rx="8"/>
  {[0,50,100,150,200].filter(v=>v<=maxScale).map(t=><g><line class="ax-mini-grid" x1={left} x2={right} y1={y(t)} y2={y(t)}/><text class="ax-mini-tick" x="24" y={y(t)+3} text-anchor="end">{t}</text></g>)}
  {[0,45,90,duration].filter((t,i,a)=>a.indexOf(t)===i).map(t=><g><line class="ax-mini-grid" x1={x(t)} x2={x(t)} y1={top} y2={bottom}/><text class="ax-mini-tick" x={x(t)} y="169" text-anchor="middle">{t}′</text></g>)}
- {paths.map(s=>s.paths.map(path=><path d={path} fill="none" stroke={s.color} stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round" class="ax-mini-line"/ >))}
+ {paths.map(s=>s.paths.map(path=><path d={path} fill="none" stroke={s.color} stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round" class="ax-mini-line" />))}
  {goals.map(m=>first[m]?.activity!=null?<circle cx={x(m)} cy={y(first[m].activity!)} r="4" fill="#ff739a" stroke="#fff0f3" stroke-width="1.5"/>:null)}
 </svg>
