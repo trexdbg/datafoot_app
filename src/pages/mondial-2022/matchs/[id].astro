@@ -1,0 +1,68 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import WorldCupNav from '../../../components/WorldCupNav.astro';
+import WorldCupWave from '../../../components/WorldCupWave.astro';
+import {games,matchUrl,countryUrl,playerUrl,detailUrl,teamTimeline,teamGoals,teamPlayers,peak,mean,flag,labelCountry,stageLabel,dateLabel,titleMatch} from '../../../lib/worldcup-data';
+import '../../../styles/worldcup.css';
+export function getStaticPaths(){return games.map(game=>({params:{id:String(game.id)},props:{matchId:game.id}}));}
+interface Props {matchId:number}
+const {matchId}=Astro.props;
+const game=games.find(g=>g.id===matchId)!;
+const base=import.meta.env.BASE_URL.replace(/\/$/,'');
+const teams=[game.home,game.away];
+const first=teamTimeline(game,game.home),second=teamTimeline(game,game.away);
+const allPlayers=[...game.profiles].sort((a,b)=>a.player.team.localeCompare(b.player.team)||a.player.entry-b.player.entry||a.player.name.localeCompare(b.player.name,'fr'));
+const actions=game.actions.length;
+---
+<BaseLayout title={titleMatch(game)+' · profils des deux équipes | DataFoot Atlas'} description={'Toutes les actions et tous les profils joueurs du match '+titleMatch(game)+' au Mondial 2022.'} canonicalPath={matchUrl(base,game.id)}>
+<div class="wc-root"><div class="shell wc-wrap">
+ <nav class="wc-crumb"><a href={base+'/mondial-2022/'}>64 MATCHS</a><span>/</span>{stageLabel(game.stage)}<span>/</span>{titleMatch(game)}</nav>
+ <div class="wc-section-head"><div><p class="wc-eyebrow">{dateLabel(game.date)} · {stageLabel(game.stage)}{game.group?' · GROUPE '+game.group:''}</p><h2>La rencontre, action par action.</h2><p>Les deux équipes et tous les joueurs recensés. Chaque courbe est indépendante, avec la même échelle 0–100.</p></div><span class="wc-filter-count">{game.duration} minutes couvertes</span></div>
+ <div class="wc-match-board" aria-label={titleMatch(game)}>
+  <a href={countryUrl(base,game.home)}><span class="wc-country-flag">{flag(game.home)}</span>{labelCountry(game.home)}</a>
+  <strong>{game.homeScore}–{game.awayScore}</strong>
+  <a href={countryUrl(base,game.away)}>{labelCountry(game.away)}<span class="wc-country-flag">{flag(game.away)}</span></a>
+ </div>
+ <WorldCupNav active="matches"/>
+ <div class="wc-stat-bar"><span>Événements <strong>{actions.toLocaleString('fr-FR')}</strong></span><span>Joueurs recensés <strong>{allPlayers.length}</strong></span><span>Buts <strong>{game.goals.length}</strong></span><span>Durée <strong>{game.duration}′</strong></span></div>
+ <section class="wc-split" aria-label="Profils collectifs indépendants">
+ {teams.map((team,index)=>{
+  const data=index===0?first:second,high=peak(data);
+  return <article class="wc-panel">
+   <div class="wc-panel-head"><h2><span class="wc-country-flag">{flag(team)}</span> {labelCountry(team)}</h2><a href={countryUrl(base,team)}>Parcours du pays ↗</a></div>
+   <p>Activité moyenne des joueurs présents de cette sélection. Aucun adversaire superposé.</p>
+   <div class="wc-tiny-stats"><span>Pic <strong>{high?.activity?.toFixed(0)??0}/100</strong></span><span>à {high?.minute??0}′</span><span>{teamPlayers(game,team).length} joueurs</span></div>
+   <WorldCupWave timeline={data} duration={game.duration} goals={teamGoals(game,team)} title={'Profil de '+labelCountry(team)} accent={index===0?'#79dfff':'#b1b3ff'} />
+  </article>;
+ })}
+ </section>
+ <section aria-labelledby="wc-squad">
+  <div class="wc-section-head"><div><p class="wc-eyebrow">JOUEURS SUR LE TERRAIN</p><h2 id="wc-squad">Tous les profils.</h2><p>Clique sur une fiche pour explorer précisément les actions et les pics. Les remplaçants apparaissent à leur entrée en jeu.</p></div><small>{allPlayers.length} joueurs recensés</small></div>
+  <div class="wc-toolbar">
+   <label for="wc-find-player">RECHERCHER</label><input id="wc-find-player" type="search" placeholder="Joueur ou équipe…" autocomplete="off"/>
+   <label for="wc-filter-team">SÉLECTION</label><select id="wc-filter-team"><option value="">Les deux pays</option>{teams.map(team=><option value={team}>{flag(team)} {labelCountry(team)}</option>)}</select>
+   <span class="wc-filter-count" id="wc-player-total">{allPlayers.length} joueurs</span>
+  </div>
+  <div class="wc-card-grid">
+  {allPlayers.map(view=>{
+   const player=view.player,top=peak(view.timeline);
+   const ownGoals=game.goals.filter(g=>g.playerId===player.id&&g.kind==='goal').map(g=>g.minute);
+   const passes=view.actions.filter(a=>a.kind==='Pass'&&a.outcome==='Complete').length;
+   return <article class="wc-card wc-player-card" data-player-name={player.name.toLowerCase()} data-player-team={player.team} data-search={(player.name+' '+labelCountry(player.team)).toLowerCase()}>
+    <div class="wc-card-kicker"><span>{flag(player.team)} {labelCountry(player.team)}</span><span>{player.entry===0?'TITULAIRE':'ENTRÉE '+player.entry+'′'}</span></div>
+    <h3 class="wc-card-title"><a href={detailUrl(base,game.id,player.id)} style="color:inherit;text-decoration:none">{player.name} ↗</a></h3>
+    <div class="wc-card-meta">{view.actions.length} événements · {passes} passes réussies</div>
+    <div class="wc-tiny-stats"><span>Pic <strong>{top?.activity?.toFixed(0)??0}</strong> à {top?.minute??0}′</span><span>Moy. <strong>{mean(view.timeline).toFixed(0)}</strong></span></div>
+    <WorldCupWave timeline={view.timeline} duration={game.duration} goals={ownGoals} title={'Pulse de '+player.name} compact/>
+    <div class="wc-card-arrow"><a href={detailUrl(base,game.id,player.id)} style="color:#aae8ff">Actions et graphique détaillé →</a><a href={playerUrl(base,player.id)} style="color:#9ec5df">Ses matchs ↗</a></div>
+   </article>;
+  })}
+  </div>
+  <p class="wc-empty" id="wc-player-empty" hidden>Aucun joueur trouvé dans cette rencontre.</p>
+ </section>
+ <p class="wc-footnote">Les deux moyennes d'équipe sont distinctes et ne servent jamais de ligne de référence sur une courbe individuelle. Les tirs au but après prolongation ne sont pas inclus dans les événements. Source : <a href={game.source} target="_blank" rel="noopener noreferrer">StatsBomb Open Data / Hudl ↗</a>.</p>
+</div></div>
+<script is:inline>
+(()=>{const find=document.getElementById('wc-find-player'),team=document.getElementById('wc-filter-team');if(!find)return;const cards=[...document.querySelectorAll('.wc-player-card')],count=document.getElementById('wc-player-total'),empty=document.getElementById('wc-player-empty');const normalize=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();function filter(){const q=normalize(find.value.trim()),t=team.value;let n=0;for(const card of cards){const visible=(!q||normalize(card.dataset.search).includes(q))&&(!t||card.dataset.playerTeam===t);card.hidden=!visible;if(visible)n++;}count.textContent=n+' joueur'+(n!==1?'s':'');empty.hidden=n>0;}[find,team].forEach(input=>input.addEventListener('input',filter));})();
+</script>
+</BaseLayout>
