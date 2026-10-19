@@ -237,3 +237,33 @@
  .wc-presence-side{border-left:0;padding-left:0;border-top:1px solid #345c68;padding-top:13px}
  .wc-presence-timeline{grid-column:1}
 }
+
+
+/* DataFoot Pulse — échelle thermique continue, de l'indice froid au pic violet. */
+.wc-profile-root .wc-thermal-line{
+ filter:drop-shadow(0 0 3px #FFD45155) drop-shadow(0 0 5px #D366EA2B);
+}
+.wc-profile-root .wc-impact-line{filter:drop-shadow(0 0 3px #79BCE566)}
+.wc-profile-root #wc-sustained-area{filter:drop-shadow(0 0 3px #FF985C36)}
+.wc-profile-root .wc-reference-label{fill:#FFE3B0}
+.wc-profile-root .wc-presence{
+ background:linear-gradient(112deg,#30243A 0%,#29293A 25%,#152A3F 72%,#0B293D 100%);
+ border-bottom-color:#67506E;
+}
+.wc-profile-root .wc-presence-label{color:#FFE0AD}
+.wc-profile-root .wc-presence-main>strong{color:#FFBD68;text-shadow:0 0 17px #FF8B5B3A}
+.wc-profile-root .wc-presence-main>strong small{color:#FFD4A0}
+.wc-profile-root .wc-presence-side>div:last-child strong{color:#D3A1FF}
+.wc-profile-root .wc-presence-step.heat{opacity:1;box-shadow:none}
+.wc-profile-root .wc-presence-step.off{background-color:#233448;opacity:.55}
+.wc-profile-root .wc-thermal-legend{flex:1 1 420px;max-width:700px;min-width:210px}
+.wc-profile-root .wc-thermal-bar{height:10px;border-radius:99px;border:1px solid #DAD0CF6B;box-shadow:0 1px 8px #F892844A}
+.wc-profile-root .wc-thermal-markers{display:flex;justify-content:space-between;gap:7px;margin-top:8px}
+.wc-profile-root .wc-thermal-markers span{font-size:10px;white-space:nowrap;color:#C8D4E3;font-weight:780}
+.wc-profile-root .wc-profile-zones{background:#10263A;align-items:center}
+.wc-profile-root .wc-profile-zones>small{max-width:310px;line-height:1.45;color:#ACC5D7}
+@media(max-width:540px){
+ .wc-profile-root .wc-thermal-legend{min-width:100%}
+ .wc-profile-root .wc-thermal-markers span{font-size:9px}
+ .wc-profile-root .wc-profile-zones>small{max-width:none}
+}
