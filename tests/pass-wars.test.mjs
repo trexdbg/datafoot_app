@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { eligiblePartners, MIN_PARTNER_PASSES, playerColor, createPlayerPalette, layoutPlayerNodes } from '../src/lib/pass-wars-engine.mjs';
+import { eligiblePartners, MIN_PARTNER_PASSES, playerColor, createPlayerPalette, layoutPlayerNodes, monthOrdinal, monthYearLabel, eventsThroughMonth } from '../src/lib/pass-wars-engine.mjs';
 
 const make = (id, direction, name='Joueur '+id)=>({partner_id:id,partner_name:name,direction});
 
@@ -202,4 +202,54 @@ test('les deux routes affichent 96+ passes sans perdre les photos',async()=>{
   assert.ok(code.includes('positions=layoutPlayerNodes(players,W,H,CX,CY)'));
   assert.ok(code.includes('drawPortrait(p.id'));
   assert.ok(!code.includes('drawEdges('));
+});
+
+
+test('frise chronologique : uniquement mois/année sans jour ni minute',()=>{
+  assert.equal(monthOrdinal('2004-10-24'),2004*12+9);
+  assert.equal(monthOrdinal('2022-12-18'),2022*12+11);
+  assert.equal(monthYearLabel(monthOrdinal('2004-10-24')),'10/2004');
+  assert.equal(monthYearLabel(monthOrdinal('2022-12-18')),'12/2022');
+  assert.equal(monthYearLabel(monthOrdinal('2020-02-01')),'02/2020');
+  assert.equal(monthYearLabel(null),'--/----');
+  assert.equal(monthOrdinal('invalide'),null);
+  assert.equal(monthOrdinal('2022-13-05'),null);
+});
+
+test('frise : avance au dernier événement du mois, même quand un mois ne contient aucune passe',()=>{
+  const events=[
+    {date:'2004-10-24'},
+    {date:'2004-10-24'},
+    {date:'2004-12-01'},
+    {date:'2005-01-30'},
+    {date:'2005-01-30'},
+    {date:'2006-08-12'},
+  ];
+  assert.equal(eventsThroughMonth(events,monthOrdinal('2004-09-01')),0);
+  assert.equal(eventsThroughMonth(events,monthOrdinal('2004-10-01')),2);
+  assert.equal(eventsThroughMonth(events,monthOrdinal('2004-11-01')),2);
+  assert.equal(eventsThroughMonth(events,monthOrdinal('2004-12-01')),3);
+  assert.equal(eventsThroughMonth(events,monthOrdinal('2005-01-01')),5);
+  assert.equal(eventsThroughMonth(events,monthOrdinal('2005-09-01')),5);
+  assert.equal(eventsThroughMonth(events,monthOrdinal('2006-08-01')),6);
+  assert.equal(eventsThroughMonth([],monthOrdinal('2022-01-01')),0);
+});
+
+test('chronologie visible directement sous le graphe sur les deux pages et sans ancien curseur',async()=>{
+  const {readFileSync}=await import('node:fs');
+  for(const route of ['paintball','pass-wars']){
+    const html=readFileSync(new URL('../src/pages/joueurs/messi/'+route+'.astro',import.meta.url),'utf8');
+    assert.ok(html.includes('id="pw-now"'));
+    assert.ok(html.includes('id="pw-month-scrub"'));
+    assert.ok(!html.includes('id="pw-scrub"'));
+    assert.ok(html.includes('MOIS / ANNÉE'));
+    assert.ok(html.indexOf('id="pw-canvas"')<html.indexOf('id="pw-month-scrub"'));
+    assert.ok(html.indexOf('id="pw-month-scrub"')<html.indexOf('class="pw-canvas-legend"'));
+    assert.ok(html.includes('id="pw-month-ticks"'));
+  }
+  const core=readFileSync(new URL('../src/lib/pass-wars-engine.mjs',import.meta.url),'utf8');
+  assert.ok(core.includes('seek(eventsThroughMonth(events,month),month)'));
+  assert.ok(core.includes("set('pw-now',monthYearLabel(month))"));
+  assert.ok(!core.includes("'pw-scrub'"));
+  assert.ok(!/ctx\.stroke\s*\(|ctx\.setLineDash|drawEdges\s*\(/.test(core));
 });
