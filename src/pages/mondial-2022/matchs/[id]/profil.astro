@@ -5,7 +5,7 @@ import {monotonePath,pulsePenalty,pulseWeight} from '../../../../lib/match-activ
 import {pulsePresence} from '../../../../lib/pulse-presence.mjs';
 import {THERMAL_STOPS,THERMAL_GRADIENT,thermalColor} from '../../../../lib/pulse-temperature.mjs';
 import {pulseRoleLabel} from '../../../../lib/pulse-scoring.mjs';
-import {games,matchUrl,countryUrl,playerUrl,labelCountry,flag,flagSrc,stageLabel,dateLabel,titleMatch,peak,mean} from '../../../../lib/worldcup-data';
+import {games,matchUrl,countryUrl,playerUrl,labelCountry,playerName,flag,flagSrc,stageLabel,dateLabel,titleMatch,peak,mean} from '../../../../lib/worldcup-data';
 import '../../../../styles/worldcup.css';
 import '../../../../styles/worldcup-profile.css';
 export function getStaticPaths(){return games.map(game=>({params:{id:String(game.id)},props:{matchId:game.id}}));}
@@ -26,7 +26,7 @@ const firstPath=monotonePath(firstPoints.map(p=>({x:x(p.minute),y:y(p.activity??
 const xTicks=Array.from({length:Math.floor(game.duration/15)+1},(_,i)=>i*15).filter(n=>n===0||game.duration-n>=9);
 if(!xTicks.includes(game.duration))xTicks.push(game.duration);
 const clientPlayers=profiles.map(p=>({
- id:p.player.id,name:p.player.name,presence:pulsePresence(p.timeline),team:p.player.team,teamLabel:labelCountry(p.player.team),position:p.player.position??'',roleLabel:p.player.position?pulseRoleLabel(p.player.position):'Poste non renseigné · barème milieu',flagSrc:flagSrc(p.player.team),entry:p.player.entry,exit:p.player.exit,
+ id:p.player.id,name:playerName(p.player),presence:pulsePresence(p.timeline),team:p.player.team,teamLabel:labelCountry(p.player.team),position:p.player.position??'',roleLabel:p.player.position?pulseRoleLabel(p.player.position):'Poste non renseigné · barème milieu',flagSrc:flagSrc(p.player.team),entry:p.player.entry,exit:p.player.exit,
  timeline:p.timeline.map(t=>({activity:t.activity,impact:t.impact,actions:t.actions,penaltyGain:t.penaltyGain})),
  events:p.actions.map(a=>({minute:a.minute,second:a.second,kind:a.kind,outcome:a.outcome,
   l:(a as any).location??null,e:(a as any).endLocation??null,xg:(a as any).xg??null,goalAssist:a.goalAssist===true,shotAssist:a.shotAssist===true,subtype:(a as any).subtype??'',gain:pulseWeight(a,p.player.position??'').activity,penalty:pulsePenalty(a)}))
@@ -41,10 +41,10 @@ const initialEventCount=initial.actions.filter(a=>a.minute===initialMinute).leng
  <div class="wc-match-board"><a href={countryUrl(base,game.home)}><CountryFlag country={game.home} /> {labelCountry(game.home)}</a><strong>{game.homeScore}–{game.awayScore}</strong><a href={countryUrl(base,game.away)}>{labelCountry(game.away)} <CountryFlag country={game.away} /></a></div>
  <section class="wc-inspector" aria-label="Analyse individuelle">
   <div class="wc-inspector-head">
-   <div><p class="wc-eyebrow">CHOISIR LE JOUEUR</p><h2 id="wc-current-name">{initial.player.name}</h2><p id="wc-current-info"><CountryFlag country={initial.player.team} id="wc-current-flag" /> <span id="wc-current-label">{labelCountry(initial.player.team)} · {initial.player.position?pulseRoleLabel(initial.player.position):'Poste non renseigné · barème milieu'} · {initial.player.entry}′ → {initial.player.exit??game.duration}′</span></p></div>
+   <div><p class="wc-eyebrow">CHOISIR LE JOUEUR</p><h2 id="wc-current-name">{playerName(initial.player)}</h2><p id="wc-current-info"><CountryFlag country={initial.player.team} id="wc-current-flag" /> <span id="wc-current-label">{labelCountry(initial.player.team)} · {initial.player.position?pulseRoleLabel(initial.player.position):'Poste non renseigné · barème milieu'} · {initial.player.entry}′ → {initial.player.exit??game.duration}′</span></p></div>
    <div class="wc-player-chooser"><label for="wc-select-player">Profil individuel</label>
     <select id="wc-select-player" aria-label="Choisir un joueur du match">
-     {[game.home,game.away].map(team=><optgroup label={labelCountry(team)}>{profiles.filter(p=>p.player.team===team).map(p=><option value={p.player.id} selected={p.player.id===initial.player.id}>{p.player.name}{p.player.entry>0?' · remplaçant':''}</option>)}</optgroup>)}
+     {[game.home,game.away].map(team=><optgroup label={labelCountry(team)}>{profiles.filter(p=>p.player.team===team).map(p=><option value={p.player.id} selected={p.player.id===initial.player.id}>{playerName(p.player)}{p.player.entry>0?' · remplaçant':''}</option>)}</optgroup>)}
     </select>
    </div>
   </div>
@@ -75,7 +75,7 @@ const initialEventCount=initial.actions.filter(a=>a.minute===initialMinute).leng
   </div>
   <div class="wc-profile-chart-scroll" tabindex="0" aria-label="Défiler le graphique sur les petits écrans">
    <svg id="wc-profile-chart" viewBox="0 0 1140 456" role="img" aria-labelledby="wc-chart-title wc-chart-description">
-    <title id="wc-chart-title">Profil de {initial.player.name} sur {game.duration} minutes</title>
+    <title id="wc-chart-title">Profil de {playerName(initial.player)} sur {game.duration} minutes</title>
     <desc id="wc-chart-description">Courbe d’activité 0–100 pour un seul joueur, points représentant les événements sous l’axe horizontal. Mode impact indicatif disponible. Le curseur permet l’inspection des minutes.</desc>
     <rect width="1140" height="456" fill="#071b30"/>
     <defs>
