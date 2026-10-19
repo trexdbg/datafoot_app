@@ -16,19 +16,35 @@ const allPlayers=[...game.profiles].sort((a,b)=>a.player.team.localeCompare(b.pl
 const actions=game.actions.length;
 const firstTeam=teamTimeline(game,game.home);
 const secondTeam=teamTimeline(game,game.away);
+const ownerOf=new Map(game.players.map(player=>[player.id,player.team]));
+const actionsFor=(team:string)=>game.actions.filter(action=>ownerOf.get(action.p)===team);
+const homeActions=actionsFor(game.home),awayActions=actionsFor(game.away);
+const shots=(actions:typeof game.actions)=>actions.filter(action=>action.k==='Shot');
+const onTarget=(actions:typeof game.actions)=>shots(actions).filter(action=>['Goal','Saved','Saved to Post'].includes(action.o)).length;
+const xg=(actions:typeof game.actions)=>Number(shots(actions).reduce((total,action)=>total+(action.xg??0),0).toFixed(1));
+const successfulPasses=(actions:typeof game.actions)=>actions.filter(action=>action.k==='Pass'&&action.o==='Complete').length;
+const duelStats=[
+ {label:'Tirs',first:shots(homeActions).length,second:shots(awayActions).length,format:'int' as const},
+ {label:'Tirs cadrés',first:onTarget(homeActions),second:onTarget(awayActions),format:'int' as const},
+ {label:'xG',first:xg(homeActions),second:xg(awayActions),format:'decimal' as const},
+ {label:'Passes réussies',first:successfulPasses(homeActions),second:successfulPasses(awayActions),format:'int' as const}
+];
+const goalMarkers=game.goals.map(goal=>({
+ minute:goal.minute,
+ team:labelCountry(goal.team),
+ kind:goal.kind,
+ label:goal.kind==='own-goal'
+  ?(game.players.find(p=>p.id===goal.playerId)?.name??'But contre son camp')
+  :(game.players.find(p=>p.id===goal.playerId)?.name??'Buteur non renseigné')
+}));
+
 ---
 <BaseLayout title={titleMatch(game)+' · profils des deux équipes | DataFoot Atlas'} description={'Toutes les actions et tous les profils joueurs du match '+titleMatch(game)+' au Mondial 2022.'} canonicalPath={matchUrl(base,game.id)}>
 <div class="wc-root"><div class="shell wc-wrap">
  <nav class="wc-crumb"><a href={base+'/mondial-2022/'}>64 MATCHS</a><span>/</span>{stageLabel(game.stage)}<span>/</span>{titleMatch(game)}</nav>
- <div class="wc-section-head"><div><p class="wc-eyebrow">{dateLabel(game.date)} · {stageLabel(game.stage)}{game.group?' · GROUPE '+game.group:''}</p><h2>La rencontre, action par action.</h2><p>Compare le rythme des deux sélections sur un seul graphique. Plus bas, chaque joueur conserve sa courbe individuelle et interactive, sans ligne d'équipe superposée.</p></div><span class="wc-filter-count">{game.duration} minutes couvertes</span></div>
- <div class="wc-match-board" aria-label={titleMatch(game)}>
-  <a href={countryUrl(base,game.home)}><span class="wc-country-flag"><CountryFlag country={game.home} /></span>{labelCountry(game.home)}</a>
-  <strong>{game.homeScore}–{game.awayScore}</strong>
-  <a href={countryUrl(base,game.away)}>{labelCountry(game.away)}<span class="wc-country-flag"><CountryFlag country={game.away} /></span></a>
- </div>
+ <div class="wc-match-context"><span>{dateLabel(game.date)} · {stageLabel(game.stage)}{game.group?' · GROUPE '+game.group:''}</span><span>{game.duration}′ de données · {allPlayers.length} joueurs</span></div>
  <WorldCupNav active="matches"/>
- <div class="wc-stat-bar"><span>Événements <strong>{actions.toLocaleString('fr-FR')}</strong></span><span>Joueurs recensés <strong>{allPlayers.length}</strong></span><span>Buts <strong>{game.goals.length}</strong></span><span>Durée <strong>{game.duration}′</strong></span></div>
- <WorldCupMatchComparison home={labelCountry(game.home)} away={labelCountry(game.away)} homeCountry={game.home} awayCountry={game.away} first={firstTeam} second={secondTeam} duration={game.duration} goals={game.goals.map(goal=>({minute:goal.minute,team:goal.team===game.home?labelCountry(game.home):labelCountry(game.away)}))}/>
+ <WorldCupMatchComparison home={labelCountry(game.home)} away={labelCountry(game.away)} homeCountry={game.home} awayCountry={game.away} homeScore={game.homeScore} awayScore={game.awayScore} first={firstTeam} second={secondTeam} duration={game.duration} goals={goalMarkers} stats={duelStats}/>
  <div class="wc-country-shortcuts" aria-label="Accès aux pays">
    <span>Explorer les sélections séparément :</span>
    {teams.map(team=><a href={countryUrl(base,team)}><CountryFlag country={team} /> {labelCountry(team)} · parcours du pays →</a>)}
@@ -58,7 +74,7 @@ const secondTeam=teamTimeline(game,game.away);
   </div>
   <p class="wc-empty" id="wc-player-empty" hidden>Aucun joueur trouvé dans cette rencontre.</p>
  </section>
- <p class="wc-footnote">Cette page présente uniquement des profils individuels. Les parcours des sélections sont accessibles séparément. Les tirs au but après prolongation ne sont pas inclus dans les événements. Source : <a href={game.source} target="_blank" rel="noopener noreferrer">StatsBomb Open Data / Hudl ↗</a> · <a href={base+'/data/worldcup-2022/matches/'+game.id+'.json'}>Données de ce match (JSON) ↗</a>.</p>
+ <p class="wc-footnote">Cette page présente la comparaison des équipes et les profils individuels, calculés à partir des événements observés. Les parcours des sélections sont accessibles séparément. Les tirs au but après prolongation ne sont pas inclus dans les événements. Source : <a href={game.source} target="_blank" rel="noopener noreferrer">StatsBomb Open Data / Hudl ↗</a> · <a href={base+'/data/worldcup-2022/matches/'+game.id+'.json'}>Données de ce match (JSON) ↗</a>.</p>
 </div></div>
 <script is:inline>
 (()=>{const find=document.getElementById('wc-find-player'),team=document.getElementById('wc-filter-team');if(!find)return;const cards=[...document.querySelectorAll('.wc-player-card')],count=document.getElementById('wc-player-total'),empty=document.getElementById('wc-player-empty');const normalize=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();function filter(){const q=normalize(find.value.trim()),t=team.value;let n=0;for(const card of cards){const visible=(!q||normalize(card.dataset.search).includes(q))&&(!t||card.dataset.playerTeam===t);card.hidden=!visible;if(visible)n++;}count.textContent=n+' joueur'+(n!==1?'s':'');empty.hidden=n>0;}[find,team].forEach(input=>input.addEventListener('input',filter));})();
