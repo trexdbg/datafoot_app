@@ -1,0 +1,56 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import WorldCupNav from '../../components/WorldCupNav.astro';
+import {fixtures,countries,playerIndex,labelCountry,flag,stageLabel,dateLabel,matchUrl,countryUrl,playerUrl} from '../../lib/worldcup-data';
+import '../../styles/worldcup.css';
+const base=import.meta.env.BASE_URL.replace(/\/$/,'');
+const sorted=[...fixtures].sort((a,b)=>b.date.localeCompare(a.date)||b.id-a.id);
+const stages=['Group Stage','Round of 16','Quarter-finals','Semi-finals','3rd Place Final','Final'];
+const finale=fixtures.find(f=>f.stage==='Final')!;
+---
+<BaseLayout title="Coupe du monde 2022 · 64 matchs, 32 pays, tous les joueurs | DataFoot" description="Explorez l'intégralité du Mondial 2022 avec les profils d'activité DataFoot Pulse : par match, pays ou joueur." canonicalPath={base+'/mondial-2022/'}>
+<div class="wc-root"><div class="shell wc-wrap">
+ <nav class="wc-crumb"><a href={base+'/'}>DATAFOOT</a><span>/</span><span>MONDIAL 2022</span></nav>
+ <header class="wc-hero">
+  <div><p class="wc-eyebrow">DATAFOOT ATLAS / QATAR 2022 / STATSBOMB OPEN DATA</p>
+   <h1>Un Mondial.<br/><em>Toutes ses histoires.</em></h1>
+   <p>Replonge dans chaque rencontre, retrouve un pays ou suis un joueur à travers la compétition. Des courbes d'activité construites sur les événements réels, sans comparaison forcée avec une sélection.</p>
+  </div>
+  <div class="wc-hero-side" aria-label="Couverture des données"><div><strong>64</strong><span>MATCHS</span></div><div><strong>32</strong><span>PAYS</span></div><div><strong>{playerIndex.length}</strong><span>JOUEURS</span></div></div>
+ </header>
+ <WorldCupNav active="matches"/>
+ <div class="wc-focus">
+  <div class="wc-section-head"><div><p class="wc-eyebrow">PAR OÙ COMMENCER ?</p><h2>Trois façons de découvrir la compétition.</h2><p>Une navigation cohérente, quelle que soit ta porte d'entrée.</p></div></div>
+  <div class="wc-card-grid">
+   <a class="wc-card" href={matchUrl(base,finale.id)}><div class="wc-card-kicker">FINALE · 18 DÉCEMBRE 2022</div><h3 class="wc-card-title">{flag(finale.home)} {labelCountry(finale.home)} <span class="wc-score">{finale.homeScore}–{finale.awayScore}</span> {flag(finale.away)} {labelCountry(finale.away)}</h3><p class="wc-card-meta">Découvrir les profils de chaque participant à la finale.</p><span class="wc-card-arrow">Explorer le match <span>↗</span></span></a>
+   <a class="wc-card" href={base+'/mondial-2022/pays/'}><div class="wc-card-kicker">32 ÉQUIPES NATIONALES</div><h3 class="wc-card-title">Du Qatar à l'Argentine.</h3><p class="wc-card-meta">Parcours d'un pays, rencontres, effectif et accès direct à ses joueurs.</p><span class="wc-card-arrow">Explorer les pays <span>↗</span></span></a>
+   <a class="wc-card" href={base+'/mondial-2022/joueurs/'}><div class="wc-card-kicker">{playerIndex.length} PROFILS OBSERVÉS</div><h3 class="wc-card-title">Retrouver un joueur.</h3><p class="wc-card-meta">Recherche par nom ou pays et courbes de ses matchs.</p><span class="wc-card-arrow">Explorer les joueurs <span>↗</span></span></a>
+  </div>
+ </div>
+ <section aria-labelledby="wc-all-matches">
+  <div class="wc-section-head"><div><p class="wc-eyebrow">64 RENCONTRES · DU 20 NOVEMBRE AU 18 DÉCEMBRE</p><h2 id="wc-all-matches">Tous les matchs.</h2><p>Filtre par pays, phase ou adversaire. Chaque match donne accès aux deux équipes et à tous les joueurs recensés.</p></div></div>
+  <div class="wc-toolbar">
+   <label for="wc-match-find">RECHERCHER</label><input id="wc-match-find" type="search" placeholder="Ex. Argentine, Maroc, 18 décembre…" autocomplete="off"/>
+   <label for="wc-stage">PHASE</label><select id="wc-stage"><option value="">Toutes les phases</option>{stages.map(s=><option value={s}>{stageLabel(s)}</option>)}</select>
+   <label for="wc-team">PAYS</label><select id="wc-team"><option value="">Tous les pays</option>{countries.map(team=><option value={team}>{flag(team)} {labelCountry(team)}</option>)}</select>
+   <span class="wc-filter-count" id="wc-match-count">{sorted.length} matchs</span>
+  </div>
+  <div class="wc-card-grid" id="wc-matches">
+   {sorted.map(game=><a class="wc-card wc-fixture" href={matchUrl(base,game.id)} data-stage={game.stage} data-home={game.home} data-away={game.away} data-search={(game.date+' '+labelCountry(game.home)+' '+labelCountry(game.away)+' '+game.home+' '+game.away+' '+stageLabel(game.stage)).toLowerCase()}>
+    <div class="wc-card-kicker"><span>{dateLabel(game.date)}</span><span>{stageLabel(game.stage)}{game.group?' · Groupe '+game.group:''}</span></div>
+    <h3 class="wc-card-title">{flag(game.home)} {labelCountry(game.home)} <span class="wc-score">{game.homeScore}–{game.awayScore}</span> {flag(game.away)} {labelCountry(game.away)}</h3>
+    <div class="wc-card-meta">Actions, profils d’activité et moments clés des deux équipes.</div>
+    <span class="wc-card-arrow">Voir les deux équipes et leurs joueurs <span>↗</span></span>
+   </a>)}
+  </div>
+  <p class="wc-empty" id="wc-empty" hidden>Aucun match correspondant. Essaye un autre pays ou retire un filtre.</p>
+ </section>
+ <p class="wc-footnote"><strong>Couverture : les 64 matchs officiels de 2022.</strong> Événements publics © StatsBomb / Hudl. Les tirs au but de séance sont exclus des courbes ; le score affiché est celui du match avant séance. Pulse est un indicateur éditorial d’activité, pas une mesure physique ni une note officielle. <a href="https://github.com/hudl/open-data" target="_blank" rel="noopener noreferrer">Consulter la source ↗</a></p>
+</div></div>
+<script is:inline>
+(()=>{const find=document.getElementById('wc-match-find'),stage=document.getElementById('wc-stage'),team=document.getElementById('wc-team'),cards=[...document.querySelectorAll('.wc-fixture')],count=document.getElementById('wc-match-count'),empty=document.getElementById('wc-empty');if(!find)return;
+const normal=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('fr');
+function refresh(){const q=normal(find.value.trim()),s=stage.value,t=team.value;let shown=0;for(const card of cards){const visible=(!q||normal(card.dataset.search).includes(q))&&(!s||card.dataset.stage===s)&&(!t||card.dataset.home===t||card.dataset.away===t);card.hidden=!visible;if(visible)shown++;}count.textContent=shown+' match'+(shown!==1?'s':'');empty.hidden=shown>0;}
+[find,stage,team].forEach(input=>input.addEventListener('input',refresh));})();
+</script>
+</BaseLayout>
