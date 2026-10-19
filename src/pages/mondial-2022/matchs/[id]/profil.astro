@@ -1,7 +1,8 @@
 ---
 import CountryFlag from '../../../../components/CountryFlag.astro';
 import BaseLayout from '../../../../layouts/BaseLayout.astro';
-import {monotonePath,pulsePenalty,PULSE_BANDS} from '../../../../lib/match-activity.mjs';
+import {monotonePath,pulsePenalty,pulseWeight,PULSE_BANDS} from '../../../../lib/match-activity.mjs';
+import {pulseRoleLabel} from '../../../../lib/pulse-scoring.mjs';
 import {games,matchUrl,countryUrl,playerUrl,labelCountry,flag,flagSrc,stageLabel,dateLabel,titleMatch,peak,mean} from '../../../../lib/worldcup-data';
 import '../../../../styles/worldcup.css';
 import '../../../../styles/worldcup-profile.css';
@@ -19,10 +20,10 @@ const y=(score:number)=>bottom-Math.max(0,Math.min(100,score))/100*(bottom-top);
 const firstPoints=initial.timeline.filter(p=>p.activity!==null);
 const firstPath=monotonePath(firstPoints.map(p=>({x:x(p.minute),y:y(p.activity??0)})));
 const clientPlayers=profiles.map(p=>({
- id:p.player.id,name:p.player.name,team:p.player.team,teamLabel:labelCountry(p.player.team),flagSrc:flagSrc(p.player.team),entry:p.player.entry,exit:p.player.exit,
+ id:p.player.id,name:p.player.name,team:p.player.team,teamLabel:labelCountry(p.player.team),position:p.player.position??'',roleLabel:p.player.position?pulseRoleLabel(p.player.position):'Poste non renseigné · barème milieu',flagSrc:flagSrc(p.player.team),entry:p.player.entry,exit:p.player.exit,
  timeline:p.timeline.map(t=>({activity:t.activity,impact:t.impact,actions:t.actions,penaltyGain:t.penaltyGain})),
  events:p.actions.map(a=>({minute:a.minute,second:a.second,kind:a.kind,outcome:a.outcome,
-  l:(a as any).location??null,e:(a as any).endLocation??null,xg:(a as any).xg??null,goalAssist:a.goalAssist===true,shotAssist:a.shotAssist===true,penalty:pulsePenalty(a)}))
+  l:(a as any).location??null,e:(a as any).endLocation??null,xg:(a as any).xg??null,goalAssist:a.goalAssist===true,shotAssist:a.shotAssist===true,subtype:(a as any).subtype??'',gain:pulseWeight(a,p.player.position??'').activity,penalty:pulsePenalty(a)}))
 }));
 const initialMinute=firstPeak?.minute??0;
 const initialEventCount=initial.actions.filter(a=>a.minute===initialMinute).length;
@@ -34,7 +35,7 @@ const initialEventCount=initial.actions.filter(a=>a.minute===initialMinute).leng
  <div class="wc-match-board"><a href={countryUrl(base,game.home)}><CountryFlag country={game.home} /> {labelCountry(game.home)}</a><strong>{game.homeScore}–{game.awayScore}</strong><a href={countryUrl(base,game.away)}>{labelCountry(game.away)} <CountryFlag country={game.away} /></a></div>
  <section class="wc-inspector" aria-label="Analyse individuelle">
   <div class="wc-inspector-head">
-   <div><p class="wc-eyebrow">CHOISIR LE JOUEUR</p><h2 id="wc-current-name">{initial.player.name}</h2><p id="wc-current-info"><CountryFlag country={initial.player.team} id="wc-current-flag" /> <span id="wc-current-label">{labelCountry(initial.player.team)} · {initial.player.entry}′ → {initial.player.exit??game.duration}′</span></p></div>
+   <div><p class="wc-eyebrow">CHOISIR LE JOUEUR</p><h2 id="wc-current-name">{initial.player.name}</h2><p id="wc-current-info"><CountryFlag country={initial.player.team} id="wc-current-flag" /> <span id="wc-current-label">{labelCountry(initial.player.team)} · {initial.player.position?pulseRoleLabel(initial.player.position):'Poste non renseigné · barème milieu'} · {initial.player.entry}′ → {initial.player.exit??game.duration}′</span></p></div>
    <div class="wc-player-chooser"><label for="wc-select-player">Profil individuel</label>
     <select id="wc-select-player" aria-label="Choisir un joueur du match">
      {[game.home,game.away].map(team=><optgroup label={labelCountry(team)}>{profiles.filter(p=>p.player.team===team).map(p=><option value={p.player.id} selected={p.player.id===initial.player.id}>{p.player.name}{p.player.entry>0?' · remplaçant':''}</option>)}</optgroup>)}
@@ -48,7 +49,7 @@ const initialEventCount=initial.actions.filter(a=>a.minute===initialMinute).leng
    <div><span>BUTS</span><strong id="wc-goals">{initial.actions.filter(a=>a.kind==='Shot'&&a.outcome==='Goal').length}</strong><small>hors séance de tirs au but</small></div>
   </div>
   <div class="wc-mode-head">
-   <div class="wc-mode-copy"><p class="wc-eyebrow">PROFIL DU JOUEUR <span id="wc-mode-title">· Activité du match</span></p><p id="wc-mode-desc">L’activité suit les actions et s’atténue pendant les temps calmes.</p></div>
+   <div class="wc-mode-copy"><p class="wc-eyebrow">PROFIL DU JOUEUR <span id="wc-mode-title">· Activité du match</span></p><p id="wc-mode-desc">L’activité valorise les gestes selon le poste et s’atténue pendant les temps calmes.</p></div>
    <div class="wc-mode-tabs" role="group" aria-label="Lecture du graphique">
     <button type="button" data-mode="activity" class="active" aria-pressed="true">◉ Activité</button>
     <button type="button" data-mode="impact" aria-pressed="false">✦ Impact indicatif</button>
@@ -85,6 +86,7 @@ const initialEventCount=initial.actions.filter(a=>a.minute===initialMinute).leng
   <aside id="wc-profile-tooltip" class="wc-profile-tooltip" hidden aria-live="off">
    <strong id="wc-tooltip-title">—</strong><span id="wc-tooltip-numbers">—</span><div id="wc-tooltip-actions"></div>
   </aside>
+  <div class="wc-pulse-scoring-link"><span>But = passe décisive · Interception ou duel gagné d’un défenseur = dribble d’un attaquant</span><a href={base+'/pulse-bareme/'}>Voir le barème complet par poste ↗</a></div>
   <div class="wc-profile-zones" aria-label="Seuils de l'indice Pulse"><span><i class="low"></i> Sous 25 · discret</span><span><i class="steady"></i> 25–75 · dans le jeu</span><span><i class="high"></i> Au-dessus de 75 · temps fort</span><small>50/100 à l'entrée sur le terrain · les malus restent légers</small></div>
   <div class="wc-profile-legend"><span><i class="quiet"></i>Autres événements</span><span><i class="positive"></i>Actions significatives</span><span><i class="goal"></i>Buts</span><span><i class="assist"></i>Passes décisives</span><small>Survolez ou sélectionnez les points sous l’axe X.</small></div>
   <div class="wc-highlights"><strong>MOMENTS CLÉS</strong><div id="wc-moments"></div></div>
@@ -98,11 +100,11 @@ const initialEventCount=initial.actions.filter(a=>a.minute===initialMinute).leng
  <div class="wc-action-bottom">
   <section class="wc-action-log"><div class="wc-section-head"><div><p class="wc-eyebrow">UN MATCH, ACTION PAR ACTION</p><h2>Le journal.</h2><p>Filtre les événements du joueur et clique sur une action pour retrouver la minute exacte.</p></div></div>
    <div class="wc-log-filters" role="group" aria-label="Filtrer les actions">
-    <button type="button" class="active" data-filter="all" aria-pressed="true">Toutes</button><button type="button" data-filter="Pass" aria-pressed="false">Passes</button><button type="button" data-filter="Dribble" aria-pressed="false">Dribbles</button><button type="button" data-filter="Shot" aria-pressed="false">Tirs</button><button type="button" data-filter="assist" aria-pressed="false">Passes décisives</button><button type="button" data-filter="other" aria-pressed="false">Autres</button>
+    <button type="button" class="active" data-filter="all" aria-pressed="true">Toutes</button><button type="button" data-filter="Pass" aria-pressed="false">Passes</button><button type="button" data-filter="Dribble" aria-pressed="false">Dribbles</button><button type="button" data-filter="Shot" aria-pressed="false">Tirs</button><button type="button" data-filter="assist" aria-pressed="false">Passes décisives</button><button type="button" data-filter="defense" aria-pressed="false">Défense</button><button type="button" data-filter="other" aria-pressed="false">Autres</button>
    </div>
    <div class="wc-log-rows" id="wc-log"></div>
   </section>
-  <aside class="wc-profile-note"><p class="wc-eyebrow">LE MODÈLE PULSE</p><h2>Observer le rythme, pas attribuer une note.</h2><p>Les actions créent des impulsions qui s’atténuent avec une mémoire courte de 3 minutes et une mémoire longue de 10 minutes. But et passe décisive déclenchent une forte impulsion : c'est un pic d'activité, pas une note de performance. L’axe 0–100 est fixe pour comparer les matchs, sans ajouter une courbe d’équipe au profil individuel.</p><p><strong>Impact indicatif :</strong> indicateur éditorial tenant compte du type d’action, du xG des tirs et de la progression des passes quand ces données sont disponibles. Ce n’est pas un xT ou un VAEP validé.</p><a href={playerUrl(base,initial.player.id)} id="wc-other-games">↗ Tous les matchs de ce joueur</a><a href={matchUrl(base,game.id)}>← Retour aux deux équipes</a></aside>
+  <aside class="wc-profile-note"><p class="wc-eyebrow">LE MODÈLE PULSE</p><h2>Observer le rythme, pas attribuer une note.</h2><p>Les actions créent des impulsions qui s’atténuent avec une mémoire courte de 3 minutes et une mémoire longue de 10 minutes. Le barème dépend du poste : interceptions, duels gagnés et gestes défensifs sont mieux récompensés chez les défenseurs. But et passe décisive ont exactement la même impulsion. C'est un pic d'activité, pas une note de performance. L’axe 0–100 est fixe pour comparer les matchs, sans ajouter une courbe d’équipe au profil individuel.</p><p><strong>Impact indicatif :</strong> indicateur éditorial tenant compte du type d’action, du xG des tirs et de la progression des passes quand ces données sont disponibles. Ce n’est pas un xT ou un VAEP validé.</p><a href={base+'/pulse-bareme/'}>↗ Consulter le barème des actions</a><a href={playerUrl(base,initial.player.id)} id="wc-other-games">↗ Tous les matchs de ce joueur</a><a href={matchUrl(base,game.id)}>← Retour aux deux équipes</a></aside>
  </div>
  <p class="wc-footnote">Source de l’ensemble des événements : <a href={game.source} target="_blank" rel="noopener noreferrer">StatsBomb Open Data / Hudl ↗</a> · <a href={base+'/data/worldcup-2022/matches/'+game.id+'.json'}>Télécharger les actions du match (JSON) ↗</a>. Pas de données inventées ni de suivi GPS. La séance de tirs au but ne fait pas partie de la courbe ; temps additionnel et prolongations sont conservés.</p>
 </div></div>
@@ -121,7 +123,8 @@ const initialEventCount=initial.actions.filter(a=>a.minute===initialMinute).leng
  const label=a=>a.kind==='Pass'?(a.goalAssist?'PASSE DÉCISIVE':a.shotAssist?'Passe créant un tir':a.outcome==='Complete'?'Passe réussie':'Passe non réussie'):
  a.kind==='Dribble'?(a.outcome==='Complete'?'Dribble réussi':'Dribble non réussi'):
  a.kind==='Shot'?((a.outcome==='Goal'?'BUT':'Tir · '+a.outcome)+(Number.isFinite(a.xg)?' · xG '+Number(a.xg).toFixed(2):'')):
- ({Carry:'Conduite de balle','Ball Receipt*':'Réception','Ball Recovery':'Récupération',Pressure:'Pressing',Duel:'Duel',Interception:'Interception',Miscontrol:'Contrôle manqué','Foul Committed':'Faute commise'})[a.kind]||a.kind;
+ (a.kind==='Duel'?(a.subtype==='Tackle'?'Tacle':'Duel')+(a.outcome==='Won'||a.outcome==='Won In Play'?' gagné':' · '+a.outcome):({Carry:'Conduite de balle','Ball Receipt*':'Réception','Ball Recovery':'Récupération',Pressure:'Pressing',Interception:'Interception',Clearance:'Dégagement',Block:'Contre','Goal Keeper':a.outcome?'Gardien · '+a.outcome:'Action du gardien',Miscontrol:'Contrôle manqué','Foul Committed':'Faute commise'})[a.kind]||a.kind);
+ const value=a=>' · +'+Number(a.gain||0).toLocaleString('fr-FR',{maximumFractionDigits:2})+' imp.'+(a.penalty>0?' / −'+a.penalty.toFixed(2):'');
  const kind=a=>a.kind==='Shot'&&a.outcome==='Goal'?'goal':a.goalAssist?'assist':a.penalty>0?'negative':['Shot','Dribble','Pass','Ball Recovery','Interception'].includes(a.kind)?'positive':'quiet';
  const svgEl=(tag,attributes,title)=>{const el=document.createElementNS(ns,tag);for(const [key,value] of Object.entries(attributes))el.setAttribute(key,String(value));if(title){const t=document.createElementNS(ns,'title');t.textContent=title;el.append(t);}return el;};
  const points=()=>player.timeline;
@@ -173,14 +176,14 @@ const initialEventCount=initial.actions.filter(a=>a.minute===initialMinute).leng
   tipTitle.textContent=minute+'′ · '+(selectedScore==null?'Hors terrain':selectedScore<25?'Rythme discret':selectedScore>75?'Temps fort':'Dans le jeu');
   tipNumbers.textContent='Activité '+(p.activity==null?'—':Math.round(p.activity)+'/100')+' · Impact '+(p.impact==null?'—':Math.round(p.impact)+'/100')+' · '+events.length+' action'+(events.length===1?'':'s')+(p.penaltyGain>0?' · malus léger −'+p.penaltyGain.toFixed(2):'');
   tipActions.replaceChildren();
-  for(const action of events.slice(0,5)){const badge=document.createElement('span');badge.className='wc-tip-action '+kind(action);badge.textContent=String(action.second).padStart(2,'0')+'″ '+label(action)+(action.penalty>0?' · −'+action.penalty.toFixed(2):'');tipActions.append(badge);}
+  for(const action of events.slice(0,5)){const badge=document.createElement('span');badge.className='wc-tip-action '+kind(action);badge.textContent=String(action.second).padStart(2,'0')+'″ '+label(action)+value(action);tipActions.append(badge);}
   if(events.length>5){const more=document.createElement('span');more.textContent='+'+(events.length-5)+' autres actions';tipActions.append(more);}
   if(!events.length){const empty=document.createElement('span');empty.textContent=p.activity==null?'Hors terrain':'Pas d’action : l’activité s’atténue.';tipActions.append(empty);}
   tooltip.hidden=false;
   tooltip.style.borderColor=color;
 
   if(!events.length){const node=document.createElement('span');node.className='wc-no-action';node.textContent=p.activity==null?'Joueur hors du terrain.':'Aucune action enregistrée : les impulsions précédentes diminuent.';chips.append(node);return;}
-  for(const e of events){const node=document.createElement('span');node.className='wc-event-chip '+kind(e);node.textContent=String(e.second).padStart(2,'0')+'″ · '+label(e)+(e.penalty>0?' · léger malus −'+e.penalty.toFixed(2):'');chips.append(node);}
+  for(const e of events){const node=document.createElement('span');node.className='wc-event-chip '+kind(e);node.textContent=String(e.second).padStart(2,'0')+'″ · '+label(e)+value(e);chips.append(node);}
  }
  function peakFor(metric){let best=null;for(let m=0;m<points().length;m++){const value=points()[m][metric];if(value!=null&&(!best||value>best.value))best={m,value};}return best;}
  function renderMoments(){
@@ -195,11 +198,11 @@ const initialEventCount=initial.actions.filter(a=>a.minute===initialMinute).leng
  }
  function renderLog(){
   log.replaceChildren();
-  const relevant=player.events.filter(a=>filter==='all'||(filter==='assist'?a.goalAssist:filter==='other'?!['Pass','Shot','Dribble'].includes(a.kind):a.kind===filter));
+  const relevant=player.events.filter(a=>filter==='all'||(filter==='assist'?a.goalAssist:filter==='defense'?['Interception','Duel','Ball Recovery','Clearance','Block','Goal Keeper'].includes(a.kind):filter==='other'?!['Pass','Shot','Dribble'].includes(a.kind):a.kind===filter));
   for(const a of relevant){
    const button=document.createElement('button');button.type='button';button.className='wc-event-row';
    const time=document.createElement('span');time.textContent=a.minute+'′ '+String(a.second).padStart(2,'0')+'″';
-   const name=document.createElement('strong');name.textContent=label(a);
+   const name=document.createElement('strong');name.textContent=label(a)+' · +'+Number(a.gain||0).toLocaleString('fr-FR',{maximumFractionDigits:2})+' imp.';
    const arrow=document.createElement('small');arrow.textContent='Voir ↗';
    button.append(time,name,arrow);button.addEventListener('click',()=>{setMinute(a.minute);document.getElementById('wc-minute-reader')?.scrollIntoView({behavior:'smooth',block:'center'});});
    log.append(button);
@@ -211,7 +214,7 @@ const initialEventCount=initial.actions.filter(a=>a.minute===initialMinute).leng
   select.value=String(player.id);
   if(updateUrl){const url=new URL(location.href);url.searchParams.set('joueur',String(player.id));history.replaceState(null,'',url);}
   document.getElementById('wc-current-name').textContent=player.name;
-  document.getElementById('wc-current-label').textContent=player.teamLabel+' · '+player.entry+'′ → '+(player.exit??duration)+'′';
+  document.getElementById('wc-current-label').textContent=player.teamLabel+' · '+player.roleLabel+' · '+player.entry+'′ → '+(player.exit??duration)+'′';
   document.getElementById('wc-current-flag').src=player.flagSrc;
   document.getElementById('wc-other-games').href=basePath+'/mondial-2022/joueurs/'+player.id+'/';
   const active=points().filter(p=>p.activity!=null),sum=active.reduce((n,p)=>n+p.activity,0),high=peakFor('activity');
@@ -227,7 +230,7 @@ const initialEventCount=initial.actions.filter(a=>a.minute===initialMinute).leng
  document.querySelectorAll('[data-mode]').forEach(button=>button.addEventListener('click',()=>{
   mode=button.dataset.mode;for(const b of document.querySelectorAll('[data-mode]')){const active=b===button;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));}
   document.getElementById('wc-mode-title').textContent=mode==='activity'?'· Activité du match':'· Impact des actions';
-  document.getElementById('wc-mode-desc').textContent=mode==='activity'?'Une impulsion pour chaque action : l’activité progresse puis diminue lors des périodes plus calmes.':'Impact éditorial expérimental : tient compte de la progression des passes et des xG des tirs lorsque disponibles. Ce n’est pas un modèle xT.';
+  document.getElementById('wc-mode-desc').textContent=mode==='activity'?'Les impulsions dépendent du poste : les gestes défensifs sont mieux valorisés pour un défenseur.':'Impact éditorial expérimental : tient compte de la progression des passes et des xG des tirs lorsque disponibles. Ce n’est pas un modèle xT.';
   chart();setMinute(minute);
  }));
  slider.addEventListener('input',()=>setMinute(slider.value));

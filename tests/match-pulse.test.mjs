@@ -1,4 +1,5 @@
 import test from 'node:test';
+import {pulseRole,pulsePoints,PULSE_SCORE_ROWS} from '../src/lib/pulse-scoring.mjs';
 import assert from 'node:assert/strict';
 import {computePulse,pulseWeight,pulsePenalty,pulseBand,PULSE_BANDS,PULSE_RULES,computeMatchProfiles} from '../src/lib/match-activity.mjs';
 
@@ -109,10 +110,10 @@ test('une séquence de deux buts fait approcher 100 sans imposer le maximum',()=
  assert.equal(t[79].activity,Number((50*Math.pow(2,-79/25)).toFixed(1)));
 });
 
-test('une passe décisive est un vrai temps fort, sans égaler un but',()=>{
+test('une passe décisive vaut exactement un but dans le barème Pulse',()=>{
  const passing={kind:'Pass',outcome:'Complete'};
  assert.deepEqual(pulseWeight(passing),{activity:1,impact:0.5});
- assert.equal(pulseWeight({...passing,goalAssist:true}).activity,20);
+ assert.equal(pulseWeight({...passing,goalAssist:true}).activity,28);
  assert.equal(pulseWeight({...passing,shotAssist:true}).activity,3.2);
  assert.equal(pulseWeight({kind:'Shot',outcome:'Goal'}).activity,28);
  const event={minute:35,second:44,...passing};
@@ -122,7 +123,8 @@ test('une passe décisive est un vrai temps fort, sans égaler un but',()=>{
  const goal=computePulse([{minute:35,second:44,kind:'Shot',outcome:'Goal'}],90).timeline;
  assert.ok(assist[35].activity>key[35].activity);
  assert.ok(key[35].activity>regular[35].activity);
- assert.ok(goal[35].activity>assist[35].activity);
+ assert.equal(goal[35].activity,assist[35].activity);
+ assert.equal(goal[35].impact,assist[35].impact);
  assert.ok(assist[36].activity<assist[35].activity);
  assert.ok(assist.every(p=>p.activity==null||p.activity<=100));
 });
@@ -135,4 +137,41 @@ test('le profil des joueurs conserve le statut de passe décisive depuis les don
  assert.equal(profiles[0].actions[0].goalAssist,true);
  assert.equal(profiles[0].actions[1].shotAssist,true);
  assert.ok(profiles[0].timeline[35].activity>75);
+});
+
+test('barème selon le poste : interception/tacle du défenseur = dribble de l’attaquant',()=>{
+ assert.equal(pulseRole('Right Center Back'),'defense');
+ assert.equal(pulseRole('Left Back'),'defense');
+ assert.equal(pulseRole('Left Defensive Midfield'),'midfield');
+ assert.equal(pulseRole('Center Forward'),'attack');
+ assert.equal(pulseRole('Goalkeeper'),'goalkeeper');
+ assert.equal(pulseRole(''),'midfield');
+ assert.equal(pulsePoints('interception','defense'),5);
+ assert.equal(pulsePoints('tackle','defense'),5);
+ assert.equal(pulsePoints('dribble','attack'),5);
+ const intercept={kind:'Interception',outcome:''};
+ const tackle={kind:'Duel',outcome:'Won',subtype:'Tackle'};
+ const dribble={kind:'Dribble',outcome:'Complete'};
+ assert.equal(pulseWeight(intercept,'Right Back').activity,pulseWeight(dribble,'Center Forward').activity);
+ assert.equal(pulseWeight(tackle,'Right Center Back').activity,pulseWeight(dribble,'Center Forward').activity);
+ assert.ok(pulseWeight(intercept,'Center Back').activity>pulseWeight(intercept,'Center Forward').activity);
+ assert.equal(pulseWeight({kind:'Pass',outcome:'Complete',goalAssist:true},'Right Back').activity,28);
+ assert.equal(pulseWeight({kind:'Shot',outcome:'Goal'},'Right Back').activity,28);
+ assert.equal(pulseWeight({kind:'Goal Keeper',outcome:'Shot Saved'},'Goalkeeper').activity,7);
+ assert.ok(PULSE_SCORE_ROWS.every(row=>Object.values(row.points).every(n=>n>=0)));
+});
+
+test('poste transmis à la timeline et moyenne équipe calculée sur les indices ajustés',()=>{
+ const game={duration:15,players:[
+  {id:10,name:'DC',position:'Right Center Back',entry:0,exit:null},
+  {id:11,name:'BU',position:'Center Forward',entry:0,exit:null}
+ ],actions:[
+  {p:10,m:5,s:10,k:'Interception',o:''},
+  {p:11,m:5,s:10,k:'Interception',o:''}
+ ]};
+ const {profiles,team}=computeMatchProfiles(game);
+ assert.ok(profiles[0].timeline[5].activity>profiles[1].timeline[5].activity);
+ assert.equal(team[5].activity,Number(((profiles[0].timeline[5].activity+profiles[1].timeline[5].activity)/2).toFixed(1)));
+ assert.equal(profiles[0].timeline[5].gain,5);
+ assert.ok(profiles[0].timeline.every(p=>p.activity===null||(p.activity>=0&&p.activity<=100)));
 });

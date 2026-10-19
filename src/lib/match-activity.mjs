@@ -1,3 +1,5 @@
+import {pulseRole,pulsePoints} from './pulse-scoring.mjs';
+
 // Indice éditorial d'activité d'un joueur, sans données physiques.
 export const ACTIVITY_RULES = Object.freeze({start: 50, decay: 1, pass: 5, dribble: 5, goal: 45, floor: 0});
 
@@ -45,34 +47,42 @@ export const PULSE_RULES = Object.freeze({
   activityScale: 14, impactScale: 8
 });
 
-export function pulseWeight(action) {
-  const kind = action.kind, complete = action.outcome === 'Complete';
-  if (kind === 'Pass') {
-    // Distance de progression en coordonnées normalisées StatsBomb (terrain 120x80).
-    // Un bonus heuristique, surtout pas une probabilité de créer un but.
+export function pulseWeight(action, position = '') {
+  const role=pulseRole(position),kind=action.kind,complete=action.outcome==='Complete';
+  const pt=key=>pulsePoints(key,role);
+  if(kind==='Pass') {
     const progress=Array.isArray(action.location)&&Array.isArray(action.endLocation)
-      ? Math.max(0,action.endLocation[0]-action.location[0]):0;
-    if(complete && action.goalAssist) return {activity:20,impact:7.5};
-    if(complete && action.shotAssist) return {activity:3.2,impact:Number((1.5+Math.min(1.5,progress/30)).toFixed(2))};
-    return {activity:complete?1:0.45,impact:complete?Number((0.5+Math.min(2.4,progress/18)).toFixed(2)):0};
+      ?Math.max(0,action.endLocation[0]-action.location[0]):0;
+    if(complete&&action.goalAssist)return {activity:pt('assist'),impact:10};
+    if(complete&&action.shotAssist)return {activity:pt('chance'),impact:Number((1.5+Math.min(1.5,progress/30)).toFixed(2))};
+    return {activity:pt(complete?'pass':'missedPass'),impact:complete?Number((0.5+Math.min(2.4,progress/18)).toFixed(2)):0};
   }
-  if (kind === 'Dribble') return {activity:complete?5:2.5, impact:complete?3.2:0};
-  if (kind === 'Shot') {
+  if(kind==='Dribble')return {activity:pt(complete?'dribble':'missedDribble'),impact:complete?3.2:0};
+  if(kind==='Shot') {
     const xg=Number.isFinite(action.xg)?Math.min(1,Math.max(0,action.xg)):null;
-    // Un but est un temps fort majeur d'activité (impulsion courte qui redescend).
-    if(action.outcome==='Goal')return {activity:28,impact:xg==null?10:Number((8.5+1.5*xg).toFixed(2))};
-    return {activity:4,impact:xg==null?(action.outcome==='Blocked'?0.6:2):Number((1.2+7*xg).toFixed(2))};
+    // Même impulsion de base pour un but et une passe décisive, à tout poste.
+    if(action.outcome==='Goal')return {activity:pt('goal'),impact:10};
+    return {activity:pt('shot'),impact:xg==null?(action.outcome==='Blocked'?0.6:2):Number((1.2+7*xg).toFixed(2))};
   }
-  if (kind === 'Ball Recovery' || kind === 'Interception') return {activity:2, impact:1};
-  if (kind === 'Duel') return {activity:1.4, impact:0.45};
-  if (kind === 'Pressure') return {activity:0.8, impact:0.25};
-  if (kind === 'Carry') return {activity:0.65, impact:0.1};
-  if (kind === 'Ball Receipt*') return {activity:0.3, impact:0};
-  if (kind === 'Clearance' || kind === 'Block' || kind === 'Goal Keeper')
-    return {activity:1.5, impact:0.5};
-  if (kind === 'Miscontrol' || kind === 'Foul Committed' || kind === 'Dribbled Past')
-    return {activity:0.4, impact:0};
-  return {activity:0.3, impact:0};
+  if(kind==='Interception')return {activity:pt('interception'),impact:role==='defense'?3.2:1.3};
+  if(kind==='Ball Recovery')return {activity:pt('recovery'),impact:role==='defense'?2:1.2};
+  if(kind==='Duel') {
+    const won=['Won','Won In Play','Success'].includes(action.outcome);
+    const key=won?(action.subtype==='Tackle'?'tackle':'duel'):'lostDuel';
+    return {activity:pt(key),impact:won?(role==='defense'?3.2:2):0.25};
+  }
+  if(kind==='Clearance')return {activity:pt('clearance'),impact:role==='defense'?2:0.6};
+  if(kind==='Block')return {activity:pt('block'),impact:role==='defense'?2.2:0.6};
+  if(kind==='Goal Keeper') {
+    const saved=/saved|save|claim|smother/i.test(action.outcome||'');
+    return {activity:pt(saved?'save':'keeper'),impact:saved?4:0.8};
+  }
+  if(kind==='Pressure')return {activity:pt('pressure'),impact:role==='defense'?0.5:0.25};
+  if(kind==='Carry')return {activity:pt('carry'),impact:0.1};
+  if(kind==='Ball Receipt*')return {activity:0.3,impact:0};
+  if(kind==='Miscontrol'||kind==='Foul Committed'||kind==='Dribbled Past')
+    return {activity:0.4,impact:0};
+  return {activity:0.3,impact:0};
 }
 
 // Bandes visuelles : niveaux de l'indice, pas pente mathématique de la courbe.
@@ -112,7 +122,7 @@ const pulseIndex = (value, scale) => Number((100 * (1 - Math.exp(-Math.max(0,val
  * Le score à la minute m correspond à la fin de l'intervalle [m, m+1[ :
  * les événements futurs n'influencent jamais le passé.
  */
-export function computePulse(events, duration = 125, {entry = 0, exit = duration + 1} = {}) {
+export function computePulse(events, duration = 125, {entry = 0, exit = duration + 1, position = ''} = {}) {
   const byMinute = Array.from({length:duration+1},()=>[]);
   for(const event of events) {
     if(Number.isInteger(event.minute) && event.minute>=0 && event.minute<=duration)
@@ -133,7 +143,7 @@ export function computePulse(events, duration = 125, {entry = 0, exit = duration
     const items=all.filter(event=>event.minute>=entry && event.minute<exit);
     let gain=0, penaltyGain=0, impactGain=0;
     for(const event of items){
-      const weight=pulseWeight(event);
+      const weight=pulseWeight(event,position);
       const penalty=pulsePenalty(event);
       // À l'intérieur de la minute, un événement plus tôt a légèrement plus décru.
       const elapsed=1-Math.max(0,Math.min(59,Number(event.second)||0))/60;
@@ -210,9 +220,9 @@ export function computeMatchProfiles(match) {
   const profiles = match.players.map(player => {
     const actions = match.actions.filter(a=>a.p===player.id).map(a=>({
       minute:a.m,second:a.s,kind:a.k,outcome:a.o,playerId:a.p,
-      location:a.l,endLocation:a.e,xg:a.xg,goalAssist:a.ga===1,shotAssist:a.sa===1
+      location:a.l,endLocation:a.e,xg:a.xg,goalAssist:a.ga===1,shotAssist:a.sa===1,subtype:a.t
     }));
-    const {timeline} = computePulse(actions,match.duration,{entry:player.entry,exit:player.exit??match.duration+1});
+    const {timeline} = computePulse(actions,match.duration,{entry:player.entry,exit:player.exit??match.duration+1,position:player.position??''});
     return {player,actions,timeline};
   });
   const team = Array.from({length:match.duration+1},(_, minute)=>{

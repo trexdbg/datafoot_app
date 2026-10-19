@@ -190,3 +190,9 @@
  .wc-profile-root .wc-profile-zones,.wc-profile-root .wc-profile-legend{padding:10px 13px}
  .wc-profile-root .wc-minute-reader{padding:15px}
 }
+
+/* Encart compact entre la courbe et les légendes : barème vérifiable par poste. */
+.wc-pulse-scoring-link{display:flex;justify-content:space-between;align-items:center;gap:10px 22px;flex-wrap:wrap;padding:12px 23px;background:#15384a;border-top:1px solid #356075;border-bottom:1px solid #356075}
+.wc-pulse-scoring-link span{font-size:11px;line-height:1.6;color:#d5edfa}
+.wc-pulse-scoring-link a{font-size:11px;font-weight:850;color:#c6f391;white-space:nowrap}
+@media(max-width:600px){.wc-pulse-scoring-link{padding:11px 14px}.wc-pulse-scoring-link a{white-space:normal}}

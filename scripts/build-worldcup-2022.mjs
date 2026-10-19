@@ -78,17 +78,19 @@ export function compactMatch(fixture,raw) {
     if(kind==='Own Goal Against')
       goals.push({minute,second:e.second,playerId:e.player?.id??null,team:teams.find(n=>n!==e.team?.name),kind:'own-goal'});
     if(!e.player?.id||!teams.includes(e.team?.name)||kind==='Substitution'||kind==='Player On'||kind==='Player Off')continue;
-    add(e.player,e.team.name,0);
+    add(e.player,e.team.name,0,e.position?.name||'');
     const outcome=kind==='Pass'?(e.pass?.outcome?.name||'Complete')
       :kind==='Dribble'?(e.dribble?.outcome?.name||'Complete')
       :kind==='Shot'?(e.shot?.outcome?.name||'')
       :kind==='Duel'?(e.duel?.outcome?.name||'')
+      :kind==='Goal Keeper'?(e.goalkeeper?.type?.name||'')
       :'';
     const location=Array.isArray(e.location)?e.location.slice(0,2).map(Math.round):null;
     const end=kind==='Pass'&&Array.isArray(e.pass?.end_location)?e.pass.end_location.slice(0,2).map(Math.round):null;
     const a={p:e.player.id,m:minute,s:e.second,k:kind,o:outcome};
     // Assists de but validées par StatsBomb : aucune inférence par proximité temporelle.
     // "shot_assist" (passe créant un tir) est une catégorie distincte.
+    if(kind==='Duel'&&e.duel?.type?.name)a.t=e.duel.type.name;
     if(kind==='Pass'&&e.pass?.goal_assist===true)a.ga=1;
     else if(kind==='Pass'&&e.pass?.shot_assist===true)a.sa=1;
     if(location)a.l=location;
