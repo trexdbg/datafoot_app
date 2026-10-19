@@ -40,7 +40,7 @@ jobs:
           node --input-type=module <<'JS'
           import assert from 'node:assert/strict';
           import fs from 'node:fs';
-          import { computeActivity, computeMatchProfiles, actionImpact, smoothVisual } from './src/lib/match-activity.mjs';
+          import { computeActivity, computePulse, computeMatchProfiles, actionImpact, pulseWeight, smoothVisual, PULSE_RULES } from './src/lib/match-activity.mjs';
           import { games, playerList, commonScale } from './src/lib/explorer-data.mjs';
           const path = 'src/data/matches/2022-final-mbappe.json';
           const data = JSON.parse(fs.readFileSync(path, 'utf8'));
@@ -74,22 +74,42 @@ jobs:
           assert.equal(actionImpact({kind:'Dribble',outcome:'Complete'}),5);
           assert.equal(actionImpact({kind:'Shot',outcome:'Goal'}),45);
           assert.equal(computeActivity([],125).timeline[125].activity,0);
+          // V3 : le score démarre à 0, une action crée une impulsion causale.
+          assert.equal(PULSE_RULES.shortHalfLife,3);
+          assert.equal(PULSE_RULES.longHalfLife,10);
+          assert.deepEqual(pulseWeight({kind:'Pass',outcome:'Complete'}),{activity:1,impact:0.5});
+          assert.ok(pulseWeight({kind:'Dribble',outcome:'Complete'}).activity>pulseWeight({kind:'Pass',outcome:'Complete'}).activity);
+          const pulse=computePulse([{minute:4,second:30,kind:'Dribble',outcome:'Complete'}],30).timeline;
+          assert.equal(pulse[3].activity,0);
+          assert.ok(pulse[4].activity>0 && pulse[4].impact>0);
+          assert.ok(pulse[5].activity<pulse[4].activity);
+          assert.ok(pulse[10].activity<pulse[5].activity);
+          assert.equal(computePulse([],90).timeline[90].activity,0);
+          assert.ok(pulse.every(p=>p.activity>=0 && p.activity<=100 && p.impact>=0 && p.impact<=100));
+          const secondPulse=computePulse([{minute:4,second:0,kind:'Pass',outcome:'Complete'},{minute:4,second:59,kind:'Pass',outcome:'Complete'}],20).timeline;
+          assert.equal(secondPulse[4].gain,2);
+          const off=computePulse([{minute:1,second:15,kind:'Pass',outcome:'Complete'}],20,{entry:5,exit:9}).timeline;
+          assert.equal(off[4].activity,null);
+          assert.equal(off[5].activity,0);
+          assert.equal(off[9].activity,null);
           assert.equal(games.length,7);
           assert.equal(playerList.length,24);
-          assert.ok(commonScale>=150);
+          assert.equal(commonScale,100);
           for (const game of games) {
             assert.equal(game.team.length,game.duration+1);
             assert.ok(game.profiles.length>=11);
-            assert.ok(game.team.every((point,i)=>point.activity>=0 && point.players>0 && Number.isFinite(point.activity)));
+            assert.ok(game.team.every(point=>point.activity>=0 && point.activity<=100 && point.impact>=0 && point.impact<=100 && point.players>0 && Number.isFinite(point.activity)));
             const playerIds=new Set(game.players.map(p=>p.id));
             assert.ok(game.actions.every(a=>playerIds.has(a.p) && a.m>=0 && a.m<=game.duration));
             assert.equal(game.profiles.filter(p=>p.player.id===3009).length,1);
             for(const profile of game.profiles) {
               assert.equal(profile.timeline.length,game.duration+1);
-              assert.equal(profile.timeline[profile.player.entry].activity>=50,true);
+              assert.ok(profile.timeline[profile.player.entry].activity>=0 && profile.timeline[profile.player.entry].activity<=100);
               if(profile.player.entry>0)assert.equal(profile.timeline[profile.player.entry-1].activity,null);
               const display=smoothVisual(profile.timeline);
               assert.equal(display.length,profile.timeline.length);
+              assert.ok(profile.timeline.every(p=>p.activity==null || p.activity>=0 && p.activity<=100));
+              assert.ok(profile.timeline.every(p=>p.impact==null || p.impact>=0 && p.impact<=100));
               assert.ok(display.every((p,i)=>p.activity==null || p.activity>=0));
             }
           }
