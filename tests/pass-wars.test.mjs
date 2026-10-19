@@ -1,44 +1,46 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { eligiblePartners, MIN_PARTNER_PASSES, playerColor, createPlayerPalette, layoutPlayerNodes, monthOrdinal, monthYearLabel, eventCalendarPosition, eventsThroughMonth, sampleVisualPasses, thinVisualQueue } from '../src/lib/pass-wars-engine.mjs';
+import { eligiblePartners, MIN_PARTNER_PASSES, playerColor, createPlayerPalette, layoutPlayerNodes, monthOrdinal, monthYearLabel, eventCalendarPosition, eventsThroughMonth, passEventSeed, curvedPassPoint } from '../src/lib/pass-wars-engine.mjs';
 
 const make = (id, direction, name='Joueur '+id)=>({partner_id:id,partner_name:name,direction});
 
-test('seuil > 95 strict : 95 exclus, 96 et 97 inclus',()=>{
+test('seuil strict : 500 passes reçues de Messi insuffisantes, 501 éligibles',()=>{
   const events=[
-    ...Array.from({length:95},()=>make(1,'given')),
-    ...Array.from({length:48},()=>make(2,'given')),
-    ...Array.from({length:48},()=>make(2,'received')),
-    ...Array.from({length:97},(_,i)=>make(3,i%2?'given':'received')),
+    ...Array.from({length:500},()=>make(1,'given')),
+    ...Array.from({length:501},()=>make(2,'given')),
+    ...Array.from({length:1500},()=>make(2,'received')),
+    ...Array.from({length:900},()=>make(3,'received')),
+    ...Array.from({length:602},()=>make(4,'given')),
   ];
   const players=eligiblePartners(events);
-  assert.equal(MIN_PARTNER_PASSES,96);
-  assert.deepEqual(players.map(p=>[p.id,p.total]),[[3,97],[2,96]]);
-  assert.equal(players[1].given,48);
-  assert.equal(players[1].received,48);
+  assert.equal(MIN_PARTNER_PASSES,501);
+  assert.deepEqual(players.map(p=>[p.id,p.given,p.received]),[[4,602,0],[2,501,1500]]);
+  assert.ok(!players.some(p=>p.id===1),'500 exactement ne passe pas');
+  assert.ok(!players.some(p=>p.id===3),'passe vers Messi ne qualifie pas le partenaire');
 });
 
-test('un filtre de période peut cacher tous les joueurs sans changer les données brutes',()=>{
-  const all=[...Array.from({length:98},()=>make(10,'given')),...Array.from({length:75},()=>make(11,'received'))];
-  const shortSelection=all.slice(0,45);
+test('le seuil de 501 reçues de Messi se recalcule au changement de période',()=>{
+  const all=Array.from({length:501},()=>make(10,'given'));
   assert.equal(eligiblePartners(all).length,1);
-  assert.deepEqual(eligiblePartners(shortSelection),[]);
-  assert.equal(all.length,173);
+  assert.deepEqual(eligiblePartners(all.slice(0,500)),[]);
+  assert.equal(all.length,501);
 });
 
-test('plafond de 30 joueurs même lorsque 40 dépassent le seuil',()=>{
-  const events=Array.from({length:40},(_,i)=>Array.from({length:96+i},()=>make(i,'received'))).flat();
+test('plafond des 30 plus grands receveurs de Messi si 40 dépassent le seuil',()=>{
+  const events=Array.from({length:40},(_,i)=>Array.from({length:501+i},()=>make(i,'given'))).flat();
   const players=eligiblePartners(events);
   assert.equal(players.length,30);
   assert.equal(players[0].id,39);
-  assert.ok(players.every(p=>p.total>=96));
+  assert.ok(players.every(p=>p.given>500));
 });
 
 test('les données réelles publiées correspondent au seuil de la visualisation',async()=>{
   const {readFileSync}=await import('node:fs');
   const summary=JSON.parse(readFileSync(new URL('../src/data/players/messi-pass-wars.json',import.meta.url),'utf8'));
   const events=JSON.parse(readFileSync(new URL('../src/data/players/messi-pass-wars-events.json',import.meta.url),'utf8'));
-  const expected=summary.partners.filter(p=>p.total>=96).slice(0,30).map(p=>p.id);
+  const expected=summary.partners.filter(p=>p.given>=501).sort((a,b)=>
+    b.given-a.given||b.total-a.total||String(a.name).localeCompare(String(b.name))||a.id-b.id
+  ).slice(0,30).map(p=>p.id);
   const actual=eligiblePartners(events.events).map(p=>p.id);
   assert.deepEqual(actual,expected);
   assert.ok(actual.length>=1 && actual.length<=30,'Le classement garde son plafond de 30 joueurs même avec la couverture complète');
@@ -48,7 +50,7 @@ test('les données réelles publiées correspondent au seuil de la visualisation
 test('une couleur distincte et stable par joueur, quel que soit le sens ou le tri',async()=>{
   const {readFileSync}=await import('node:fs');
   const summary=JSON.parse(readFileSync(new URL('../src/data/players/messi-pass-wars.json',import.meta.url),'utf8'));
-  const visible=summary.partners.filter(p=>p.total>=96).slice(0,30);
+  const visible=summary.partners.filter(p=>p.given>=501).slice(0,30);
   const colors=visible.map(p=>playerColor(p.id));
   assert.equal(new Set(colors).size,visible.length,'Chaque joueur visible doit avoir sa couleur propre');
   assert.ok(colors.every(color=>/^hsl\(\d+\.\d{3} \d+% \d+%\)$/.test(color)));
@@ -73,7 +75,7 @@ test('palette StatsBomb : teintes réellement distinctes, constantes entre filtr
   const data=JSON.parse(readFileSync(new URL('../src/data/players/messi-pass-wars.json',import.meta.url),'utf8'));
   const whole=createPlayerPalette(data.partners);
   const shuffled=createPlayerPalette([...data.partners].reverse());
-  const visible=data.partners.filter(p=>p.total>=96).slice(0,30);
+  const visible=data.partners.filter(p=>p.given>=501).slice(0,30);
   const colors=visible.map(p=>whole.get(p.id));
   assert.ok(colors.length>=11&&colors.length<=30);
   assert.equal(new Set(colors).size,visible.length);
@@ -126,11 +128,11 @@ test('la route paintball v3 neuve est cohérente avec le réseau sans traits',as
 });
 
 
-test('V3 : noms usuels et photos des partenaires >95', async()=>{
+test('V3 : noms usuels et photos des partenaires recevant >500 passes', async()=>{
   const {readFileSync}=await import('node:fs');
   const {displayPlayerName,photoFor,profileFor,photoCredits,playerInitials,MESSI_ID}=await import('../src/lib/messi-player-profiles.mjs');
   const summary=JSON.parse(readFileSync(new URL('../src/data/players/messi-pass-wars.json',import.meta.url),'utf8'));
-  const roster=summary.partners.filter(p=>p.total>=96).slice(0,30);
+  const roster=summary.partners.filter(p=>p.given>=501).slice(0,30);
   assert.ok(roster.length>=11);
   assert.equal(displayPlayerName(20131,'Xavier Hernández Creus'),'Xavi');
   assert.equal(displayPlayerName(19757,'Anderson Luís de Souza'),'Deco');
@@ -177,7 +179,7 @@ test('V3 : noms et portraits présents sans réintroduire de traits',async()=>{
 test('les onze joueurs sont dispersés et non classés en horloge',async()=>{
   const {readFileSync}=await import('node:fs');
   const summary=JSON.parse(readFileSync(new URL('../src/data/players/messi-pass-wars.json',import.meta.url),'utf8'));
-  const roster=summary.partners.filter(p=>p.total>=MIN_PARTNER_PASSES).slice(0,30);
+  const roster=summary.partners.filter(p=>p.given>=MIN_PARTNER_PASSES).slice(0,30);
   const positions=layoutPlayerNodes(roster);
   assert.ok(roster.length>=11);
   assert.equal(positions.size,roster.length);
@@ -195,11 +197,11 @@ test('les onze joueurs sont dispersés et non classés en horloge',async()=>{
     'Pas de progression monotone des angles par rang');
 });
 
-test('les deux routes affichent 96+ passes sans perdre les photos',async()=>{
+test('les deux routes affichent 501+ passes reçues de Messi sans perdre les photos',async()=>{
   const {readFileSync}=await import('node:fs');
   for(const route of ['paintball','pass-wars']){
     const html=readFileSync(new URL('../src/pages/joueurs/messi/'+route+'.astro',import.meta.url),'utf8');
-    assert.ok(html.includes('96+ PASSES'));
+    assert.ok(html.includes('501+ PASSES DE MESSI'));
     assert.ok(!html.includes('80 PASSES MINIMUM'));
   }
   const code=readFileSync(new URL('../src/lib/pass-wars-engine.mjs',import.meta.url),'utf8');
@@ -212,7 +214,7 @@ test('les deux routes affichent 96+ passes sans perdre les photos',async()=>{
 test('chaque rechargement peut changer le placement sans collisions ni joueur masqué',async()=>{
   const {readFileSync}=await import('node:fs');
   const data=JSON.parse(readFileSync(new URL('../src/data/players/messi-pass-wars.json',import.meta.url),'utf8'));
-  const roster=data.partners.filter(p=>p.total>=MIN_PARTNER_PASSES).slice(0,30);
+  const roster=data.partners.filter(p=>p.given>=MIN_PARTNER_PASSES).slice(0,30);
   const base=layoutPlayerNodes(roster,1200,780,600,385,111);
   const moved=layoutPlayerNodes(roster,1200,780,600,385,222);
   assert.equal(base.size,roster.length);
@@ -256,43 +258,45 @@ test('la lecture du calendrier progresse à intervalle régulier, même les mois
   }
 });
 
-test('les projectiles sont échantillonnés parmi les vraies passes, sans ajouter de faux événements',()=>{
-  const original=Array.from({length:1000},(_,i)=>({
-    id:'statsbomb-'+i,partner_id:i%17,direction:i%2?'given':'received',date:'2017-08-12'
-  }));
-  const subset=sampleVisualPasses(original,0,original.length,4);
-  assert.equal(subset.length,4);
-  assert.equal(new Set(subset.map(e=>e.id)).size,4);
-  assert.ok(subset.every(e=>original.includes(e)));
-  assert.deepEqual(sampleVisualPasses(original,10,13,4),original.slice(10,13));
-  assert.deepEqual(sampleVisualPasses(original,0,0,8),[]);
-  assert.deepEqual(sampleVisualPasses(original,10,100,0),[]);
-  assert.equal(original.length,1000,'L’échantillonnage ne modifie jamais les données sources');
-  const queue=original.slice(0,900);
-  const sampled=thinVisualQueue(queue,48);
-  assert.equal(sampled.length,48);
-  assert.equal(sampled[0],queue[0]);
-  assert.equal(sampled.at(-1),queue.at(-1));
-  assert.ok(sampled.every(e=>queue.includes(e)));
-  assert.equal(new Set(sampled.map(e=>e.id)).size,48);
-  assert.deepEqual(thinVisualQueue(queue.slice(0,4),48),queue.slice(0,4));
+test('les courbes pseudo-aléatoires ont des chemins variés et les bonnes extrémités',()=>{
+  const from={x:600,y:385},to={x:270,y:145};
+  const seed1=passEventSeed({id:'uuid-pass-1'});
+  const seed2=passEventSeed({id:'uuid-pass-2'});
+  assert.equal(passEventSeed({id:'uuid-pass-1'}),seed1);
+  assert.notEqual(seed1,seed2);
+  assert.deepEqual(curvedPassPoint(from,to,0,seed1),from);
+  assert.deepEqual(curvedPassPoint(from,to,1,seed1),to);
+  const p1=curvedPassPoint(from,to,.5,seed1);
+  const p2=curvedPassPoint(from,to,.5,seed2);
+  assert.ok(Math.hypot(p1.x-p2.x,p1.y-p2.y)>.1,'Différentes passes, différentes courbures');
+  const reverse=curvedPassPoint(to,from,1,seed2);
+  assert.deepEqual(reverse,from,'Le retour du partenaire termine bien sur Messi');
+  for(let i=0;i<100;i++){
+    const point=curvedPassPoint(from,to,i/100,passEventSeed({id:'shot-'+i}));
+    assert.ok(Number.isFinite(point.x)&&Number.isFinite(point.y));
+  }
 });
 
-test('pas de rafale de projectiles après une journée très dense ni après une pause',async()=>{
+test('une mini-bille par passe et aucune coupe de file : garde les événements StatsBomb',async()=>{
   const {readFileSync}=await import('node:fs');
   const engine=readFileSync(new URL('../src/lib/pass-wars-engine.mjs',import.meta.url),'utf8');
-  assert.ok(engine.includes('enqueueVisualInterval(from,cursor)'));
-  assert.ok(engine.includes('launchVisualPass(t)'));
-  assert.ok(engine.includes('visualQueue=thinVisualQueue(visualQueue,MAX_VISUAL_QUEUE)'));
-  assert.ok(engine.includes('const gap=battle?56:VISUAL_GAP_MS'));
-  assert.ok(engine.includes('nextLaunchAt=t+gap'));
-  assert.ok(engine.includes('if(t<nextLaunchAt)return'));
+  assert.ok(engine.includes('const event=events[releaseCursor++]'));
+  assert.ok(engine.includes('balls.push({id:event.partner_id'));
+  assert.ok(engine.includes('releaseCursor>=cursor'));
+  assert.ok(engine.includes('const MAX_ACTIVE_BALLS=1200'));
+  assert.ok(engine.includes('flightCredit'));
+  assert.ok(engine.includes('emitted++'));
+  assert.ok(engine.includes('curvedPassPoint(from,to,age,p.seed)'));
+  assert.ok(engine.includes('stampMiniImpact(p,to)'));
+  assert.ok(engine.includes('radius:PARTICLE_RADIUS'));
+  assert.ok(!engine.includes('sampleVisualPasses('));
+  assert.ok(!engine.includes('thinVisualQueue('));
+  assert.ok(!engine.includes('visualQueue='));
+  assert.ok(!engine.includes('balls=balls.slice('));
   assert.ok(engine.includes('while(cursor<events.length)count(events[cursor++]);'));
-  assert.ok(engine.includes('events.slice(start,end).filter(e=>e.partner_id===focus)'));
-  assert.ok(engine.includes('visualQueue=visualQueue.filter(e=>e.partner_id===focus)'));
-  assert.ok(!engine.includes('count(events[cursor++],true,t)'));
-  assert.ok(engine.includes('while(cursor<end)count(events[cursor++]);'),
-    'Naviguer par mois doit comptabiliser tous les événements sans billes intempestives');
+  assert.ok(engine.includes('while(cursor<end)count(events[cursor++]);'));
+  assert.ok(engine.includes('releaseCursor=cursor;'),
+    'Scrubbing explicite réinitialise correctement la file');
 });
 
 test('frise chronologique : uniquement mois/année sans jour ni minute',()=>{
