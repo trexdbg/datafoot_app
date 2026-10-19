@@ -171,3 +171,9 @@
 .wc-duel-inspection-team>p{margin:4px 0 0;grid-column:1/-1;color:#b8d4e4;font-size:11px;line-height:1.65;overflow-wrap:anywhere}
 @media(max-width:750px){.wc-duel{padding:16px 13px}.wc-duel-inspection{grid-template-columns:1fr 1fr}.wc-duel-inspection-time{grid-column:1/-1;flex-direction:row;align-items:center;flex-wrap:wrap;padding:9px 13px!important}.wc-duel-inspection-time>strong{font-size:24px}.wc-duel-chart{overflow-x:auto}.wc-duel-svg{min-width:620px}}
 @media(max-width:480px){.wc-duel-legend{width:100%}.wc-duel-legend>div{flex:1;justify-content:center;min-width:0;padding:9px}.wc-duel-inspection{gap:7px}.wc-duel-inspection>div{padding:11px}.wc-duel-inspection-team>strong{font-size:19px}.wc-duel-inspection-team>span{font-size:11px}.wc-duel-inspection-team>p{font-size:10px}}
+
+/* Intensité individuelle : acier sous 25, cyan entre 25 et 75, vert citron au-dessus */
+.wc-wave-shell .wc-wave-line{filter:drop-shadow(0 0 2px #6fe6fa33)}
+.wc-wave-tooltip{width:min(205px,67%);padding:9px 10px;gap:4px;box-shadow:0 8px 22px #0009}
+.wc-wave-tooltip strong{font-size:11px}
+.wc-wave-tooltip span{font-size:10px}
