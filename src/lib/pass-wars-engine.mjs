@@ -83,7 +83,7 @@ export function bootPassWars(){
     const img=entry.image,w=img.naturalWidth,h=img.naturalHeight;
     if(!w||!h)return false;
     // Carré central recadré dans un disque : pas de traits de liaison.
-    const side=Math.min(w,h),sx=(w-side)/2,sy=(h-side)/2;
+    const side=Math.min(w,h),sx=(w-side)/2,sy=Math.max(0,(h-side)*.18);
     ctx.save();ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.clip();
     ctx.drawImage(img,sx,sy,side,side,x-r,y-r,r*2,r*2);
     ctx.restore();return true;
@@ -251,6 +251,7 @@ export function bootPassWars(){
         const photo=document.createElement('img');
         photo.alt='Portrait de '+displayPlayerName(p.id,p.name);
         photo.width=44;photo.height=44;photo.loading='lazy';
+        photo.style.objectPosition='50% 20%';
         photo.referrerPolicy='no-referrer';
         photo.addEventListener('load',()=>{
           if(photo.naturalWidth>0){photo.classList.add('loaded');fallback.hidden=true;}
