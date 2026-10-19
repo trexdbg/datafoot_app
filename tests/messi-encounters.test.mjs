@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {rankOpponents,MODE_IDS} from '../src/lib/messi-encounters-engine.mjs';
+import {rankOpponents,MODE_IDS,opponentDisplayName} from '../src/lib/messi-encounters-engine.mjs';
 import {monthOrdinal,layoutPlayerNodes} from '../src/lib/pass-wars-engine.mjs';
 import fs from 'node:fs';
 
@@ -43,4 +43,27 @@ test('page Rival Wars préserve les événements réels, le mois/année et les l
  assert.equal(monthOrdinal('2015-06-06'),2015*12+5);
  const pos=layoutPlayerNodes([{id:12},{id:14},{id:16}]);
  assert.equal(pos.size,3);
+});
+
+
+test('identifiants StatsBomb : affichage des noms usuels sans modifier les comptages',()=>{
+ assert.equal(opponentDisplayName(26070,'Antonio Rodríguez Martínez'),'Toño');
+ assert.equal(opponentDisplayName(25144,'Diego Alves Carreira'),'Diego Alves');
+ assert.equal(opponentDisplayName(6320,'Filipe Luís Kasmirski'),'Filipe Luís');
+ assert.equal(opponentDisplayName(11179,'Iker Casillas Fernández'),'Iker Casillas');
+ assert.equal(opponentDisplayName(999999,'Gardien inconnu'),'Gardien inconnu');
+ assert.equal(rankOpponents([{target_id:26070,target_name:'Antonio Rodríguez Martínez',kind:'tir'}])[0].name,'Toño');
+});
+
+test('le fichier de données réelles est disponible pour le déploiement Pages',()=>{
+ const source=fs.readFileSync(new URL('../src/data/players/messi-encounters.json',import.meta.url),'utf8');
+ const exposed=fs.readFileSync(new URL('../public/data/players/messi-encounters.json',import.meta.url),'utf8');
+ const data=JSON.parse(source),pub=JSON.parse(exposed);
+ assert.equal(data.schema_version,1);
+ assert.equal(data.scope.complete_career,false);
+ assert.ok(data.scope.liga_matches>0&&data.scope.ucl_matches>0);
+ assert.ok(data.modes.goalkeepers.count>0);
+ assert.ok(data.modes.defenders.count>0);
+ assert.ok(data.modes.clubs.count>0);
+ assert.deepEqual(data,pub);
 });
