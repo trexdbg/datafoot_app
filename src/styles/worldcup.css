@@ -189,3 +189,12 @@
 .wc-wave-shell.is-inspecting .wc-wave-readout{background:#0b2b43}
 .wc-wave-shell .wc-wave-tooltip{display:none!important}
 @media(max-width:600px){.wc-wave-shell .wc-wave-action-summary{min-height:62px;padding:9px 10px!important}.wc-wave-event-chip{font-size:10px}}
+
+/* Drapeaux vectoriels à codes FIFA/nation corrects, alignés sur les textes. */
+.wc-flag{display:inline-block;vertical-align:-.16em;flex:none;width:27px;height:19px;object-fit:contain;border-radius:2px;box-shadow:0 0 0 1px #ffffff27}
+.wc-flag-emoji{display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;min-width:27px;font-size:21px}
+.wc-country-flag .wc-flag{display:block;width:33px;height:24px}
+.wc-person .wc-country-flag .wc-flag{width:27px;height:19px}
+.wc-match-board .wc-flag{width:34px;height:24px}
+.wc-card-title .wc-flag{width:24px;height:17px}
+@media(max-width:750px){.wc-match-board .wc-flag{width:28px;height:20px}}
