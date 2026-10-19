@@ -1,96 +1,165 @@
 ---
 import CountryFlag from './CountryFlag.astro';
 import {monotonePath,actionLabel} from '../lib/match-activity.mjs';
+
 interface Point {minute:number;activity:number|null;actions?:number;events?:Array<{kind:string;outcome:string;playerName?:string}>}
-interface Props {home:string;away:string;homeCountry:string;awayCountry:string;first:Point[];second:Point[];duration:number;goals?:Array<{minute:number;team:string}>}
-const {home,away,homeCountry,awayCountry,first,second,duration,goals=[]}=Astro.props;
-const COLORS={first:'#58D8F6',second:'#FFB783'};
-const left=57,right=1067,top=32,bottom=274;
-const X=(minute:number)=>left+minute/duration*(right-left);
-const Y=(v:number)=>bottom-Math.max(0,Math.min(100,v))/100*(bottom-top);
-const getPath=(values:Point[])=>monotonePath(values.filter(p=>p.activity!=null).map(p=>({x:X(p.minute),y:Y(p.activity??0)})));
-const firstPath=getPath(first),secondPath=getPath(second);
+interface GoalMarker {minute:number;team:string;label?:string;kind?:string}
+interface Stat {label:string;first:number;second:number;format?:'int'|'decimal'}
+interface Props {
+ home:string;away:string;homeCountry:string;awayCountry:string;
+ homeScore:number;awayScore:number;
+ first:Point[];second:Point[];duration:number;
+ goals?:GoalMarker[];stats?:Stat[];
+}
+const {home,away,homeCountry,awayCountry,homeScore,awayScore,first,second,duration,goals=[],stats=[]}=Astro.props;
+const COLORS={first:'#58D8F6',second:'#FF638A'};
+const left=55,right=1065,top=36,mid=190,bottom=344,amplitude=143;
+const X=(minute:number)=>left+Math.max(0,Math.min(duration,minute))/Math.max(1,duration)*(right-left);
+const Y=(value:number,team:number)=>mid+(team===0?-1:1)*Math.max(0,Math.min(100,value))/100*amplitude;
+const valid=(points:Point[])=>points.filter(p=>p.activity!=null);
+const paths=[first,second].map((series,team)=>{
+ const points=valid(series);
+ const line=points.length?monotonePath(points.map(p=>({x:X(p.minute),y:Y(p.activity??0,team)}))):'';
+ const area=points.length?line+' L '+X(points.at(-1)!.minute)+' '+mid+' L '+X(points[0].minute)+' '+mid+' Z':'';
+ return {line,area};
+});
+const ticks=Array.from({length:Math.floor(duration/15)+1},(_,i)=>i*15).filter(t=>t===0||duration-t>7);
+if(!ticks.includes(duration))ticks.push(duration);
+const markers=goals.filter(goal=>goal.minute>=0&&goal.minute<=duration).sort((a,b)=>a.minute-b.minute);
 const sample=JSON.stringify([first,second].map(series=>series.map(p=>[
  p.activity??null,p.actions??0,
  (p.events??[]).slice(0,3).map(e=>(e.playerName?e.playerName+' · ':'')+actionLabel(e))
 ])));
+const formatValue=(value:number,format?:string)=>format==='decimal'?value.toFixed(1).replace('.',','):String(value);
 ---
-<section class="wc-duel" aria-labelledby="wc-duel-title" data-wc-duel data-duration={duration} data-series={sample}>
- <div class="wc-duel-header">
-  <div><p class="wc-eyebrow">VUE MATCH / ACTIVITÉ DES DEUX ÉQUIPES</p><h2 id="wc-duel-title">Le duel des rythmes.</h2><p>Deux sélections, une seule échelle 0–100. L'activité affichée est la moyenne des joueurs présents de chaque équipe, à chaque minute — pas une note du résultat.</p></div>
-  <div class="wc-duel-legend" aria-label="Couleurs des équipes">
-   <div><i style={'background:'+COLORS.first}></i><strong><CountryFlag country={homeCountry} /> {home}</strong></div>
-   <div><i style={'background:'+COLORS.second}></i><strong><CountryFlag country={awayCountry} /> {away}</strong></div>
+<section class="wc-duel wc-duel-mirror" aria-label={'Comparaison des rythmes : '+home+' contre '+away} data-wc-duel data-duration={duration} data-series={sample}>
+ <div class="wc-duel-scoreline">
+  <div class="wc-duel-side wc-duel-side-home">
+   <CountryFlag country={homeCountry} />
+   <div><strong>{home}</strong><span>ÉQUIPE 1</span></div>
+   <i style={'background:'+COLORS.first} aria-hidden="true"></i>
+  </div>
+  <div class="wc-duel-result" aria-label={'Score : '+home+' '+homeScore+', '+away+' '+awayScore}>
+   <div class="wc-duel-score-numbers"><strong>{homeScore}</strong><span>–</span><strong>{awayScore}</strong></div>
+   <small>{duration>90?'APRÈS PROLONGATION':'TEMPS RÉGLEMENTAIRE'} · {duration}′</small>
+  </div>
+  <div class="wc-duel-side wc-duel-side-away">
+   <i style={'background:'+COLORS.second} aria-hidden="true"></i>
+   <div><strong>{away}</strong><span>ÉQUIPE 2</span></div>
+   <CountryFlag country={awayCountry} />
   </div>
  </div>
- <div class="wc-duel-chart">
-  <svg viewBox="0 0 1120 347" class="wc-duel-svg" role="img" tabindex="0" aria-label={'Superposition interactive des activités '+home+' en bleu et '+away+' en orange. Déplacer la souris, toucher ou utiliser les flèches.'}>
-   <rect width="1120" height="347" rx="12" fill="#081c30"/>
-   {[0,25,50,75,100].map(value=><g><line class="wc-duel-grid" x1={left} x2={right} y1={Y(value)} y2={Y(value)}/><text x="46" y={Y(value)+5} text-anchor="end" class="wc-duel-axis">{value}</text></g>)}
-   {Array.from({length:Math.floor(duration/15)+1},(_,i)=>i*15).concat([duration]).filter((v,i,a)=>a.indexOf(v)===i).map(minute=><g><line class="wc-duel-grid vertical" x1={X(minute)} x2={X(minute)} y1={top} y2={bottom}/><text x={X(minute)} y="298" text-anchor="middle" class="wc-duel-axis">{minute}′</text></g>)}
-   <text x={left} y="21" class="wc-duel-label">INDICE D'ACTIVITÉ / 100</text>
-   <path d={firstPath} fill="none" stroke={COLORS.first} stroke-width="4.3" stroke-linecap="round" stroke-linejoin="round" class="wc-duel-line"/>
-   <path d={secondPath} fill="none" stroke={COLORS.second} stroke-width="4.3" stroke-linecap="round" stroke-linejoin="round" class="wc-duel-line"/>
-   {goals.filter(g=>g.minute<=duration).map(g=><g><circle cx={X(g.minute)} cy={Y((g.team===home?first:second)[g.minute]?.activity??0)} r="5.5" fill={g.team===home?COLORS.first:COLORS.second} stroke="#fff" stroke-width="2"><title>{g.minute}′ : but de {g.team===home?home:away}</title></circle></g>)}
-   <line data-duel-cursor x1={left} x2={left} y1={top} y2={bottom} stroke="#eefaff" stroke-width="1.6" stroke-dasharray="5 6" visibility="hidden"/>
-   <circle data-duel-dot="0" cx={left} cy={bottom} r="6" fill="#081c30" stroke={COLORS.first} stroke-width="3" visibility="hidden"/>
-   <circle data-duel-dot="1" cx={left} cy={bottom} r="6" fill="#081c30" stroke={COLORS.second} stroke-width="3" visibility="hidden"/>
+ <div class="wc-duel-chart" tabindex="0" aria-label="Faire défiler le graphique horizontalement sur petit écran">
+  <svg class="wc-duel-svg" viewBox="0 0 1120 389" role="img" tabindex="0" aria-label={'Indices Pulse par minute, '+home+' au-dessus de la ligne centrale et '+away+' en dessous. Chaque indice reste compris entre 0 et 100 ; le côté inférieur ne représente pas des valeurs négatives. Survol, toucher ou flèches pour explorer.'}>
+   <defs>
+    <linearGradient id="wc-duel-fill-first" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#58D8F6" stop-opacity=".38"/><stop offset="100%" stop-color="#58D8F6" stop-opacity=".035"/></linearGradient>
+    <linearGradient id="wc-duel-fill-second" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#FF638A" stop-opacity=".04"/><stop offset="100%" stop-color="#FF638A" stop-opacity=".34"/></linearGradient>
+   </defs>
+   <rect width="1120" height="389" rx="12" fill="#071725"/>
+   <rect x={left} y={top} width={right-left} height={mid-top} fill="#58D8F6" opacity=".028"/>
+   <rect x={left} y={mid} width={right-left} height={bottom-mid} fill="#FF638A" opacity=".024"/>
+   {[50,100].map(n=><g>
+    <line class="wc-duel-grid" x1={left} x2={right} y1={Y(n,0)} y2={Y(n,0)}/>
+    <line class="wc-duel-grid" x1={left} x2={right} y1={Y(n,1)} y2={Y(n,1)}/>
+    <text class="wc-duel-axis" x={left-13} y={Y(n,0)+4} text-anchor="end">{n}</text>
+    <text class="wc-duel-axis" x={left-13} y={Y(n,1)+4} text-anchor="end">{n}</text>
+   </g>)}
+   {ticks.map(minute=><g>
+    <line class="wc-duel-grid vertical" x1={X(minute)} x2={X(minute)} y1={top} y2={bottom}/>
+    <text class="wc-duel-axis" x={X(minute)} y="366" text-anchor="middle">{minute}′</text>
+   </g>)}
+   {duration>90&&<line x1={X(90)} x2={X(90)} y1={top} y2={bottom} stroke="#b7d0e0" stroke-opacity=".53" stroke-dasharray="6 5"/>}
+   <text class="wc-duel-lane-label wc-duel-lane-first" x={left+13} y={top+19}>{home.toUpperCase()}</text>
+   <text class="wc-duel-lane-label wc-duel-lane-second" x={left+13} y={bottom-11}>{away.toUpperCase()}</text>
+   <text class="wc-duel-axis" x={left-13} y={mid+4} text-anchor="end">0</text>
+   <path d={paths[0].area} fill="url(#wc-duel-fill-first)"/>
+   <path d={paths[1].area} fill="url(#wc-duel-fill-second)"/>
+   <path d={paths[0].line} fill="none" stroke={COLORS.first} stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" class="wc-duel-line first"/>
+   <path d={paths[1].line} fill="none" stroke={COLORS.second} stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" class="wc-duel-line second"/>
+   <line x1={left} x2={right} y1={mid} y2={mid} stroke="#cceaf6" stroke-opacity=".65" stroke-width="1.7"/>
    <rect data-duel-hit x={left} y={top} width={right-left} height={bottom-top} fill="transparent"/>
-   <text x={left} y="332" class="wc-duel-help">↔ SURVOLER / TOUCHER LE GRAPHIQUE · FLÈCHES DU CLAVIER</text>
+   {markers.map(goal=>{
+    const team=goal.team===home?0:1;
+    const point=(team===0?first:second)[goal.minute];
+    return <g class="wc-duel-goal-marker" transform={'translate('+X(goal.minute)+' '+Y(point?.activity??0,team)+')'}>
+     <circle r="11.5" fill="#0b2439" stroke={team===0?COLORS.first:COLORS.second} stroke-width="2.7"/>
+     <text y="5" font-size="15" text-anchor="middle" fill="#fff">⚽</text>
+     <title>{goal.minute}′ · {goal.label??'But'} · {goal.team}</title>
+    </g>;
+   })}
+   <line data-duel-cursor x1={left} x2={left} y1={top} y2={bottom} stroke="#eaf9ff" stroke-width="1.5" stroke-dasharray="5 6" visibility="hidden" pointer-events="none"/>
+   <circle data-duel-dot="0" cx={left} cy={mid} r="6.5" fill="#071725" stroke={COLORS.first} stroke-width="3" visibility="hidden" pointer-events="none"/>
+   <circle data-duel-dot="1" cx={left} cy={mid} r="6.5" fill="#071725" stroke={COLORS.second} stroke-width="3" visibility="hidden" pointer-events="none"/>
   </svg>
  </div>
+ <div class="wc-duel-events" aria-label="Buts du match">
+  {markers.length?markers.map(goal=><button type="button" class:list={['wc-duel-event',goal.team===home?'first':'second']} data-duel-jump={goal.minute} aria-label={'Voir '+goal.minute+'ème minute : '+(goal.label??'But')+' de '+goal.team}>
+   <span class="wc-duel-event-icon">⚽</span><span class="wc-duel-event-label"><strong>{goal.minute}′ · {goal.label??'But'}</strong><small>{goal.team}{goal.kind==='own-goal'?' · CSC':''}</small></span>
+  </button>):<span class="wc-duel-no-events">Aucun but dans cette rencontre</span>}
+ </div>
  <div class="wc-duel-inspection" aria-live="off">
-  <div class="wc-duel-inspection-time"><span>MINUTE</span><strong data-duel-minute>—</strong><small>Déplace le curseur pour comparer</small></div>
+  <div class="wc-duel-inspection-time"><span>MINUTE</span><strong data-duel-minute>—</strong><small>Survole ou touche la courbe</small></div>
   <div class="wc-duel-inspection-team" style={'--duel-accent:'+COLORS.first}>
-   <span><CountryFlag country={homeCountry} /> {home}</span><strong data-duel-score="0">—</strong><small data-duel-actions="0">Activité moyenne · actions</small>
-   <p data-duel-events="0">Les actions de l'équipe apparaîtront ici.</p>
+   <span><CountryFlag country={homeCountry} /> {home}</span><strong data-duel-score="0">—</strong><small data-duel-actions="0">Activité moyenne</small><p data-duel-events="0"></p>
   </div>
   <div class="wc-duel-inspection-team" style={'--duel-accent:'+COLORS.second}>
-   <span><CountryFlag country={awayCountry} /> {away}</span><strong data-duel-score="1">—</strong><small data-duel-actions="1">Activité moyenne · actions</small>
-   <p data-duel-events="1">Les actions de l'équipe apparaîtront ici.</p>
+   <span><CountryFlag country={awayCountry} /> {away}</span><strong data-duel-score="1">—</strong><small data-duel-actions="1">Activité moyenne</small><p data-duel-events="1"></p>
   </div>
  </div>
+ {stats.length>0&&<div class="wc-duel-stats" aria-label="Statistiques comparées issues des événements du match">
+  {stats.map(stat=>{
+   const max=Math.max(stat.first,stat.second,1);
+   return <div class="wc-duel-stat">
+    <span>{stat.label}</span>
+    <div class="wc-duel-stat-values"><strong style={'color:'+COLORS.first}>{formatValue(stat.first,stat.format)}</strong><strong style={'color:'+COLORS.second}>{formatValue(stat.second,stat.format)}</strong></div>
+    <div class="wc-duel-stat-bars" aria-hidden="true">
+     <div class="wc-duel-stat-half first"><i style={'width:'+(stat.first/max*100)+'%'}></i></div>
+     <div class="wc-duel-stat-half second"><i style={'width:'+(stat.second/max*100)+'%'}></i></div>
+    </div>
+   </div>;
+  })}
+ </div>}
+ <p class="wc-duel-footnote">Indice d'activité Pulse / 100 : moyenne des joueurs sur le terrain, représentée en miroir sur la même échelle. Les valeurs du bas ne sont pas négatives. Sources : événements StatsBomb, sans données inventées.</p>
 </section>
 <script>
 (() => {
- const initialize=()=>{
+ const init=()=>{
   document.querySelectorAll<HTMLElement>('[data-wc-duel]').forEach(root=>{
    if(root.dataset.ready)return;
-   root.dataset.ready='yes';
    const svg=root.querySelector<SVGSVGElement>('.wc-duel-svg');
    const cursor=root.querySelector<SVGLineElement>('[data-duel-cursor]');
    const dots=[...root.querySelectorAll<SVGCircleElement>('[data-duel-dot]')];
-   const title=root.querySelector<HTMLElement>('[data-duel-minute]');
-   const values=[...root.querySelectorAll<HTMLElement>('[data-duel-score]')];
+   const time=root.querySelector<HTMLElement>('[data-duel-minute]');
+   const scores=[...root.querySelectorAll<HTMLElement>('[data-duel-score]')];
    const counts=[...root.querySelectorAll<HTMLElement>('[data-duel-actions]')];
    const labels=[...root.querySelectorAll<HTMLElement>('[data-duel-events]')];
-   if(!svg||!cursor||!title||dots.length!==2||values.length!==2||counts.length!==2||labels.length!==2)return;
+   if(!svg||!cursor||!time||dots.length!==2||scores.length!==2||counts.length!==2||labels.length!==2)return;
+   root.dataset.ready='yes';
    const data=JSON.parse(root.dataset.series||'[]') as Array<Array<[number|null,number,string[]]>>;
    const duration=Number(root.dataset.duration||90);
    let minute=0;
    const inspect=(raw:number)=>{
     minute=Math.max(0,Math.min(duration,Math.round(raw)));
-    const x=57+minute/duration*1010;
+    const x=55+minute/Math.max(1,duration)*1010;
     cursor.setAttribute('x1',String(x));cursor.setAttribute('x2',String(x));cursor.setAttribute('visibility','visible');
-    title.textContent=minute+'′';
+    time.textContent=minute+'′';
     root.classList.add('is-inspecting');
     for(let i=0;i<2;i++){
      const [score,actions,names]=data[i]?.[minute]||[null,0,[]];
-     values[i].textContent=score==null?'—':Math.round(score)+'/100';
+     scores[i].textContent=score==null?'—':Math.round(score)+'/100';
      counts[i].textContent=actions+' action'+(actions===1?'':'s')+' à cette minute';
-     labels[i].textContent=names.length?names.join(' · ')+(actions>names.length?' · +'+(actions-names.length)+' autres':''):'Aucune action enregistrée à cette minute.';
+     labels[i].textContent=names.length?names.join(' · ')+(actions>names.length?' · +'+(actions-names.length)+' autres':''):'Aucune action enregistrée';
      const dot=dots[i];
-     if(score==null)dot.setAttribute('visibility','hidden');
-     else{
-      dot.setAttribute('cx',String(x));dot.setAttribute('cy',String(274-score/100*242));
-      dot.setAttribute('visibility','visible');
-     }
+     if(score==null){dot.setAttribute('visibility','hidden');continue;}
+     dot.setAttribute('cx',String(x));
+     dot.setAttribute('cy',String(190+(i===0?-1:1)*Math.max(0,Math.min(100,score))/100*143));
+     dot.setAttribute('visibility','visible');
     }
    };
    const fromPointer=(event:PointerEvent)=>{
     const rect=svg.getBoundingClientRect();
-    const px=(event.clientX-rect.left)/rect.width*1120;
-    inspect((px-57)/1010*duration);
+    const x=(event.clientX-rect.left)/rect.width*1120;
+    inspect((x-55)/1010*duration);
    };
    svg.addEventListener('pointermove',fromPointer);
    svg.addEventListener('pointerdown',fromPointer);
@@ -100,9 +169,14 @@ const sample=JSON.stringify([first,second].map(series=>series.map(p=>[
      inspect(event.key==='Home'?0:event.key==='End'?duration:minute+(event.key==='ArrowRight'?1:-1));
     }
    });
+   root.querySelectorAll<HTMLButtonElement>('[data-duel-jump]').forEach(button=>{
+    button.addEventListener('click',()=>{
+     inspect(Number(button.dataset.duelJump||0));
+    });
+   });
    inspect(Math.min(45,duration));
   });
  };
- if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initialize,{once:true});else initialize();
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
 </script>
