@@ -139,16 +139,16 @@
 
 /* Chronologie V3 : la date et le curseur vivent à hauteur du graphique. */
 .pw-canvas-scroll{position:relative}
+.pw-arena-head{align-items:center;flex-wrap:wrap;row-gap:.45rem}
+.pw-head-right{display:flex;align-items:center;justify-content:flex-end;gap:1rem;flex-wrap:wrap}
 .pw-chart-date{
-  position:absolute;z-index:2;top:42px;left:24px;
-  display:flex;flex-direction:column;gap:.22rem;
-  padding:.65rem .85rem;background:#081b2bea;
-  border:1px solid #40627b;border-radius:10px;
-  box-shadow:0 12px 35px #0415229c;
-  pointer-events:none;font-variant-numeric:tabular-nums;
+  position:static;display:flex;align-items:center;gap:.65rem;
+  padding:.3rem .7rem;background:#081b2bea;
+  border:1px solid #40627b;border-radius:8px;
+  font-variant-numeric:tabular-nums;white-space:nowrap;
 }
-.pw-chart-date span{font:800 .59rem ui-monospace,monospace;letter-spacing:.18em;color:#8ebdd0}
-.pw-chart-date strong{font:900 clamp(1.15rem,2vw,1.7rem) ui-monospace,monospace;letter-spacing:-.045em;color:#9bf4ff;white-space:nowrap}
+.pw-chart-date span{font:800 .58rem ui-monospace,monospace;letter-spacing:.12em;color:#8ebdd0}
+.pw-chart-date strong{font:900 1.22rem ui-monospace,monospace;letter-spacing:-.045em;color:#9bf4ff;white-space:nowrap}
 .pw-month-timeline{
   position:relative;z-index:1;padding:.85rem 1.2rem .9rem;
   background:linear-gradient(90deg,#0a1827,#13293a 50%,#0a1827);
@@ -179,15 +179,22 @@
   box-shadow:0 0 14px #54daffee;cursor:grab;
 }
 #pw-month-scrub:disabled{opacity:.45;cursor:not-allowed}
-.pw-month-ticks{display:flex;justify-content:space-between;gap:.3rem;padding-top:.8rem}
-.pw-month-ticks span{font:800 .67rem ui-monospace,monospace;color:#9cbed1;letter-spacing:.015em;white-space:nowrap}
-.pw-month-ticks span:first-child,.pw-month-ticks span:last-child{color:#c7f5ff}
+.pw-month-ticks{position:relative;height:1.25rem;margin-top:.8rem}
+.pw-month-ticks span{
+  position:absolute;top:0;transform:translateX(-50%);
+  font:800 .67rem ui-monospace,monospace;color:#9cbed1;
+  letter-spacing:.015em;white-space:nowrap;
+}
+.pw-month-ticks span:first-child{transform:none;color:#c7f5ff}
+.pw-month-ticks span:last-child{transform:translateX(-100%);color:#c7f5ff}
 .pw-playback-status{min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.35rem}
 .pw-playback-status span{font-size:.65rem;letter-spacing:.08em;color:#91b7ca;font-weight:700;text-align:center}
 .pw-playback-status strong{font-size:.81rem;color:#dcf5ff;font-variant-numeric:tabular-nums}
 @media(max-width:720px){
-  .pw-chart-date{top:34px;left:16px;padding:.46rem .65rem}
-  .pw-chart-date strong{font-size:1.25rem}
+  .pw-head-right{justify-content:space-between;gap:.5rem;width:100%}
+  .pw-chart-date{padding:.3rem .5rem;gap:.45rem}
+  .pw-chart-date span{font-size:.53rem}
+  .pw-chart-date strong{font-size:1.1rem}
   .pw-month-timeline{padding:.8rem .85rem}
   .pw-month-caption{font-size:.56rem}
   .pw-month-ticks span:nth-child(2),.pw-month-ticks span:nth-child(3),.pw-month-ticks span:nth-child(4),.pw-month-ticks span:nth-child(5){display:none}
