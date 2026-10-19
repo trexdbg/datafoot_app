@@ -1,9 +1,10 @@
 import { MESSI_ID, displayPlayerName, playerInitials, photoFor, photoCredits } from './messi-player-profiles.mjs';
 
 /** Messi Pass Wars — Canvas 2D, événements StatsBomb réels seulement. */
-// Critère d'affichage : passes réussies ENVOYÉES + REÇUES dans le filtre actif.
-// Les 118 partenaires restent dans le JSON source ; seuls les éligibles sont dessinés.
-export const MIN_PARTNER_PASSES = 96;
+// Critère : PLUS de 500 passes envoyées PAR MESSI VERS chaque partenaire.
+// Le flux source conserve tous les partenaires ; seules les cibles éligibles
+// apparaissent dans l'arène et sont animées dans les deux sens.
+export const MIN_PARTNER_PASSES = 501;
 
 export function eligiblePartners(events, minimum=MIN_PARTNER_PASSES, maximum=30){
   const tally = new Map();
@@ -17,8 +18,8 @@ export function eligiblePartners(events, minimum=MIN_PARTNER_PASSES, maximum=30)
     tally.set(e.partner_id, previous);
   }
   return Array.from(tally.values())
-    .filter(p=>p.total>=minimum)
-    .sort((a,b)=>b.total-a.total || String(a.name).localeCompare(String(b.name)) || a.id-b.id)
+    .filter(p=>p.given>=minimum)
+    .sort((a,b)=>b.given-a.given || b.total-a.total || String(a.name).localeCompare(String(b.name)) || a.id-b.id)
     .slice(0,maximum);
 }
 
@@ -107,26 +108,28 @@ export function eventCalendarPosition(isoDate){
   return month+Math.max(0,Math.min(1,(day-1)/days));
 }
 /**
- * La lecture d'une carrière entière contient des dizaines de milliers de passes.
- * Ne jamais lancer toutes les billes le même frame : on conserve chaque passe
- * dans les compteurs, mais on choisit une représentation visuelle du lot.
- * Les indices retournés proviennent STRICTEMENT de l'intervalle d'événements.
+ * Un ID StatsBomb -> une courbure reproductible, indépendante du rechargement.
+ * Le tir finit TOUJOURS au centre du bon destinataire.
  */
-export function sampleVisualPasses(events,start,end,maximum=4){
-  const count=Math.max(0,end-start),limit=Math.min(count,Math.max(0,Math.floor(maximum)));
-  if(!limit)return [];
-  return Array.from({length:limit},(_,i)=>
-    events[start+Math.min(count-1,Math.floor((i+.5)*count/limit))]);
+export function passEventSeed(event){
+  const key=String(event?.id??event?.event_id??(
+    String(event?.match_id??0)+':'+String(event?.index??0)+':'+String(event?.partner_id??0)));
+  let hash=2166136261;
+  for(let i=0;i<key.length;i++)
+    hash=Math.imul(hash^key.charCodeAt(i),16777619)>>>0;
+  return hash;
 }
-
-/** Limite de file : conserver des passes datées réparties dans l'historique. */
-export function thinVisualQueue(queue,maximum=48){
-  const limit=Math.max(0,Math.floor(maximum));
-  if(queue.length<=limit)return queue;
-  if(!limit)return [];
-  if(limit===1)return [queue.at(-1)];
-  return Array.from({length:limit},(_,i)=>
-    queue[Math.round(i*(queue.length-1)/(limit-1))]);
+export function curvedPassPoint(from,to,progress,seed){
+  const p=Math.max(0,Math.min(1,Number(progress)||0));
+  const dx=to.x-from.x,dy=to.y-from.y,length=Math.hypot(dx,dy)||1;
+  // Point de contrôle de Bézier : amplitude et côté pseudo-aléatoires.
+  const magnitude=Math.min(72,length*.21)*(0.35+((seed>>>8)&255)/255*.65);
+  const side=(seed&1)?1:-1;
+  const cx=(from.x+to.x)/2+(-dy/length)*magnitude*side;
+  const cy=(from.y+to.y)/2+(dx/length)*magnitude*side;
+  const inv=1-p;
+  return {x:inv*inv*from.x+2*inv*p*cx+p*p*to.x,
+          y:inv*inv*from.y+2*inv*p*cy+p*p*to.y};
 }
 
 export function eventsThroughMonth(events,ordinal){
@@ -162,9 +165,11 @@ export function bootPassWars(){
     else bytes[0]=(Date.now()^Math.floor(Math.random()*0xffffffff))>>>0;
     return bytes[0];
   })();
-  let balls=[],ripples=[],visualQueue=[],nextLaunchAt=0;
-  const MAX_VISUAL_QUEUE=48;
-  const VISUAL_GAP_MS=105;
+  // Pas de tableau de doublons ni d'échantillonnage : events est LA file.
+  // releaseCursor n'avance qu'après le lancement réel de chaque mini-bille.
+  let balls=[],releaseCursor=0,emitted=0,flightCredit=0;
+  const MAX_ACTIVE_BALLS=1200;
+  const PARTICLE_RADIUS=1.4;
   // Photos Commons préchargées une seule fois par joueur ; si erreur réseau,
   // le Canvas et le classement conservent un monogramme coloré.
   const portraits=new Map();
@@ -287,18 +292,19 @@ export function bootPassWars(){
     const ids=new Set(players.map(p=>p.id));
     events=filtered.filter(e=>ids.has(e.partner_id));
     configureMonthTimeline();focus=null;reset();
-    set('pw-coverage',new Set(filtered.map(e=>e.match_id)).size+' MATCHS · '+players.length+' PARTENAIRES (96+ PASSES)');
+    set('pw-coverage',new Set(filtered.map(e=>e.match_id)).size+' MATCHS · '+players.length+' PARTENAIRES (>500 PASSES DE MESSI)');
     $('pw-play').disabled=events.length===0;
     $('pw-battle').disabled=events.length===0;
     set('pw-dates',monthYearLabel(monthOrdinal(filtered[0]?.date))+' → '+monthYearLabel(monthOrdinal(filtered.at(-1)?.date))+' · '+format(filtered.length)+' PASSES SOURCÉES');
     set('pw-message',players.length===0
-      ? 'Aucun partenaire avec plus de 95 passes échangées sur cette sélection. Change de saison ou élargis les filtres.'
-      : 'StatsBomb Open Data : '+meta.scope.matches_count+' matchs couverts. '+meta.scope.coverage_note+
-        ' Les compteurs intègrent toutes les passes sourcées : les billes sont un échantillon visuel des vraies passes, étalé dans le temps pour éviter les arrivées par paquets.');
+      ? 'Aucun partenaire ayant reçu plus de 500 passes de Messi dans cette sélection. Élargissez la saison ou la compétition.'
+      : 'Chaque mini-bille est une vraie passe StatsBomb entre Messi et un partenaire ayant reçu plus de 500 de ses passes. '+
+        'Toutes les passes éligibles sont animées, dans les deux sens, sans suppression et avec des trajectoires courbes variées. '+
+        meta.scope.coverage_note);
   }
   function reset(){
     playing=false;cursor=0;calendarPosition=timelineFirst??0;
-    counts=new Map();balls=[];ripples=[];visualQueue=[];nextLaunchAt=0;selectedMonth=null;
+    counts=new Map();balls=[];releaseCursor=0;emitted=0;flightCredit=0;selectedMonth=null;
     paint.clearRect(0,0,W,H);
     updatePlay();renderBoard();renderLeaderboard();
   }
@@ -311,38 +317,45 @@ export function bootPassWars(){
   function count(e){
     const q=counts.get(e.partner_id)||empty();q[e.direction]++;q.total++;counts.set(e.partner_id,q);
   }
-  function enqueueVisualInterval(start,end){
-    if(end<=start)return;
-    // À vitesse normale, 4 projectiles représentatifs au maximum par frame.
-    // Lorsqu'un joueur est isolé, ne lancer que ses propres passes.
-    // Les autres événements restent comptés au scoreboard global.
-    const due=focus===null?events.slice(start,end):
-      events.slice(start,end).filter(e=>e.partner_id===focus);
-    visualQueue.push(...sampleVisualPasses(due,0,due.length,battle?8:4));
-    if(visualQueue.length>MAX_VISUAL_QUEUE)
-      visualQueue=thinVisualQueue(visualQueue,MAX_VISUAL_QUEUE);
-  }
-  function launchVisualPass(t){
-    if(!visualQueue.length)return;
-    if(nextLaunchAt===0)nextLaunchAt=t;
-    const gap=battle?56:VISUAL_GAP_MS;
-    // Jamais de rattrapage en rafale après un onglet inactif.
-    if(t<nextLaunchAt)return;
-    const e=visualQueue.shift();
-    balls.push({id:e.partner_id,direction:e.direction,index:e.index,
-      start:t,duration:770+(e.index%5)*75});
-    nextLaunchAt=t+gap;
-    if(balls.length>80)balls=balls.slice(-80);
+  function launchDuePasses(dt,t){
+    if(releaseCursor>=cursor)return;
+    const monthSpan=Math.max(1,(timelineLast??timelineFirst??0)-(timelineFirst??0)+1);
+    const rate=Math.min(1850,Math.max(70,
+      events.length*(battle?24:speed)/monthSpan*1.22));
+    // Crédit d'animation : débit constant, indépendant des paquets de dates.
+    // On ne saute jamais une passe pour rattraper le calendrier.
+    flightCredit=Math.min(160,flightCredit+dt*rate);
+    let budget=Math.min(100,Math.floor(flightCredit),
+      MAX_ACTIVE_BALLS-balls.length);
+    while(budget>0&&releaseCursor<cursor){
+      const event=events[releaseCursor++];
+      // Le focus est un filtre visuel volontaire, sans perte de statistiques.
+      if(focus!==null&&event.partner_id!==focus)continue;
+      const seed=passEventSeed(event);
+      const target=positions.get(event.partner_id);
+      if(!target)continue;
+      balls.push({id:event.partner_id,direction:event.direction,
+        index:event.index,seed,start:t,duration:430+(seed%210),
+        radius:PARTICLE_RADIUS+((seed>>>16)%12)/12,hit:false});
+      emitted++;flightCredit--;budget--;
+    }
+    // En focus : ignorer rapidement les autres événements sans surcharger la file.
+    if(focus!==null&&budget===0){
+      while(releaseCursor<cursor&&events[releaseCursor].partner_id!==focus)
+        releaseCursor++;
+    }
   }
   function seek(n,month=null){
     const end=Math.max(0,Math.min(events.length,Number(n)||0));
     selectedMonth=month;
     // Le mois sélectionné est entièrement inclus ; lecture suivante = mois suivant.
     calendarPosition=month===null?(timelineFirst??0):Math.min((timelineLast??month)+1,month+.999);
-    playing=false;cursor=0;counts=new Map();balls=[];ripples=[];
-    visualQueue=[];nextLaunchAt=0;
+    playing=false;cursor=0;counts=new Map();balls=[];
+    releaseCursor=0;emitted=0;flightCredit=0;
     paint.clearRect(0,0,W,H);
     while(cursor<end)count(events[cursor++]);
+    // Un saut explicite dans le temps marque les passes précédentes comme déjà vues.
+    releaseCursor=cursor;
     // État visuel après scrubbing : un condensé des impacts précédents,
     // calculé à partir des vrais compteurs (aucun événement inventé).
     for(const p of players){
@@ -365,12 +378,13 @@ export function bootPassWars(){
     set('pw-focus',p?displayPlayerName(p.id,p.name).toUpperCase()+' — '+score(p.id).given+' ENVOYÉES / '+score(p.id).received+' REÇUES':
       'TOUS LES JOUEURS · CLIQUEZ SUR UN NŒUD OU UN NOM POUR L’ISOLER.');
     renderCurrentMonth();
-    set('pw-progress-text',format(cursor)+' / '+format(events.length)+' PASSES');
+    set('pw-progress-text',format(emitted)+' BILLES LANCÉES · '+format(cursor)+' / '+format(events.length)+' PASSES');
     for(const el of $('pw-leader').querySelectorAll('[data-count]'))el.textContent=format(score(Number(el.dataset.count)).total);
   }
   function selectPlayer(id){
     focus=focus===id?null:id;
-    if(focus!==null)visualQueue=visualQueue.filter(e=>e.partner_id===focus);
+    // Le filtre de partenaire reste purement visuel : aucun événement source perdu.
+    flightCredit=0;
     renderBoard();
     $('pw-leader').querySelectorAll('[data-partner]').forEach(el=>{
       el.classList.toggle('chosen',Number(el.dataset.partner)===focus);
@@ -476,52 +490,42 @@ export function bootPassWars(){
     }
     paint.restore();
   }
+  function stampMiniImpact(ball,destination){
+    // Une petite trace discrète par passe : pas d'explosion coûteuse à 600/s.
+    const offsetX=((ball.seed>>>5)&31)-15;
+    const offsetY=((ball.seed>>>12)&31)-15;
+    paint.globalAlpha=.10;
+    paint.fillStyle=colorOf(ball.id);
+    paint.beginPath();
+    paint.arc(destination.x+offsetX,destination.y+offsetY,
+      1+((ball.seed>>>21)&7)*.32,0,Math.PI*2);
+    paint.fill();
+    paint.globalAlpha=1;
+  }
   function drawParticles(t){
     const survivors=[];
     for(const p of balls){
-      const end=positions.get(p.id);if(!end)continue;
+      const destination=positions.get(p.id);
+      if(!destination)continue;
       const age=(t-p.start)/p.duration;
-      if(age>1.12)continue;
+      const from=p.direction==='given'?{x:CX,y:CY}:destination;
+      const to=p.direction==='given'?destination:{x:CX,y:CY};
+      if(age>=1){
+        // Chaque projectile atteint sa destination avant d'être éliminé.
+        if(!p.hit){p.hit=true;stampMiniImpact(p,to);}
+        continue;
+      }
       survivors.push(p);
-      const from=p.direction==='given'?{x:CX,y:CY}:end;
-      const to=p.direction==='given'?end:{x:CX,y:CY};
-      const color=colorOf(p.id);
-      if(age>=1 && !p.hit){
-        p.hit=true;
-        stampPaint(p.id,p.direction,p.index);
-        ripples.push({start:t,x:to.x,y:to.y,color,
-                      seed:(p.index||0)+(p.id||0)*23});
-        if(ripples.length>120)ripples.shift();
-      }
-      if(age<0||age>1||(focus!==null&&focus!==p.id))continue;
-      // Une seule bille isolée en vol. Aucun trait, aucune traînée en pointillés.
-      const d=1-(1-age)*(1-age);
-      const x=from.x+(to.x-from.x)*d,y=from.y+(to.y-from.y)*d;
-      ctx.save();ctx.shadowBlur=21;ctx.shadowColor=color;ctx.fillStyle=color;
-      ctx.beginPath();ctx.arc(x,y,8.6,0,Math.PI*2);ctx.fill();
-      ctx.fillStyle='#ffffff';ctx.beginPath();ctx.arc(x-2,y-2,2.8,0,Math.PI*2);ctx.fill();ctx.restore();
+      if(age<0||(focus!==null&&focus!==p.id))continue;
+      const point=curvedPassPoint(from,to,age,p.seed);
+      ctx.globalAlpha=.60+Math.sin(Math.PI*age)*.35;
+      ctx.fillStyle=colorOf(p.id);
+      ctx.beginPath();
+      ctx.arc(point.x,point.y,p.radius,0,Math.PI*2);
+      ctx.fill();
     }
-    balls=survivors;ripples=ripples.filter(r=>t-r.start<600);
-    for(const r of ripples){
-      if(focus!==null && Math.hypot(r.x-CX,r.y-CY)>90){
-        const focused=positions.get(focus);
-        if(!focused || Math.hypot(r.x-focused.x,r.y-focused.y)>75)continue;
-      }
-      const age=(t-r.start)/600;
-      ctx.save();ctx.globalAlpha=(1-age)*.78;
-      const rng=randomSeed(r.seed>>>0);
-      ctx.fillStyle=r.color;
-      for(let j=0;j<12;j++){
-        const angle=(j+rng()*.65)/12*Math.PI*2;
-        const dist=9+age*(35+rng()*40);
-        ctx.globalAlpha=(1-age)*(.5+rng()*.45);
-        ctx.beginPath();
-        ctx.arc(r.x+Math.cos(angle)*dist,r.y+Math.sin(angle)*dist,
-                (2+rng()*5)*(1-age*.65),0,7);
-        ctx.fill();
-      }
-      ctx.restore();
-    }
+    ctx.globalAlpha=1;
+    balls=survivors;
   }
   function drawNodes(){
     for(const p of players){
@@ -579,7 +583,7 @@ export function bootPassWars(){
       // Frise réellement calendaire : mêmes distances pour chaque mois.
       // Chaque événement réel compte, mais les projectiles sont distribués
       // à cadence visuellement lisible plutôt que tirés tous à la fois.
-      const end=timelineLast+1,from=cursor;
+      const end=timelineLast+1;
       calendarPosition=Math.min(end,calendarPosition+dt*(battle?24:speed));
       while(cursor<events.length &&
             eventCalendarPosition(events[cursor].date)<calendarPosition)
@@ -587,9 +591,8 @@ export function bootPassWars(){
       if(calendarPosition>=end){
         while(cursor<events.length)count(events[cursor++]);
       }
-      enqueueVisualInterval(from,cursor);
-      launchVisualPass(t);
-      if(calendarPosition>=end && visualQueue.length===0){
+      launchDuePasses(dt,t);
+      if(calendarPosition>=end&&releaseCursor>=events.length&&balls.length===0){
         playing=false;updatePlay();
       }
       if(t-lastText>90){lastText=t;renderBoard();}
@@ -604,13 +607,13 @@ export function bootPassWars(){
   ['pw-team','pw-season','pw-competition'].forEach(id=>$(id).addEventListener('change',build));
   $('pw-sort').addEventListener('change',e=>{sort=e.target.value;renderLeaderboard();});
   $('pw-play').addEventListener('click',()=>{
-    if(timelineLast!==null&&calendarPosition>=timelineLast+1 && visualQueue.length===0)reset();
-    playing=!playing;nextLaunchAt=0;updatePlay();
+    if(timelineLast!==null&&calendarPosition>=timelineLast+1 && releaseCursor>=events.length&&balls.length===0)reset();
+    playing=!playing;flightCredit=0;updatePlay();
   });
   $('pw-reset').addEventListener('click',reset);
   $('pw-battle').addEventListener('click',()=>{
-    battle=!battle;if(battle&&timelineLast!==null&&calendarPosition>=timelineLast+1&&visualQueue.length===0)reset();
-    if(battle)playing=true;updatePlay();
+    battle=!battle;if(battle&&timelineLast!==null&&calendarPosition>=timelineLast+1&&releaseCursor>=events.length&&balls.length===0)reset();
+    if(battle)playing=true;flightCredit=0;updatePlay();
   });
   $('pw-speed').addEventListener('change',e=>speed=Number(e.target.value));
   $('pw-month-scrub').addEventListener('input',e=>{
