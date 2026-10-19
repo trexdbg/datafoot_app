@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import ActivityMiniChart from '../../../components/ActivityMiniChart.astro';
-import {games,commonScale,getProfile,mbappeId,matchHref,playerHref,formattedDate,matchTitle,opposingTeam,teamGoals,matchProfileHref} from '../../../lib/explorer-data.mjs';
+import {games,pulsePeak,mbappeId,matchHref,playerHref,formattedDate,matchTitle,opposingTeam,teamGoals,matchProfileHref} from '../../../lib/explorer-data.mjs';
 import '../../../styles/match-explorer.css';
 const base=import.meta.env.BASE_URL.replace(/\/$/,'');
 const sorted=[...games].reverse();
@@ -11,23 +11,23 @@ const sorted=[...games].reverse();
   <div class="shell ax-wrap">
    <nav class="ax-breadcrumb" aria-label="Fil d'Ariane"><a href={base+'/'}>DATAFOOT</a><span>/</span>ÉQUIPE DE FRANCE</nav>
    <div class="ax-header">
-    <div><p class="ax-eyebrow">EXPLORATEUR · COUPE DU MONDE 2022</p><h1>La France.<br/><em>Match par match.</em></h1><p>Sept rencontres, un indice commun et des comparaisons immédiates. Choisis un match pour afficher sa courbe collective et les graphiques de tous les joueurs.</p></div>
+    <div><p class="ax-eyebrow">EXPLORATEUR · COUPE DU MONDE 2022</p><h1>La France.<br/><em>Match par match.</em></h1><p>Sept rencontres, sept profils collectifs autonomes. Ouvre un match pour retrouver chaque joueur et découvrir ses actions, sans superposition avec la moyenne française.</p></div>
     <div class="ax-header-stat"><strong>07</strong><span>RENCONTRES AVEC DONNÉES</span><small>StatsBomb · Mondial 2022</small></div>
    </div>
    <div class="ax-subnav"><a class="active" href={base+'/equipes/france/'}>France · matchs</a><a href={playerHref(base,mbappeId)}>Mbappé · matchs</a><a href={matchHref(base,sorted[0])}>Finale · joueurs</a></div>
-   <div class="ax-context"><span class="ax-dot blue"></span> Bleu : moyenne des joueurs présents sur le terrain <span class="ax-dot pink"></span> Rose : Mbappé <span class="ax-dot goal"></span> Points : buts français</div>
+   <div class="ax-context"><span class="ax-dot blue"></span> Cyan : activité collective moyenne <span class="ax-dot goal"></span> Rose : buts français <span class="ax-model-tag">PULSE V3 · 0–100</span></div>
    <div class="ax-search-row"><label for="ax-filter">Retrouver une rencontre</label><input id="ax-filter" type="search" placeholder="Adversaire, date… ex. Argentine" autocomplete="off"/><span id="ax-filter-count">{sorted.length} matchs</span></div>
    <div class="ax-card-grid" id="ax-cards">
     {sorted.map(game=><article class="ax-match-card" data-search={(game.date+' '+opposingTeam(game)+' '+matchTitle(game)).toLocaleLowerCase('fr')}>
       <div class="ax-card-kicker">{formattedDate(game.date)} · COUPE DU MONDE</div>
       <a class="ax-match-title" href={matchHref(base,game)}>{matchTitle(game)} <span aria-hidden="true">↗</span></a>
-      <p class="ax-card-meta">Profil collectif France + Mbappé · {game.duration}′</p>
-      <ActivityMiniChart duration={game.duration} maxScale={commonScale} series={[{label:'France',timeline:game.team,color:'#5ac9ff'},{label:'Mbappé',timeline:getProfile(game,mbappeId)?.timeline??[],color:'#fc8ab9'}]} goals={teamGoals(game)} caption={'Comparaison de la France et Mbappé contre '+opposingTeam(game)} />
+      <p class="ax-card-meta">Profil collectif autonome · {game.duration}′ · pic {pulsePeak(game.team)?.activity?.toFixed(0)??0} à {pulsePeak(game.team)?.minute??0}′</p>
+      <ActivityMiniChart duration={game.duration} timeline={game.team} goals={teamGoals(game)} caption={'Pulse du collectif France contre '+opposingTeam(game)} />
       <div class="ax-card-footer"><a class="ax-detail-link" href={matchProfileHref(base,game)}>Points et actions France <span>↗</span></a><a href={matchProfileHref(base,game,mbappeId)}>Détail Mbappé ↗</a><a href={matchHref(base,game)}>Tous les joueurs →</a></div>
      </article>)}
    </div>
    <p class="ax-no-results" id="ax-empty" hidden>Aucun match correspondant à cette recherche.</p>
-   <div class="ax-method"><strong>Comment lire la courbe ?</strong> Chaque joueur commence à 50 à son entrée, perd 1 par minute, gagne 5 par passe ou dribble réussi et 45 par but. Le score ne descend jamais sous zéro. La moyenne collective est calculée sur les joueurs présents sur le terrain. Les petites courbes sont lissées uniquement pour l'affichage ; les scores restent inchangés.</div>
+   <div class="ax-method"><strong>Le collectif est une vue autonome.</strong> DataFoot Pulse V3 donne à chaque joueur un indice d’activité sur 100 à partir d’impulsions qui décroissent sur 3 et 10 minutes. Ici, la courbe représente uniquement la moyenne des joueurs présents sur le terrain ; les courbes individuelles sont consultables dans chaque rencontre, sans superposition.</div>
    <p class="ax-source">Couverture actuelle : les 7 matchs de la France au Mondial 2022 disponibles dans <a href="https://github.com/hudl/open-data" rel="noopener noreferrer" target="_blank">StatsBomb Open Data</a>. La carrière complète des joueurs n'est pas encore couverte.</p>
   </div>
  </div>
