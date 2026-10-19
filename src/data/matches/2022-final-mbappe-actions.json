@@ -1,0 +1,1044 @@
+{
+  "source": "StatsBomb Open Data / Hudl",
+  "match_id": 3869685,
+  "player_id": 3009,
+  "minute_convention": "StatsBomb minute + 1; periods 1–4 only; shootout excluded",
+  "events": [
+    {
+      "id": "befa4b3d-e0e2-4df1-99f8-15c2e45b3d9b",
+      "minute": 5,
+      "second": 19,
+      "kind": "Ball Recovery",
+      "outcome": ""
+    },
+    {
+      "id": "5ba25b60-3df6-4eb0-bf65-25010601764f",
+      "minute": 5,
+      "second": 19,
+      "kind": "Carry",
+      "outcome": ""
+    },
+    {
+      "id": "f56df973-fcb8-48e2-ae52-6d3e0506d84a",
+      "minute": 5,
+      "second": 20,
+      "kind": "Pass",
+      "outcome": "Complete"
+    },
+    {
+      "id": "9d4dea62-303f-4c6e-be2f-517b743fa98a",
+      "minute": 6,
+      "second": 1,
+      "kind": "Ball Receipt*",
+      "outcome": ""
+    },
+    {
+      "id": "e9d0b2c5-33af-4069-8a9b-f758d8e96fd0",
+      "minute": 6,
+      "second": 1,
+      "kind": "Carry",
+      "outcome": ""
+    },
+    {
+      "id": "e3811e3d-4af4-4043-ae6a-2cc4af03dd23",
+      "minute": 6,
+      "second": 3,
+      "kind": "Pass",
+      "outcome": "Complete"
+    },
+    {
+      "id": "004ad96d-cc87-4ef3-9382-cb8c51228edc",
+      "minute": 14,
+      "second": 2,
+      "kind": "Ball Receipt*",
+      "outcome": ""
+    },
+    {
+      "id": "e9afd476-7735-4e7b-9e1c-ea2e578fc97e",
+      "minute": 14,
+      "second": 2,
+      "kind": "Carry",
+      "outcome": ""
+    },
+    {
+      "id": "a58e0380-cad1-4d26-92b6-aed516eedbfa",
+      "minute": 14,
+      "second": 7,
+      "kind": "Pass",
+      "outcome": "Complete"
+    },
+    {
+      "id": "31f4b99b-fd13-491f-8649-8e32fc6c45ee",
+      "minute": 14,
+      "second": 10,
+      "kind": "Ball Receipt*",
+      "outcome": ""
+    },
+    {
+      "id": "109e5a19-6445-4deb-be7c-9311133952c3",
+      "minute": 17,
+      "second": 8,
+      "kind": "Ball Receipt*",
+      "outcome": ""
+    },
+    {
+      "id": "6b875c43-7c4c-4b32-a723-379292e94943",
+      "minute": 18,
+      "second": 22,
+      "kind": "Ball Receipt*",
+      "outcome": ""
+    },
+    {
+      "id": "9e051769-414b-416a-b588-eab06b4e1868",
+      "minute": 18,
+      "second": 22,
+      "kind": "Carry",
+      "outcome": ""
+    },
+    {
+      "id": "309fe67b-f8fe-4b73-8ee5-5870a4eac34d",
+      "minute": 18,
+      "second": 23,
+      "kind": "Pass",
+      "outcome": "Complete"
+    },
+    {
+      "id": "3dcf0fd0-b4dc-4a3c-be77-7f9e2a393556",
+      "minute": 19,
+      "second": 8,
+      "kind": "Ball Receipt*",
+      "outcome": ""
+    },
+    {
+      "id": "bf211d84-bf4c-438a-98db-41960ae7157f",
+      "minute": 19,
+      "second": 8,
+      "kind": "Pass",
+      "outcome": "Complete"
+    },
+    {
+      "id": "c50c0cdd-47ea-4bf2-aef9-b4a22fcdf6f6",
+      "minute": 24,
+      "second": 58,
+      "kind": "Ball Receipt*",
+      "outcome": ""
+    },
+    {
+      "id": "7f0a6b5e-1792-414d-ae3a-1556369cd6fb",
+      "minute": 25,
+      "second": 3,
+      "kind": "Pass",
+      "outcome": "Complete"
+    },
+    {
+      "id": "03f18c95-a3de-467a-99c2-7ca110d79fee",
+      "minute": 25,
+      "second": 6,
+      "kind": "Ball Receipt*",
+      "outcome": ""
+    },
+    {
+      "id": "38177784-49b8-4b05-8662-af395e258d7c",
+      "minute": 25,
+      "second": 6,
+      "kind": "Carry",
+      "outcome": ""
+    },
+    {
+      "id": "9beb0fa7-66bb-420a-b1a1-c27029985bc5",
+      "minute": 25,
+      "second": 12,
+      "kind": "Pass",
+      "outcome": "Incomplete"
+    },
+    {
+      "id": "d2e974b7-05e0-4a01-a6c9-b7cf28c7545f",
+      "minute": 31,
+      "second": 28,
+      "kind": "Ball Receipt*",
+      "outcome": ""
+    },
+    {
+      "id": "55ffa867-508d-4e71-8e04-22a4d16d2aa1",
+      "minute": 31,
+      "second": 32,
+      "kind": "Ball Receipt*",
+      "outcome": ""
+    },
+    {
+      "id": "e9469e76-faba-4eb2-a604-e0d5e692f3ca",
+      "minute": 33,
+      "second": 6,
+      "kind": "Ball Receipt*",
+      "outcome": ""
+    },
+    {
+      "id": "d230a1b3-165e-4d72-85f9-728154e10fb3",
+      "minute": 33,
+      "second": 16,
+      "kind": "Pressure",
+      "outcome": ""
+    },
+    {
+      "id": "0cbf9595-f0c9-4f23-a673-41790c12cc05",
+      "minute": 33,
+      "second": 18,
+      "kind": "Pressure",
+      "outcome": ""
+    },
+    {
+      "id": "a358d304-f9ac-46eb-8893-78b8883e3e27",
+      "minute": 36,
+      "second": 3,
+      "kind": "Ball Receipt*",
+      "outcome": ""
+    },
+    {
+      "id": "187def11-7e4c-492a-874c-a5c96897bc94",
+      "minute": 36,
+      "second": 3,
+      "kind": "Carry",
+      "outcome": ""
+    },
+    {
+      "id": "e33c1d27-f948-4f32-b69f-c8137650aa06",
+      "minute": 36,
+      "second": 4,
+      "kind": "Dribble",
+      "outcome": "Incomplete"
+    },
+    {
+      "id": "1a553a13-d16c-45b7-ace1-6b55bd7d0413",
+      "minute": 36,
+      "second": 5,
+      "kind": "Pressure",
+      "outcome": ""
+    },
+    {
+      "id": "277a4cb1-ff56-43f5-bf28-5aaffcfb6ee1",
+      "minute": 37,
+      "second": 57,
+      "kind": "Ball Receipt*",
+      "outcome": ""
+    },
+    {
+      "id": "e52d7aa0-17bb-4d07-8d65-7627c946249a",
+      "minute": 37,
+      "second": 57,
+      "kind": "Carry",
+      "outcome": ""
+    },
+    {
+      "id": "8cbae9a1-c058-46cc-ba85-4fff23c6628c",
+      "minute": 38,
+      "second": 0,
+      "kind": "Pass",
+      "outcome": "Complete"
+    },
+    {
+      "id": "0e3b7d5c-17b8-43fa-b3e7-4d8b9791c898",
+      "minute": 39,
+      "second": 24,
+      "kind": "Ball Receipt*",
+      "outcome": ""
+    },
+    {
+      "id": "98cec47e-1911-4093-a2c3-03f433e19722",
+      "minute": 39,
+      "second": 24,
+      "kind": "Carry",
+      "outcome": ""
+    },
+    {
+      "id": "7aab2764-9b93-446a-8a65-da400c439584",
+      "minute": 39,
+      "second": 26,
+      "kind": "Pass",
+      "outcome": "Complete"
+    },
+    {
+      "id": "4a9bcd38-af58-4b78-980f-39abb359ad77",
+      "minute": 40,
+      "second": 5,
+      "kind": "Ball Receipt*",
+      "outcome": ""
+    },
+    {
+      "id": "c4567fbe-d360-4d2a-a8a2-c0a0a68b4b98",
+      "minute": 45,
+      "second": 41,
+      "kind": "Ball Receipt*",
+      "outcome": ""
+    },
+    {
+      "id": "c93061c1-24a3-4e59-93be-e8821ecb84eb",
+      "minute": 47,
+      "second": 25,
+      "kind": "Ball Recovery",
+      "outcome": ""
+    },
+    {
+      "id": "c035d7e6-e586-458d-82e7-67abf672531c",
+      "minute": 47,
+      "second": 25,
+      "kind": "Carry",
+      "outcome": ""
+    },
+    {
+      "id": "57b27565-e355-482c-8375-895003e627d3",
+      "minute": 47,
+      "second": 27,
+      "kind": "Pass",
+      "outcome": "Complete"
+    },
+    {
+      "id": "b330e49f-bc61-45c8-b3f8-006612f899e8",
+      "minute": 49,
+      "second": 23,
+      "kind": "Ball Receipt*",
+      "outcome": ""
+    },
+    {
+      "id": "1a80577d-fb5c-440e-b934-3032dead3740",
+      "minute": 49,
+      "second": 23,
+      "kind": "Miscontrol",
+      "outcome": ""
+    },
+    {
+      "id": "37fe7b57-fcb5-4912-a317-64047393ca24",
+      "minute": 49,
+      "second": 41,
+      "kind": "Ball Receipt*",
+      "outcome": ""
+    },
+    {
+      "id": "087ef35e-52c6-4888-83e5-b08fae4b774c",
+      "minute": 50,
+      "second": 2,
+      "kind": "Ball Receipt*",
+      "outcome": ""
+    },
+    {
+      "id": "2f1bd7d4-5c72-44f7-861b-0957d2d3608f",
+      "minute": 50,
+      "second": 2,
+      "kind": "Carry",
+      "outcome": ""
+    },
+    {
+      "id": "2a8aab74-c7eb-45cb-951b-e19af371f0a1",
+      "minute": 50,
+      "second": 3,
+      "kind": "Dribble",
+      "outcome": "Complete"
+    },
+    {
+      "id": "3990af06-fb9a-442c-98bd-f27636f2e6d5",
+      "minute": 50,
+      "second": 3,
+      "kind": "Carry",
+      "outcome": ""
+    },
+    {
+      "id": "225e6541-e9ca-4096-a1e4-e69e17a0b7be",
+      "minute": 50,
+      "second": 7,
+      "kind": "Dribble",
+      "outcome": "Complete"
+    },
+    {
+      "id": "f96e74ca-3261-40ce-9510-e0189057cb02",
+      "minute": 50,
+      "second": 7,
+      "kind": "Carry",
+      "outcome": ""
+    },
+    {
+      "id": "4d0de017-e462-40c7-9642-e29985e86cd8",
+      "minute": 50,
+      "second": 37,
+      "kind": "Ball Receipt*",
+      "outcome": ""
+    },
+    {
+      "id": "a595070d-8355-4b38-8c7e-6c8d7598ac6f",
+      "minute": 50,
+      "second": 41,
+      "kind": "Ball Receipt*",
+      "outcome": ""
+    },
+    {
+      "id": "6818e72e-4a9e-483b-93bd-388db7926e82",
+      "minute": 51,
+      "second": 34,
+      "kind": "Ball Receipt*",
+      "outcome": ""
+    },
+    {
+      "id": "8f425970-a45d-46ee-9998-53c41341775d",
+      "minute": 51,
+      "second": 34,
+      "kind": "Carry",
+      "outcome": ""
+    },
+    {
+      "id": "aebf3121-de4e-4b87-a20a-a2d0b8553b75",
+      "minute": 51,
+      "second": 36,
+      "kind": "Dribble",
+      "outcome": "Incomplete"
+    },
+    {
+      "id": "6e2bbf6c-2d17-418f-b41e-b2ce4083b24d",
+      "minute": 52,
+      "second": 9,
+      "kind": "Pressure",
+      "outcome": ""
+    },
+    {
+      "id": "62a41d2f-3908-4a13-b399-b992e38ea3b1",
+      "minute": 54,
+      "second": 54,
+      "kind": "Ball Receipt*",
+      "outcome": ""
+    },
+    {
+      "id": "58e5fd20-3535-4dc3-8167-c25dc8daf3ce",
+      "minute": 54,
+      "second": 54,
+      "kind": "Carry",
+      "outcome": ""
+    },
+    {
+      "id": "4d17e61d-f7bf-4be3-a0ce-d0f24f8fb1b5",
+      "minute": 54,
+      "second": 57,
+      "kind": "Pass",
+      "outcome": "Incomplete"
+    },
+    {
+      "id": "0e218150-55e5-49cc-b098-ee10981a184c",
+      "minute": 54,
+      "second": 58,
+      "kind": "Block",
+      "outcome": ""
+    },
+    {
+      "id": "2dad305a-9e42-4f07-8102-44de310d5e92",
+      "minute": 56,
+      "second": 56,
+      "kind": "Pressure",
+      "outcome": ""
+    },
+    {
+      "id": "789370ef-0684-4938-a278-03ed0e695f38",
+      "minute": 58,
+      "second": 22,
+      "kind": "Ball Receipt*",
+      "outcome": ""
+    },
+    {
+      "id": "8b8df9c3-cfb0-45c6-9ec0-8a979696268b",
+      "minute": 58,
+      "second": 22,
+      "kind": "Carry",
+      "outcome": ""
+    },
+    {
+      "id": "1cbb25b0-d48a-4f0b-a294-612b7b822ef2",
+      "minute": 58,
+      "second": 24,
+      "kind": "Dribble",
+      "outcome": "Incomplete"
+    },
+    {
+      "id": "2468568f-5336-4482-af29-6d9afde6a482",
+      "minute": 58,
+      "second": 27,
+      "kind": "Pressure",
+      "outcome": ""
+    },
+    {
+      "id": "56346f85-1533-4579-bb3c-6df7618b4dbf",
+      "minute": 58,
+      "second": 27,
+      "kind": "Foul Committed",
+      "outcome": ""
+    },
+    {
+      "id": "7dc8fc75-3745-4fe1-b1d2-7d235c6c6b02",
+      "minute": 59,
+      "second": 57,
+      "kind": "Ball Receipt*",
+      "outcome": ""
+    },
+    {
+      "id": "8e4dd33a-91ee-4dbe-9e0e-d8c1a4be40c7",
+      "minute": 63,
+      "second": 57,
+      "kind": "Ball Receipt*",
+      "outcome": ""
+    },
+    {
+      "id": "9cc51887-76fb-4de0-b34e-9c52b9055425",
+      "minute": 63,
+      "second": 57,
+      "kind": "Carry",
+      "outcome": ""
+    },
+    {
+      "id": "1d51c5df-af1d-42fc-8bd5-d1f8a7a53a43",
+      "minute": 63,
+      "second": 59,
+      "kind": "Pass",
+      "outcome": "Complete"
+    },
+    {
+      "id": "b1c7eaa6-32d1-4c47-a471-2d92969d6edb",
+      "minute": 64,
+      "second": 3,
+      "kind": "Ball Receipt*",
+      "outcome": ""
+    },
+    {
+      "id": "0888c9d1-fa0f-426b-a958-f40c5d2e25c1",
+      "minute": 64,
+      "second": 3,
+      "kind": "Carry",
+      "outcome": ""
+    },
+    {
+      "id": "06995171-c1cb-408b-8c30-d10579bae34c",
+      "minute": 64,
+      "second": 5,
+      "kind": "Pass",
+      "outcome": "Incomplete"
+    },
+    {
+      "id": "1ef52cdb-6ec0-4306-87aa-be4088510946",
+      "minute": 66,
+      "second": 45,
+      "kind": "Ball Receipt*",
+      "outcome": ""
+    },
+    {
+      "id": "7cb4f3b5-c84f-4444-afd6-4a8b08c8ffc5",
+      "minute": 69,
+      "second": 11,
+      "kind": "Ball Receipt*",
+      "outcome": ""
+    },
+    {
+      "id": "acf534ac-cd18-4d47-8f33-42b1611925de",
+      "minute": 69,
+      "second": 11,
+      "kind": "Carry",
+      "outcome": ""
+    },
+    {
+      "id": "4fcfaf71-7dcf-43e6-b081-c0c4127c5794",
+      "minute": 69,
+      "second": 11,
+      "kind": "Pass",
+      "outcome": "Complete"
+    },
+    {
+      "id": "c2623165-c20c-400f-8c92-edf8f53df4bc",
+      "minute": 69,
+      "second": 49,
+      "kind": "Ball Receipt*",
+      "outcome": ""
+    },
+    {
+      "id": "62c32fa5-0905-4151-82d0-7bc203e235e7",
+      "minute": 69,
+      "second": 49,
+      "kind": "Carry",
+      "outcome": ""
+    },
+    {
+      "id": "0e7a0726-c5b8-4749-92d6-435599b131cc",
+      "minute": 69,
+      "second": 50,
+      "kind": "Pass",
+      "outcome": "Complete"
+    },
+    {
+      "id": "d76a5cee-7b23-4a1d-ba47-003b467c496e",
+      "minute": 70,
+      "second": 6,
+      "kind": "Ball Receipt*",
+      "outcome": ""
+    },
+    {
+      "id": "08662350-ea89-4af1-9046-77eaf17f8be8",
+      "minute": 70,
+      "second": 6,
+      "kind": "Carry",
+      "outcome": ""
+    },
+    {
+      "id": "67bc8d2d-c1c8-4b34-a13a-4a057fa6b63e",
+      "minute": 70,
+      "second": 6,
+      "kind": "Pass",
+      "outcome": "Complete"
+    },
+    {
+      "id": "02745b8b-3416-4b4f-9674-729685442ad4",
+      "minute": 71,
+      "second": 3,
+      "kind": "Ball Receipt*",
+      "outcome": ""
+    },
+    {
+      "id": "46410ab2-2265-43db-8daa-8b327b120441",
+      "minute": 71,
+      "second": 3,
+      "kind": "Carry",
+      "outcome": ""
+    },
+    {
+      "id": "cea1dbaa-10e1-46fb-9ce4-017c178ab0b4",
+      "minute": 71,
+      "second": 5,
+      "kind": "Pass",
+      "outcome": "Incomplete"
+    },
+    {
+      "id": "74beb1fe-1cf0-498e-9602-a5f438db684d",
+      "minute": 71,
+      "second": 7,
+      "kind": "Ball Recovery",
+      "outcome": ""
+    },
+    {
+      "id": "b48b46bf-a2a4-4906-9ae4-94a8ed9a142d",
+      "minute": 71,
+      "second": 7,
+      "kind": "Carry",
+      "outcome": ""
+    },
+    {
+      "id": "b2d43671-a3e6-4709-9c0c-646442c1074c",
+      "minute": 71,
+      "second": 9,
+      "kind": "Shot",
+      "outcome": "Off T"
+    },
+    {
+      "id": "93333d97-06f5-44b9-b6ec-b8e6ee416a9a",
+      "minute": 73,
+      "second": 26,
+      "kind": "Ball Receipt*",
+      "outcome": ""
+    },
+    {
+      "id": "efc41723-69d4-4362-a2ad-e19826f03846",
+      "minute": 74,
+      "second": 7,
+      "kind": "Ball Receipt*",
+      "outcome": ""
+    },
+    {
+      "id": "cdb9b2e8-10c6-4d64-b5b2-67ef3a59f0c8",
+      "minute": 75,
+      "second": 16,
+      "kind": "Ball Recovery",
+      "outcome": ""
+    },
+    {
+      "id": "d29969e3-69a0-4671-895e-a502ec8184be",
+      "minute": 75,
+      "second": 16,
+      "kind": "Carry",
+      "outcome": ""
+    },
+    {
+      "id": "0ed930a1-3fbf-4e49-94ef-20b4b36761f5",
+      "minute": 75,
+      "second": 20,
+      "kind": "Miscontrol",
+      "outcome": ""
+    },
+    {
+      "id": "8d3d3fee-60c8-4c45-bb23-0c44016168b6",
+      "minute": 75,
+      "second": 21,
+      "kind": "Pressure",
+      "outcome": ""
+    },
+    {
+      "id": "68234956-06cc-4b58-a80f-1e3161e8ee55",
+      "minute": 77,
+      "second": 1,
+      "kind": "Ball Receipt*",
+      "outcome": ""
+    },
+    {
+      "id": "ca70c445-9759-4df9-b161-733763ffeb01",
+      "minute": 79,
+      "second": 8,
+      "kind": "Ball Receipt*",
+      "outcome": ""
+    },
+    {
+      "id": "6777874d-f83d-4839-8380-126bab7aaef4",
+      "minute": 79,
+      "second": 8,
+      "kind": "Carry",
+      "outcome": ""
+    },
+    {
+      "id": "78210631-552f-4d49-b554-aaeabe22efaa",
+      "minute": 79,
+      "second": 8,
+      "kind": "Pass",
+      "outcome": "Complete"
+    },
+    {
+      "id": "6cc0d5e2-6999-4006-8a7a-34de4cbe3ffd",
+      "minute": 80,
+      "second": 24,
+      "kind": "Shot",
+      "outcome": "Goal"
+    },
+    {
+      "id": "ce2aabcd-7a3b-4286-b7d9-7e3ed43ea681",
+      "minute": 81,
+      "second": 56,
+      "kind": "Ball Receipt*",
+      "outcome": ""
+    },
+    {
+      "id": "45ef8ec8-6ae8-46c7-9ae4-65538e52b622",
+      "minute": 81,
+      "second": 56,
+      "kind": "Pass",
+      "outcome": "Complete"
+    },
+    {
+      "id": "1babfb2c-0785-4997-ae5a-db0504d53d89",
+      "minute": 81,
+      "second": 59,
+      "kind": "Ball Receipt*",
+      "outcome": ""
+    },
+    {
+      "id": "03fb2918-e1e7-4ec8-89ff-7bc5531e853d",
+      "minute": 81,
+      "second": 59,
+      "kind": "Shot",
+      "outcome": "Goal"
+    },
+    {
+      "id": "6673bf80-4a52-4bca-bfe2-ce0f50d56818",
+      "minute": 85,
+      "second": 1,
+      "kind": "Ball Receipt*",
+      "outcome": ""
+    },
+    {
+      "id": "60c4b8cb-ff87-4964-9e02-60856d7a8bad",
+      "minute": 85,
+      "second": 1,
+      "kind": "Carry",
+      "outcome": ""
+    },
+    {
+      "id": "e03e5915-a830-42fe-8220-082d15ee6aa4",
+      "minute": 85,
+      "second": 3,
+      "kind": "Pass",
+      "outcome": "Out"
+    },
+    {
+      "id": "9e711f20-57bd-4cd4-870b-8fa3426605fd",
+      "minute": 87,
+      "second": 13,
+      "kind": "Pass",
+      "outcome": "Complete"
+    },
+    {
+      "id": "ec812adc-bea7-466e-92f3-738e60ae9928",
+      "minute": 87,
+      "second": 15,
+      "kind": "Ball Receipt*",
+      "outcome": ""
+    },
+    {
+      "id": "3e95e874-ea43-499f-9fec-52d10f10ea5a",
+      "minute": 87,
+      "second": 15,
+      "kind": "Carry",
+      "outcome": ""
+    },
+    {
+      "id": "551c6a72-96bc-406e-bc5f-69eda2e1fb64",
+      "minute": 87,
+      "second": 15,
+      "kind": "Pass",
+      "outcome": "Incomplete"
+    },
+    {
+      "id": "a4c17498-b200-4652-b9d8-99b255c100bc",
+      "minute": 90,
+      "second": 50,
+      "kind": "Ball Receipt*",
+      "outcome": ""
+    },
+    {
+      "id": "1c4bb588-9e10-4355-a3c2-337bb556551d",
+      "minute": 90,
+      "second": 50,
+      "kind": "Pass",
+      "outcome": "Complete"
+    },
+    {
+      "id": "7f7e855a-bf2c-4939-9bb8-1fd47eec1bef",
+      "minute": 93,
+      "second": 16,
+      "kind": "Pass",
+      "outcome": "Incomplete"
+    },
+    {
+      "id": "77c6f6ed-2ca4-476a-af65-6ca6a97e5adb",
+      "minute": 93,
+      "second": 47,
+      "kind": "Pressure",
+      "outcome": ""
+    },
+    {
+      "id": "70e35d26-931a-4887-b898-f11eaf352187",
+      "minute": 93,
+      "second": 52,
+      "kind": "Ball Recovery",
+      "outcome": ""
+    },
+    {
+      "id": "2de76777-f3cc-4a7b-a309-0da28d915304",
+      "minute": 93,
+      "second": 52,
+      "kind": "Carry",
+      "outcome": ""
+    },
+    {
+      "id": "5dbcde3d-ba75-483d-a65f-72d2b99ff713",
+      "minute": 93,
+      "second": 57,
+      "kind": "Shot",
+      "outcome": "Blocked"
+    },
+    {
+      "id": "b6853ef5-293a-404a-a1a3-be935e66a514",
+      "minute": 94,
+      "second": 41,
+      "kind": "Ball Receipt*",
+      "outcome": ""
+    },
+    {
+      "id": "dbbd9dad-7940-4c01-8a93-5e2366d4fa9b",
+      "minute": 95,
+      "second": 30,
+      "kind": "Pressure",
+      "outcome": ""
+    },
+    {
+      "id": "f59fe0e7-063c-45ca-aa33-34d4983d9c45",
+      "minute": 96,
+      "second": 1,
+      "kind": "Ball Receipt*",
+      "outcome": ""
+    },
+    {
+      "id": "cedfe276-0431-4db7-89bc-3887362f334b",
+      "minute": 96,
+      "second": 1,
+      "kind": "Carry",
+      "outcome": ""
+    },
+    {
+      "id": "764f8e7a-efea-44fb-b331-3e4d6a6a420f",
+      "minute": 96,
+      "second": 3,
+      "kind": "Pass",
+      "outcome": "Complete"
+    },
+    {
+      "id": "0f5c6756-1996-410c-acd0-b7e80d5135a9",
+      "minute": 96,
+      "second": 9,
+      "kind": "Ball Recovery",
+      "outcome": ""
+    },
+    {
+      "id": "b8f63676-50e1-450f-898c-9fede1850891",
+      "minute": 96,
+      "second": 9,
+      "kind": "Carry",
+      "outcome": ""
+    },
+    {
+      "id": "3fc0174d-6640-47c3-a36c-b16e6ca28f6b",
+      "minute": 96,
+      "second": 10,
+      "kind": "Dribble",
+      "outcome": "Complete"
+    },
+    {
+      "id": "f07c2dcf-da1d-48f5-8a24-32c879eb82c6",
+      "minute": 96,
+      "second": 10,
+      "kind": "Carry",
+      "outcome": ""
+    },
+    {
+      "id": "29f16f91-7558-42e1-afc7-e875d7d7f2f6",
+      "minute": 96,
+      "second": 10,
+      "kind": "Pass",
+      "outcome": "Complete"
+    },
+    {
+      "id": "e1aadd60-311e-4294-841f-0d1eddad2184",
+      "minute": 97,
+      "second": 0,
+      "kind": "Ball Receipt*",
+      "outcome": ""
+    },
+    {
+      "id": "8ae66e1c-e7ac-48a4-81fa-abc167789696",
+      "minute": 99,
+      "second": 48,
+      "kind": "Ball Receipt*",
+      "outcome": ""
+    },
+    {
+      "id": "f30239cd-81da-4889-af97-adf134fd0d70",
+      "minute": 99,
+      "second": 48,
+      "kind": "Carry",
+      "outcome": ""
+    },
+    {
+      "id": "957d94b2-47ac-465f-90dd-9fcfea578d31",
+      "minute": 99,
+      "second": 49,
+      "kind": "Dribble",
+      "outcome": "Complete"
+    },
+    {
+      "id": "48af128f-7334-4709-b228-4befa8ea83b5",
+      "minute": 99,
+      "second": 49,
+      "kind": "Carry",
+      "outcome": ""
+    },
+    {
+      "id": "b64396b3-5c97-4979-a47c-b141777518a1",
+      "minute": 99,
+      "second": 56,
+      "kind": "Dribble",
+      "outcome": "Incomplete"
+    },
+    {
+      "id": "4dae2518-f467-4cef-a575-cd480fac746c",
+      "minute": 116,
+      "second": 37,
+      "kind": "Ball Recovery",
+      "outcome": ""
+    },
+    {
+      "id": "e41f11eb-0f1c-444e-a03f-489fa8ae5ec4",
+      "minute": 116,
+      "second": 37,
+      "kind": "Carry",
+      "outcome": ""
+    },
+    {
+      "id": "08f2f203-cdc9-4146-99b6-818c5c32bf70",
+      "minute": 116,
+      "second": 38,
+      "kind": "Shot",
+      "outcome": "Blocked"
+    },
+    {
+      "id": "d9b92dbd-4fea-4f48-b2fb-d7222eab2dbd",
+      "minute": 118,
+      "second": 5,
+      "kind": "Shot",
+      "outcome": "Goal"
+    },
+    {
+      "id": "446764be-5a17-4e1c-9139-16595359ce43",
+      "minute": 120,
+      "second": 36,
+      "kind": "Ball Receipt*",
+      "outcome": ""
+    },
+    {
+      "id": "3d5ec058-c3ff-4e5d-9eaa-841e1589b672",
+      "minute": 120,
+      "second": 36,
+      "kind": "Carry",
+      "outcome": ""
+    },
+    {
+      "id": "dee75d51-6a89-4619-a2dd-03f86d8f08fb",
+      "minute": 120,
+      "second": 40,
+      "kind": "Pass",
+      "outcome": "Out"
+    },
+    {
+      "id": "e2850052-ddac-4302-ad6e-cb00d61261c7",
+      "minute": 124,
+      "second": 51,
+      "kind": "Ball Receipt*",
+      "outcome": ""
+    },
+    {
+      "id": "dbf1a1e4-2b59-4aae-b9ca-6ffb3513afff",
+      "minute": 124,
+      "second": 51,
+      "kind": "Carry",
+      "outcome": ""
+    },
+    {
+      "id": "ed6f0241-1c26-4d7f-a90c-ccb9519bb58b",
+      "minute": 124,
+      "second": 56,
+      "kind": "Dribble",
+      "outcome": "Complete"
+    },
+    {
+      "id": "5e6d70d0-b9ee-4ae3-8adf-546813e03ead",
+      "minute": 124,
+      "second": 56,
+      "kind": "Carry",
+      "outcome": ""
+    },
+    {
+      "id": "422f382b-2e44-4e3b-8f8e-281f8768995d",
+      "minute": 124,
+      "second": 57,
+      "kind": "Dribble",
+      "outcome": "Complete"
+    },
+    {
+      "id": "e9a67e7c-e9ee-4df6-bd77-596cfa2c0c1e",
+      "minute": 124,
+      "second": 57,
+      "kind": "Carry",
+      "outcome": ""
+    },
+    {
+      "id": "81e88fa1-4c5c-4ca9-b424-c1c03620a767",
+      "minute": 124,
+      "second": 58,
+      "kind": "Dribble",
+      "outcome": "Incomplete"
+    }
+  ]
+}

@@ -25,7 +25,7 @@ Le site est déjà prévu pour afficher :
 
 Sorare sera ajouté au dataset public lorsque les requêtes GraphQL métier seront configurées avec les identifiants/API du dépôt privé.
 
-## Profils de match — météo de Mbappé
+## Profils de match — activité de Mbappé
 
 Le premier profil historique est disponible à
 \`/datafoot_app/matchs/finale-2022/mbappe/\` (finale du Mondial 2022,
@@ -40,8 +40,16 @@ aucune clé et aucune API appelée par le visiteur.
   \`public/data/matches/2022-final-mbappe.json\` (téléchargement).
 - Le JSON initial est issu des vrais événements publics StatsBomb de la finale
   et sera remplacé par la sortie reproductible du producteur.
-- Le score 0–100 est un **indice d'activité événementielle relatif au match**.
-  Il ne représente ni un capteur GPS, ni une distance parcourue.
+- L'ancien JSON contient toujours l'indice relatif v1, à titre de provenance / compatibilité.
+- Le nouveau graphique utilise **148 actions StatsBomb horodatées** et enregistrées
+  dans `src/data/matches/2022-final-mbappe-actions.json`, indépendamment des
+  éventuelles réécritures du JSON v1 par le pipeline privé.
+- Le barème éditorial v2 est explicite : score initial 50, −1 chaque minute,
+  +5 par passe réussie, +5 par dribble réussi, +45 par but, plancher zéro.
+  L'interpolation visuelle conserve les valeurs calculées à chaque minute.
+- Chaque événement est visible dans le journal et sur la bande sous le graphique.
+  Aucune action manquante n'est inventée. L'indice n'est ni une donnée GPS,
+  ni un effort physique, ni une mesure de vitesse.
 - Le flux brut StatsBomb n'est pas servi par GitHub Pages ; seul un profil
   dérivé et ses métadonnées de provenance sont publiés.
 - Attribution obligatoire à StatsBomb (logo officiel et lien vers Open Data).
