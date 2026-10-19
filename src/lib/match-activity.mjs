@@ -10,7 +10,7 @@ export function actionImpact(action) {
 
 export function actionLabel(action) {
   const kind = action.kind;
-  if (kind === 'Pass') return action.outcome === 'Complete' ? 'Passe réussie' : 'Passe non réussie';
+  if (kind === 'Pass') return action.goalAssist ? 'Passe décisive' : action.shotAssist ? 'Passe créant un tir' : (action.outcome === 'Complete' ? 'Passe réussie' : 'Passe non réussie');
   if (kind === 'Dribble') return action.outcome === 'Complete' ? 'Dribble réussi' : 'Dribble manqué';
   if (kind === 'Shot') return action.outcome === 'Goal' ? 'But' : (action.outcome === 'Blocked' ? 'Tir contré' : 'Tir (' + action.outcome + ')');
   return ({
@@ -52,6 +52,8 @@ export function pulseWeight(action) {
     // Un bonus heuristique, surtout pas une probabilité de créer un but.
     const progress=Array.isArray(action.location)&&Array.isArray(action.endLocation)
       ? Math.max(0,action.endLocation[0]-action.location[0]):0;
+    if(complete && action.goalAssist) return {activity:20,impact:7.5};
+    if(complete && action.shotAssist) return {activity:3.2,impact:Number((1.5+Math.min(1.5,progress/30)).toFixed(2))};
     return {activity:complete?1:0.45,impact:complete?Number((0.5+Math.min(2.4,progress/18)).toFixed(2)):0};
   }
   if (kind === 'Dribble') return {activity:complete?5:2.5, impact:complete?3.2:0};
@@ -208,7 +210,7 @@ export function computeMatchProfiles(match) {
   const profiles = match.players.map(player => {
     const actions = match.actions.filter(a=>a.p===player.id).map(a=>({
       minute:a.m,second:a.s,kind:a.k,outcome:a.o,playerId:a.p,
-      location:a.l,endLocation:a.e,xg:a.xg
+      location:a.l,endLocation:a.e,xg:a.xg,goalAssist:a.ga===1,shotAssist:a.sa===1
     }));
     const {timeline} = computePulse(actions,match.duration,{entry:player.entry,exit:player.exit??match.duration+1});
     return {player,actions,timeline};
