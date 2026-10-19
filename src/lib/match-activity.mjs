@@ -43,7 +43,7 @@ export function computeActivity(events, duration = 125, {entry = 0, exit = durat
 // Ces poids sont des choix éditoriaux, PAS un modèle xT/VAEP appris.
 export const PULSE_RULES = Object.freeze({
   shortHalfLife: 3, longHalfLife: 10, shortMix: 0.65,
-  entryIndex: 50, entryHalfLife: 25,
+  entryIndex: 50, entryHalfLife: 25, goalkeeperIdleIndex: 50,
   activityScale: 14, impactScale: 8
 });
 
@@ -74,8 +74,21 @@ export function pulseWeight(action, position = '') {
   if(kind==='Clearance')return {activity:pt('clearance'),impact:role==='defense'?2:0.6};
   if(kind==='Block')return {activity:pt('block'),impact:role==='defense'?2.2:0.6};
   if(kind==='Goal Keeper') {
-    const saved=/saved|save|claim|smother/i.test(action.outcome||'');
-    return {activity:pt(saved?'save':'keeper'),impact:saved?4:0.8};
+    const outcome=String(action.outcome||'');
+    // Un tir subi ou un but encaissé n'est pas une faute individuelle automatique.
+    if(/^(goal conceded|penalty conceded|shot faced)$/i.test(outcome))
+      return {activity:0,impact:0};
+    if(/penalty saved|penalty save/i.test(outcome))
+      return {activity:pt('penaltySave'),impact:7.5};
+    if(/saved|save/i.test(outcome))
+      return {activity:pt('save'),impact:4};
+    if(/claim|collect|caught|smother/i.test(outcome))
+      return {activity:pt('keeperClaim'),impact:2.5};
+    if(/punch/i.test(outcome))
+      return {activity:pt('keeperPunch'),impact:2};
+    if(/keeper sweeper|sweep/i.test(outcome))
+      return {activity:pt('keeperSweep'),impact:1.8};
+    return {activity:pt('keeper'),impact:0.8};
   }
   if(kind==='Pressure')return {activity:pt('pressure'),impact:role==='defense'?0.5:0.25};
   if(kind==='Carry')return {activity:pt('carry'),impact:0.1};
@@ -129,6 +142,7 @@ export function computePulse(events, duration = 125, {entry = 0, exit = duration
       byMinute[event.minute].push(event);
   }
   const rules=PULSE_RULES;
+  const isGoalkeeper=pulseRole(position)==='goalkeeper';
   const fastDecay=Math.pow(2,-1/rules.shortHalfLife);
   const slowDecay=Math.pow(2,-1/rules.longHalfLife);
   let activityFast=0,activitySlow=0,impactFast=0,impactSlow=0;
@@ -161,10 +175,12 @@ export function computePulse(events, duration = 125, {entry = 0, exit = duration
     }
     const mix=rules.shortMix;
     const activityEnergy=mix*(activityFast-penaltyFast)+(1-mix)*(activitySlow-penaltySlow);
-    // Chaque joueur ENTRE à 50/100. Sans actions ce capital décroît naturellement.
-    // Les impulsions occupent l'espace restant vers 100 ; un excès de malus
-    // peut diminuer légèrement le score même en absence de gestes réussis.
-    const initialEnergy=rules.entryIndex*Math.pow(2,-Math.max(0,minute-entry)/rules.entryHalfLife);
+    // Joueurs de champ : le capital d'entrée décroît sans action.
+    // Gardiens : niveau neutre constant, même après 90 minutes sans tir subi.
+    // Seuls les gestes enregistrés créent des pics qui reviennent vers ce niveau.
+    // L'impact reste à zéro sans intervention, pour distinguer calme et exploits.
+    const initialEnergy=isGoalkeeper?rules.goalkeeperIdleIndex
+      :rules.entryIndex*Math.pow(2,-Math.max(0,minute-entry)/rules.entryHalfLife);
     const activityIndex=activityEnergy>=0
       ?initialEnergy+(100-initialEnergy)*(1-Math.exp(-activityEnergy/rules.activityScale))
       :initialEnergy*Math.exp(activityEnergy/rules.activityScale);
@@ -225,8 +241,12 @@ export function computeMatchProfiles(match) {
     const {timeline} = computePulse(actions,match.duration,{entry:player.entry,exit:player.exit??match.duration+1,position:player.position??''});
     return {player,actions,timeline};
   });
+  // Le 50 neutre des gardiens ne gonfle pas artificiellement les moyennes collectives.
+  // Si une source ne contient que des gardiens, conserver la moyenne disponible.
+  const outfield=profiles.filter(p=>pulseRole(p.player.position)!=='goalkeeper');
+  const averaged=outfield.length?outfield:profiles;
   const team = Array.from({length:match.duration+1},(_, minute)=>{
-    const active=profiles.map(p=>p.timeline[minute]).filter(p=>p.activity!=null);
+    const active=averaged.map(p=>p.timeline[minute]).filter(p=>p.activity!=null);
     return {minute, activity:active.length?Number((active.reduce((sum,p)=>sum+p.activity,0)/active.length).toFixed(1)):0,impact:active.length?Number((active.reduce((sum,p)=>sum+(p.impact??0),0)/active.length).toFixed(1)):0,actions:active.reduce((sum,p)=>sum+p.actions,0),players:active.length};
   });
   return {team, profiles};
