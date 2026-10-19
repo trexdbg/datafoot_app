@@ -7,6 +7,7 @@ export async function GET() {
     { path: '/', priority: '1.0', changefreq: 'daily' },
     { path: '/articles/', priority: '0.9', changefreq: 'daily' },
     { path: '/stats/', priority: '0.8', changefreq: 'daily' },
+    { path: '/matchs/finale-2022/mbappe/', priority: '0.8', changefreq: 'monthly' },
     { path: '/methodologie/', priority: '0.6', changefreq: 'monthly' },
   ];
   const articles = await getCollection('articles');

@@ -78,6 +78,20 @@ const articleForPlayer = (player: string) =>
     </div>
   </section>
 
+  <section class="shell mw-home-feature" aria-labelledby="mw-home-title">
+    <div class="mw-home-weather" aria-hidden="true">⛈️</div>
+    <div>
+      <p class="mw-home-eyebrow">NOUVEAU / PROFILS DE MATCH · STATSBOMB</p>
+      <h2 id="mw-home-title">La météo de <em>Mbappé.</em></h2>
+      <p>France–Argentine 2022. 148 actions et trois buts : découvrez sa finale comme un profil d’étape.</p>
+      <a href={url('/matchs/finale-2022/mbappe/')}>EXPLORER SA COURBE MINUTE PAR MINUTE ↗</a>
+    </div>
+    <div class="mw-home-signal" aria-hidden="true">
+      <svg viewBox="0 0 280 100" preserveAspectRatio="none"><defs><linearGradient id="mw-home-line" x1="0" x2="1"><stop stop-color="#59baf9"/><stop offset=".7" stop-color="#f9528e"/><stop offset="1" stop-color="#63c4ef"/></linearGradient></defs><path d="M0 78 Q16 69 27 81 T51 71 T75 80 T100 74 T129 80 T155 70 T173 67 T196 9 T210 67 T241 81 T268 40 T280 71" fill="none" stroke="url(#mw-home-line)" stroke-width="4"/></svg>
+      <span>80′ / 81′ / 118′</span>
+    </div>
+  </section>
+
   {featured && (
     <section class="shell lead-story">
       <div class="lead-label"><span>ANALYSE PRINCIPALE</span><span>{featured.data.league.replaceAll('_',' ')}</span></div>

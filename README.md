@@ -25,6 +25,30 @@ Le site est déjà prévu pour afficher :
 
 Sorare sera ajouté au dataset public lorsque les requêtes GraphQL métier seront configurées avec les identifiants/API du dépôt privé.
 
+## Profils de match — météo de Mbappé
+
+Le premier profil historique est disponible à
+\`/datafoot_app/matchs/finale-2022/mbappe/\` (finale du Mondial 2022,
+Argentine–France). C'est une page Astro intégralement pré-rendue :
+aucune clé et aucune API appelée par le visiteur.
+
+- Données à construire **uniquement dans le dépôt privé**
+  [trexdbg/datafoot](https://github.com/trexdbg/datafoot), avec
+  \`python -m datafoot.match_profiles\`.
+- Publication automatique du même JSON dans
+  \`src/data/matches/2022-final-mbappe.json\` (import Astro au build) et
+  \`public/data/matches/2022-final-mbappe.json\` (téléchargement).
+- Le JSON initial est issu des vrais événements publics StatsBomb de la finale
+  et sera remplacé par la sortie reproductible du producteur.
+- Le score 0–100 est un **indice d'activité événementielle relatif au match**.
+  Il ne représente ni un capteur GPS, ni une distance parcourue.
+- Le flux brut StatsBomb n'est pas servi par GitHub Pages ; seul un profil
+  dérivé et ses métadonnées de provenance sont publiés.
+- Attribution obligatoire à StatsBomb (logo officiel et lien vers Open Data).
+
+Le build est vérifié par \`.github/workflows/match-profile-check.yml\`
+sur les PR concernées. Le lien est présent sur l'accueil et dans la navigation.
+
 ## Développement local
 
 ```bash

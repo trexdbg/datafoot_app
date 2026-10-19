@@ -1,0 +1,95 @@
+/* Match Weather / DataFoot — graphique SVG statique, déployable sur GitHub Pages */
+.mw-root{padding:36px 0 95px;background:radial-gradient(ellipse at 62% 16%,#0c2637 0,transparent 48%);}
+.mw-heading{padding-bottom:36px}
+.mw-back{display:inline-block;text-decoration:none;font-size:11px;font-weight:800;letter-spacing:.09em;color:#b5c6bb;margin-bottom:28px}
+.mw-back:hover{color:#d6f765}
+.mw-kicker{color:#badf60!important;letter-spacing:.15em;font-size:11px!important;font-weight:800;text-transform:uppercase}
+.mw-heading h1{font-size:clamp(46px,7.5vw,104px);line-height:.99;letter-spacing:-.065em;font-weight:800;margin:12px 0 20px;color:#f2f7fa}
+.mw-heading h1 em{font-style:normal;color:#d2f35b}
+.mw-heading>p:last-child{max-width:660px;font-size:17px;line-height:1.65;color:#a4b8b7}
+.mw-report{border:1px solid #2d5270;border-radius:18px;overflow:hidden;background:#07182a;box-shadow:0 28px 80px #010b14aa, inset 0 0 0 1px #5aa7c31a;color:#f2f8ff}
+.mw-report-top{display:flex;justify-content:space-between;align-items:center;padding:24px 28px 16px;background:linear-gradient(180deg,#10263c,#091e32);gap:18px}
+.mw-title-group{display:flex;align-items:center;gap:16px;min-width:0}
+.mw-symbol{font-size:50px;line-height:1;filter:drop-shadow(0 5px 13px #00baff66);flex:none}
+.mw-overline{font-size:10px;font-weight:800;letter-spacing:.13em;color:#b2d5e0}
+.mw-title-group h2{margin:4px 0;font-size:clamp(21px,3vw,30px);color:#fff;font-weight:850;letter-spacing:-.04em}
+.mw-title-group p{margin:0;color:#adc5d5;font-size:12px}
+.mw-scoreboard{border:1px solid #4a7995;box-shadow:0 0 0 4px #03152294,inset 0 0 25px #10283d;border-radius:10px;padding:11px 18px;text-align:center;flex:none;background:#071a2b}
+.mw-scoreboard small{display:block;color:#aac8d7;font-size:10px;letter-spacing:.06em}
+.mw-scoreboard strong{font-size:19px;white-space:nowrap;color:#c9f25a}
+.mw-scoreboard strong span{font-size:26px;color:#fff;margin:0 6px}
+.mw-chart-scroll{width:100%;overflow-x:auto;overscroll-behavior-x:contain;background:#08192b}
+#mw-chart{display:block;width:100%;height:auto;min-width:770px;user-select:none}
+.mw-grid line{stroke:#7db3d0;stroke-width:1;stroke-opacity:.14}
+.mw-grid .mw-grid-vertical{stroke-opacity:.12;stroke-dasharray:4 7}
+.mw-grid .mw-extra-line{stroke:#c7eafa;stroke-opacity:.5;stroke-width:1.5;stroke-dasharray:5 5}
+#mw-chart .mw-axis-label{font-size:9px;fill:#81a8c4;letter-spacing:1px;font-weight:750}
+#mw-chart .mw-period-label{font-size:11px;fill:#bfe4ed;letter-spacing:1.8px;font-weight:800}
+.mw-weather-icon{font-size:43px;fill:#e8edf5;filter:drop-shadow(0 0 9px #4aaefa)}
+.mw-weather-icon.hot{fill:#f6dc61;filter:drop-shadow(0 0 13px #ffd361)}
+.mw-season-label{font-size:16px;fill:#f8f2d5;font-weight:800}
+.mw-season-label.hot{fill:#ffe18b}
+.mw-season-note{font-size:11px;fill:#c2d7e5}
+.mw-event line{stroke:#9dbbd3;stroke-width:1.25;stroke-opacity:.5}
+.mw-event.fr line{stroke:#ff86a4;stroke-opacity:.75}
+.mw-event-minute{font-size:16px;font-weight:900;fill:#eaf3fb;filter:drop-shadow(0 0 7px #013a6c)}
+.mw-event.fr .mw-event-minute{fill:#ff759e}
+.mw-event-name{font-size:12px;font-weight:800;fill:#fff}
+.mw-event-score{font-size:13px;font-weight:900;fill:#badaef}
+.mw-event.fr .mw-event-score{fill:#ff95b4}
+.mw-ball{font-size:17px}
+.mw-axis line{stroke:#abc6d4;stroke-opacity:.65;stroke-width:1.5}
+.mw-axis text{fill:#d8e7f0;font-size:14px;font-weight:650}
+.mw-axis .mw-axis-caption{font-size:10px;fill:#8fb3c7;letter-spacing:1.4px;font-weight:700}
+#mw-hit{cursor:crosshair;outline:none}
+#mw-hit:focus-visible{stroke:#daf55d;stroke-width:3}
+.mw-explorer{display:flex;align-items:center;gap:24px;padding:18px 27px 16px;background:#0a1d31;border-top:1px solid #20415c;flex-wrap:wrap}
+.mw-explorer>div{display:flex;flex-direction:column;gap:5px;min-width:214px}
+.mw-explorer>div>span{font-size:10px;font-weight:800;letter-spacing:.13em;color:#a8cad9}
+.mw-explorer strong{font-size:16px;color:#fff}
+.mw-explorer input{flex:1 1 250px;min-width:120px;accent-color:#d9f85d;cursor:pointer}
+.mw-explorer>span{font-size:11px;color:#a8c9db}
+.mw-legend{display:flex;flex-wrap:wrap;gap:14px 24px;padding:16px 27px 19px;background:#071827;border-top:1px solid #203e52}
+.mw-legend>span{display:flex;gap:8px;align-items:center;color:#b6cede;font-size:11px}
+.mw-legend-swatch{display:inline-block;width:16px;height:3px;border-radius:4px;box-shadow:0 0 10px currentColor}
+.mw-legend-swatch.blue{background:#63c9ff;color:#63c9ff}
+.mw-legend-swatch.pink{background:#ff628c;color:#ff628c}
+.mw-insights{display:grid;grid-template-columns:1.03fr 1fr;gap:50px;padding:65px 0;border-bottom:1px solid #394338}
+.mw-lead-insight h2{font-size:clamp(36px,5vw,72px);letter-spacing:-.06em;line-height:1.05;color:#f1f4f0;margin:12px 0 18px}
+.mw-lead-insight h2 em{font-style:normal;color:#bff25b}
+.mw-lead-insight>p:last-child{font-size:15px;line-height:1.75;color:#bac5b9;max-width:430px}
+.mw-numbers{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.mw-numbers>div{display:flex;flex-direction:column;justify-content:space-between;padding:22px 23px;border:1px solid #46534e;border-radius:8px;background:#17211c}
+.mw-numbers span{font-size:11px;letter-spacing:.12em;color:#b1bcaa;font-weight:850}
+.mw-numbers strong{font-size:clamp(35px,5vw,64px);letter-spacing:-.07em;line-height:1.2;color:#e5eee7}
+.mw-numbers strong small{font-size:17px;letter-spacing:0;color:#a4b8aa}
+.mw-explain{padding-top:54px;display:grid;grid-template-columns:.8fr 1.2fr;gap:48px}
+.mw-explain h2{font-size:clamp(24px,3vw,43px);letter-spacing:-.05em;line-height:1.13;margin:14px 0;color:#f4f8f2}
+.mw-explain>div:last-child p{max-width:780px;color:#bac6bd;line-height:1.8;font-size:14px}
+.mw-explain a{color:#d4f36f;text-decoration:underline;text-underline-offset:3px}
+.mw-source-credit{font-size:11px!important;color:#8c9e92!important}
+@media(max-width:780px){
+ .mw-root{padding:16px 0 60px}
+ .mw-heading{padding-bottom:22px}
+ .mw-back{margin-bottom:18px}
+ .mw-heading>p:last-child{font-size:14px}
+ .mw-report{border-radius:10px}
+ .mw-report-top{padding:18px 15px;flex-wrap:wrap}
+ .mw-symbol{font-size:38px}
+ .mw-title-group{gap:10px}
+ .mw-title-group p{font-size:11px}
+ .mw-scoreboard{width:100%;display:flex;align-items:center;justify-content:space-between;padding:9px 12px}
+ .mw-scoreboard strong{font-size:15px}
+ .mw-scoreboard strong span{font-size:21px}
+ .mw-scoreboard small{font-size:8px}
+ .mw-explorer{padding:14px;gap:12px}
+ .mw-legend{padding:14px;gap:10px}
+ .mw-legend>span{font-size:10px}
+ .mw-insights,.mw-explain{grid-template-columns:1fr;gap:22px}
+ .mw-insights{padding:45px 0}
+ .mw-numbers>div{padding:16px}
+}
+@media(prefers-reduced-motion:reduce){#mw-chart,#mw-hit{scroll-behavior:auto}}
+
+.mw-provider-brand{display:inline-flex;align-items:center;justify-content:center;background:#fff;padding:9px 13px;border-radius:5px;margin-top:8px;min-height:52px}
+.mw-provider-brand img{width:164px;height:auto;display:block;max-height:48px;object-fit:contain}

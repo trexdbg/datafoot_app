@@ -1,0 +1,860 @@
+{
+  "schema_version": 1,
+  "match": {
+    "id": 3869685,
+    "date": "2022-12-18",
+    "home": "Argentine",
+    "away": "France",
+    "score": "3–3",
+    "penalties": "4–2",
+    "competition": "Coupe du monde 2022 · Finale",
+    "duration_minutes": 125
+  },
+  "player": {
+    "id": 3009,
+    "name": "Kylian Mbappé",
+    "team": "France"
+  },
+  "summary": {
+    "events": 148,
+    "goals": 3,
+    "shots": 6,
+    "passes": 27,
+    "carries": 37,
+    "dribbles": 11,
+    "successful_dribbles": 6,
+    "pressures": 9,
+    "recoveries": 7,
+    "xg_shots": 1.783
+  },
+  "goals": [
+    {
+      "minute": 23,
+      "second": 24,
+      "scorer": "Lionel Andrés Messi Cuccittini",
+      "team": "Argentina",
+      "for_player": false,
+      "penalty": true,
+      "score": "1–0"
+    },
+    {
+      "minute": 36,
+      "second": 22,
+      "scorer": "Ángel Fabián Di María Hernández",
+      "team": "Argentina",
+      "for_player": false,
+      "penalty": false,
+      "score": "2–0"
+    },
+    {
+      "minute": 80,
+      "second": 24,
+      "scorer": "Kylian Mbappé Lottin",
+      "team": "France",
+      "for_player": true,
+      "penalty": true,
+      "score": "2–1"
+    },
+    {
+      "minute": 81,
+      "second": 59,
+      "scorer": "Kylian Mbappé Lottin",
+      "team": "France",
+      "for_player": true,
+      "penalty": false,
+      "score": "2–2"
+    },
+    {
+      "minute": 108,
+      "second": 58,
+      "scorer": "Lionel Andrés Messi Cuccittini",
+      "team": "Argentina",
+      "for_player": false,
+      "penalty": false,
+      "score": "3–2"
+    },
+    {
+      "minute": 118,
+      "second": 5,
+      "scorer": "Kylian Mbappé Lottin",
+      "team": "France",
+      "for_player": true,
+      "penalty": true,
+      "score": "3–3"
+    }
+  ],
+  "timeline": [
+    {
+      "minute": 0,
+      "activity": 0.1,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 1,
+      "activity": 0.6,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 2,
+      "activity": 1.9,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 3,
+      "activity": 4.4,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 4,
+      "activity": 7.5,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 5,
+      "activity": 9.5,
+      "actions": 3,
+      "raw_weight": 4.9
+    },
+    {
+      "minute": 6,
+      "activity": 9.1,
+      "actions": 3,
+      "raw_weight": 2.6
+    },
+    {
+      "minute": 7,
+      "activity": 6.5,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 8,
+      "activity": 3.5,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 9,
+      "activity": 1.5,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 10,
+      "activity": 0.8,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 11,
+      "activity": 1.1,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 12,
+      "activity": 2.2,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 13,
+      "activity": 3.7,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 14,
+      "activity": 4.7,
+      "actions": 4,
+      "raw_weight": 3.1
+    },
+    {
+      "minute": 15,
+      "activity": 5.1,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 16,
+      "activity": 5.7,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 17,
+      "activity": 7,
+      "actions": 1,
+      "raw_weight": 0.5
+    },
+    {
+      "minute": 18,
+      "activity": 8,
+      "actions": 3,
+      "raw_weight": 2.6
+    },
+    {
+      "minute": 19,
+      "activity": 7.7,
+      "actions": 2,
+      "raw_weight": 3.2
+    },
+    {
+      "minute": 20,
+      "activity": 5.9,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 21,
+      "activity": 3.8,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 22,
+      "activity": 2.9,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 23,
+      "activity": 3.6,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 24,
+      "activity": 4.9,
+      "actions": 1,
+      "raw_weight": 0.5
+    },
+    {
+      "minute": 25,
+      "activity": 5.4,
+      "actions": 4,
+      "raw_weight": 3.6
+    },
+    {
+      "minute": 26,
+      "activity": 4.5,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 27,
+      "activity": 2.9,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 28,
+      "activity": 1.7,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 29,
+      "activity": 1.5,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 30,
+      "activity": 2.4,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 31,
+      "activity": 4,
+      "actions": 2,
+      "raw_weight": 1
+    },
+    {
+      "minute": 32,
+      "activity": 5.6,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 33,
+      "activity": 6.8,
+      "actions": 3,
+      "raw_weight": 3.5
+    },
+    {
+      "minute": 34,
+      "activity": 7.7,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 35,
+      "activity": 8.7,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 36,
+      "activity": 9.6,
+      "actions": 4,
+      "raw_weight": 3.7
+    },
+    {
+      "minute": 37,
+      "activity": 9.9,
+      "actions": 2,
+      "raw_weight": 1.6
+    },
+    {
+      "minute": 38,
+      "activity": 9.3,
+      "actions": 1,
+      "raw_weight": 1
+    },
+    {
+      "minute": 39,
+      "activity": 7.6,
+      "actions": 3,
+      "raw_weight": 2.6
+    },
+    {
+      "minute": 40,
+      "activity": 5.3,
+      "actions": 1,
+      "raw_weight": 0.5
+    },
+    {
+      "minute": 41,
+      "activity": 3.1,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 42,
+      "activity": 1.7,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 43,
+      "activity": 1.4,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 44,
+      "activity": 2.4,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 45,
+      "activity": 4.8,
+      "actions": 1,
+      "raw_weight": 0.5
+    },
+    {
+      "minute": 46,
+      "activity": 8.5,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 47,
+      "activity": 13.7,
+      "actions": 3,
+      "raw_weight": 4.9
+    },
+    {
+      "minute": 48,
+      "activity": 20.4,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 49,
+      "activity": 27.5,
+      "actions": 3,
+      "raw_weight": 1.2
+    },
+    {
+      "minute": 50,
+      "activity": 31.2,
+      "actions": 8,
+      "raw_weight": 16.1
+    },
+    {
+      "minute": 51,
+      "activity": 29.1,
+      "actions": 3,
+      "raw_weight": 4.5
+    },
+    {
+      "minute": 52,
+      "activity": 22.7,
+      "actions": 1,
+      "raw_weight": 1.5
+    },
+    {
+      "minute": 53,
+      "activity": 16.3,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 54,
+      "activity": 12.1,
+      "actions": 4,
+      "raw_weight": 4.6
+    },
+    {
+      "minute": 55,
+      "activity": 9.7,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 56,
+      "activity": 8.4,
+      "actions": 1,
+      "raw_weight": 1.5
+    },
+    {
+      "minute": 57,
+      "activity": 7.9,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 58,
+      "activity": 7.2,
+      "actions": 5,
+      "raw_weight": 3.7
+    },
+    {
+      "minute": 59,
+      "activity": 5.9,
+      "actions": 1,
+      "raw_weight": 0.5
+    },
+    {
+      "minute": 60,
+      "activity": 4.6,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 61,
+      "activity": 4.4,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 62,
+      "activity": 5.5,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 63,
+      "activity": 6.8,
+      "actions": 3,
+      "raw_weight": 2.6
+    },
+    {
+      "minute": 64,
+      "activity": 7,
+      "actions": 3,
+      "raw_weight": 2.6
+    },
+    {
+      "minute": 65,
+      "activity": 6.3,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 66,
+      "activity": 6.4,
+      "actions": 1,
+      "raw_weight": 0.5
+    },
+    {
+      "minute": 67,
+      "activity": 9.1,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 68,
+      "activity": 15.1,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 69,
+      "activity": 22.5,
+      "actions": 6,
+      "raw_weight": 6.9
+    },
+    {
+      "minute": 70,
+      "activity": 27.7,
+      "actions": 3,
+      "raw_weight": 2.6
+    },
+    {
+      "minute": 71,
+      "activity": 27.8,
+      "actions": 6,
+      "raw_weight": 13.85
+    },
+    {
+      "minute": 72,
+      "activity": 23.6,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 73,
+      "activity": 18.6,
+      "actions": 1,
+      "raw_weight": 0.5
+    },
+    {
+      "minute": 74,
+      "activity": 15.7,
+      "actions": 1,
+      "raw_weight": 0.5
+    },
+    {
+      "minute": 75,
+      "activity": 15.1,
+      "actions": 4,
+      "raw_weight": 7.9
+    },
+    {
+      "minute": 76,
+      "activity": 17.4,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 77,
+      "activity": 26.9,
+      "actions": 1,
+      "raw_weight": 0.5
+    },
+    {
+      "minute": 78,
+      "activity": 48.8,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 79,
+      "activity": 78.5,
+      "actions": 3,
+      "raw_weight": 4.3
+    },
+    {
+      "minute": 80,
+      "activity": 100,
+      "actions": 1,
+      "raw_weight": 39.48
+    },
+    {
+      "minute": 81,
+      "activity": 97.5,
+      "actions": 4,
+      "raw_weight": 36.71
+    },
+    {
+      "minute": 82,
+      "activity": 72.8,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 83,
+      "activity": 42.5,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 84,
+      "activity": 21.5,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 85,
+      "activity": 12.6,
+      "actions": 3,
+      "raw_weight": 2.6
+    },
+    {
+      "minute": 86,
+      "activity": 10.4,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 87,
+      "activity": 10,
+      "actions": 4,
+      "raw_weight": 5.3
+    },
+    {
+      "minute": 88,
+      "activity": 9.7,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 89,
+      "activity": 9.8,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 90,
+      "activity": 12.1,
+      "actions": 2,
+      "raw_weight": 3.2
+    },
+    {
+      "minute": 91,
+      "activity": 17.8,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 92,
+      "activity": 25.4,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 93,
+      "activity": 32,
+      "actions": 5,
+      "raw_weight": 17.63
+    },
+    {
+      "minute": 94,
+      "activity": 35.6,
+      "actions": 1,
+      "raw_weight": 0.5
+    },
+    {
+      "minute": 95,
+      "activity": 36.4,
+      "actions": 1,
+      "raw_weight": 1.5
+    },
+    {
+      "minute": 96,
+      "activity": 34.7,
+      "actions": 8,
+      "raw_weight": 17.1
+    },
+    {
+      "minute": 97,
+      "activity": 30.7,
+      "actions": 1,
+      "raw_weight": 0.5
+    },
+    {
+      "minute": 98,
+      "activity": 25.5,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 99,
+      "activity": 19.7,
+      "actions": 5,
+      "raw_weight": 10.1
+    },
+    {
+      "minute": 100,
+      "activity": 13.7,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 101,
+      "activity": 7.8,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 102,
+      "activity": 3.4,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 103,
+      "activity": 1.1,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 104,
+      "activity": 0.3,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 105,
+      "activity": 0,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 106,
+      "activity": 0,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 107,
+      "activity": 0,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 108,
+      "activity": 0,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 109,
+      "activity": 0,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 110,
+      "activity": 0,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 111,
+      "activity": 0.3,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 112,
+      "activity": 1.3,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 113,
+      "activity": 4.8,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 114,
+      "activity": 12.5,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 115,
+      "activity": 26,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 116,
+      "activity": 43.7,
+      "actions": 3,
+      "raw_weight": 11.12
+    },
+    {
+      "minute": 117,
+      "activity": 59.3,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 118,
+      "activity": 63.8,
+      "actions": 1,
+      "raw_weight": 39.48
+    },
+    {
+      "minute": 119,
+      "activity": 54.1,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 120,
+      "activity": 36.9,
+      "actions": 3,
+      "raw_weight": 4.3
+    },
+    {
+      "minute": 121,
+      "activity": 22.8,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 122,
+      "activity": 17.2,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 123,
+      "activity": 17.9,
+      "actions": 0,
+      "raw_weight": 0
+    },
+    {
+      "minute": 124,
+      "activity": 18.4,
+      "actions": 7,
+      "raw_weight": 13.4
+    },
+    {
+      "minute": 125,
+      "activity": 15.4,
+      "actions": 0,
+      "raw_weight": 0
+    }
+  ],
+  "methodology": {
+    "label": "Indice d'activité événementielle relative",
+    "unit": "0–100 (pic individuel du match = 100)",
+    "description": "Actions StatsBomb pondérées, lissées sur une fenêtre gaussienne (~5 minutes autour de chaque point). Ni intensité physique, ni vitesse, ni possession.",
+    "window_sigma_minutes": 1.8,
+    "weights_version": "datafoot-event-activity-v1",
+    "shootout_excluded": true,
+    "minute_convention": "minute affichée = minute StatsBomb + 1 ; périodes 1 à 4 seulement"
+  },
+  "source": {
+    "provider": "StatsBomb Open Data / Hudl",
+    "url": "https://github.com/hudl/open-data/blob/master/data/events/3869685.json",
+    "license_notice": "Attribution StatsBomb et logo requis pour publication ; vérifier les conditions avant réutilisation commerciale.",
+    "match_id": 3869685,
+    "sha256": ""
+  }
+}

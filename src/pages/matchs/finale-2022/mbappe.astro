@@ -1,0 +1,188 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import profile from '../../../data/matches/2022-final-mbappe.json';
+import '../../../styles/match-weather.css';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const chart = profile.timeline;
+const x = (m: number) => 76 + m / 125 * 1064;
+const y = (v: number) => 436 - v / 100 * 234;
+const points = chart.map(p => ({ x:x(p.minute), y:y(p.activity) }));
+const smooth = 'M ' + points[0].x.toFixed(2) + ' ' + points[0].y.toFixed(2)
+ + points.slice(0,-1).map((p,i) => {
+   const next = points[i+1];
+   return ' Q ' + p.x.toFixed(2) + ' ' + p.y.toFixed(2)
+      + ' ' + ((p.x+next.x)/2).toFixed(2) + ' ' + ((p.y+next.y)/2).toFixed(2);
+ }).join('')
+ + ' L ' + points[points.length-1].x.toFixed(2) + ' ' + points[points.length-1].y.toFixed(2);
+const area = smooth + ' L 1140 454 L 76 454 Z';
+const ticks = [0,15,30,45,60,75,90,105,120];
+const milestones = [
+ {minute:23,label:'Messi',score:'1–0',y:133,team:'arg'},
+ {minute:36,label:'Di María',score:'2–0',y:89,team:'arg'},
+ {minute:80,label:'Mbappé ×2',score:'2–2',y:74,team:'fr'},
+ {minute:108,label:'Messi',score:'3–2',y:130,team:'arg'},
+ {minute:118,label:'Mbappé',score:'3–3',y:58,team:'fr'}
+];
+const firstTwo = profile.goals.filter(g=>g.for_player).slice(0,2);
+const doubleSeconds = firstTwo.length === 2
+ ? (firstTwo[1].minute-firstTwo[0].minute)*60+firstTwo[1].second-firstTwo[0].second
+ : null;
+---
+<BaseLayout
+ title="Météo de Mbappé : sa finale 2022 minute par minute | DataFoot"
+ description="La courbe d'activité de Kylian Mbappé face à l'Argentine en finale de la Coupe du monde 2022, calculée à partir de 148 événements StatsBomb."
+ canonicalPath={base+'/matchs/finale-2022/mbappe/'}
+>
+ <div class="mw-root">
+  <section class="shell mw-heading">
+   <a class="mw-back" href={base+'/'}>← RETOUR AUX ANALYSES</a>
+   <p class="mw-kicker">DATAFOOT / PROFILS DE MATCH / N° 001</p>
+   <h1>La météo <em>de Mbappé.</em></h1>
+   <p>Une finale en trois éclairs. Le relief de ses actions pendant Argentine–France, le 18 décembre 2022.</p>
+  </section>
+  <section class="shell mw-report" aria-labelledby="mw-main-title">
+   <div class="mw-report-top">
+    <div class="mw-title-group">
+     <span class="mw-symbol" aria-hidden="true">⛈️</span>
+     <div><span class="mw-overline">PROFIL D'ACTIVITÉ · COUPE DU MONDE 2022</span>
+      <h2 id="mw-main-title">Météo du joueur</h2>
+      <p>De l’ombre au tonnerre : les actions qui ont fait basculer la finale.</p>
+     </div>
+    </div>
+    <div class="mw-scoreboard" aria-label="Argentine 3, France 3. Argentine vainqueur aux tirs au but, 4 à 2">
+     <small>FINALE · 18 DÉC. 2022</small><strong>ARG <span>3–3</span> FRA</strong>
+     <small>Argentine : 4–2 aux tirs au but</small>
+    </div>
+   </div>
+   <div class="mw-chart-scroll" aria-label="Graphique d'activité par minute">
+    <svg id="mw-chart" viewBox="0 0 1200 525" role="img" aria-labelledby="mw-svg-title mw-svg-desc">
+     <title id="mw-svg-title">Courbe d'activité de Mbappé pendant la finale Argentine–France 2022</title>
+     <desc id="mw-svg-desc">Activité relative issue des événements StatsBomb, forte montée à la 80e minute puis à la 118e. Six buts repérés. Ce n'est pas une mesure physique.</desc>
+     <defs>
+      <linearGradient id="mw-bg" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#142945"/><stop offset=".55" stop-color="#081c36"/><stop offset="1" stop-color="#08101e"/></linearGradient>
+      <linearGradient id="mw-line" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#5fb4ff"/><stop offset=".5" stop-color="#56c9ff"/><stop offset="1" stop-color="#6ad9ff"/></linearGradient>
+      <linearGradient id="mw-fill" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#129deb" stop-opacity=".32"/><stop offset="1" stop-color="#129deb" stop-opacity="0"/></linearGradient>
+      <linearGradient id="mw-pink" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#ff89ad"/><stop offset=".5" stop-color="#ff477d"/><stop offset="1" stop-color="#ff9cbb"/></linearGradient>
+      <radialGradient id="mw-glow"><stop stop-color="#2565a5" stop-opacity=".4"/><stop offset="1" stop-color="#0c1d34" stop-opacity="0"/></radialGradient>
+      <filter id="mw-neon" x="-30%" y="-80%" width="160%" height="260%"><feGaussianBlur stdDeviation="6"/></filter>
+      <clipPath id="mw-goal-clips"><rect x={x(76)} y="175" width={x(85)-x(76)} height="285"/><rect x={x(114)} y="175" width={x(122)-x(114)} height="285"/></clipPath>
+      <pattern id="mw-texture" width="22" height="22" patternUnits="userSpaceOnUse"><path d="M22 0 L0 0 0 22" fill="none" stroke="#a8cffb" stroke-opacity=".045" stroke-width=".7"/></pattern>
+     </defs>
+     <rect width="1200" height="525" fill="url(#mw-bg)"/>
+     <rect width="1200" height="525" fill="url(#mw-texture)"/>
+     <ellipse cx="590" cy="250" rx="560" ry="230" fill="url(#mw-glow)"/>
+     <path d="M0 165 Q300 55 600 160 T1200 126" fill="none" stroke="#a3d3f3" stroke-opacity=".07" stroke-width="22"/>
+     <path d="M0 182 Q300 72 600 172 T1200 143" fill="none" stroke="#a3d3f3" stroke-opacity=".08" stroke-width="13"/>
+     <g class="mw-grid">
+      {[218,291,363,436].map(v=><line x1="76" y1={v} x2="1140" y2={v}/>)}
+      {ticks.map(t=><line x1={x(t)} y1="186" x2={x(t)} y2="450" class="mw-grid-vertical"/>)}
+      <line x1={x(90)} y1="175" x2={x(90)} y2="453" class="mw-extra-line"/>
+      <text x="82" y="210" class="mw-axis-label">PIC D'ACTIVITÉ</text>
+      <text x="82" y="429" class="mw-axis-label">CALME</text>
+      <text x={x(97)} y="198" class="mw-period-label">PROLONGATION</text>
+     </g>
+     <g class="mw-season">
+      <text x="117" y="81" class="mw-weather-icon">☁</text>
+      <text x="117" y="108" class="mw-season-label">Ciel couvert</text>
+      <text x="117" y="126" class="mw-season-note">Moins d'occasions</text>
+      <text x="530" y="82" class="mw-weather-icon">☀</text>
+      <text x="530" y="109" class="mw-season-label">Éclaircie</text>
+      <text x="530" y="127" class="mw-season-note">Plus d'actions</text>
+      <text x={x(82)} y="58" class="mw-weather-icon hot">⚡</text>
+      <text x={x(82)} y="83" class="mw-season-label hot">Tempête</text>
+      <text x={x(82)} y="101" class="mw-season-note">Deux buts</text>
+     </g>
+     <path d={area} fill="url(#mw-fill)"/>
+     <path d={smooth} fill="none" stroke="#4cbcff" stroke-width="13" stroke-opacity=".5" filter="url(#mw-neon)"/>
+     <path d={smooth} fill="none" stroke="url(#mw-line)" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round"/>
+     <g clip-path="url(#mw-goal-clips)">
+      <path d={smooth} fill="none" stroke="#ff517d" stroke-width="19" stroke-opacity=".7" filter="url(#mw-neon)"/>
+      <path d={smooth} fill="none" stroke="url(#mw-pink)" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+     </g>
+     {milestones.map(m=>(
+      <g class:list={['mw-event',m.team]}>
+       <line x1={x(m.minute)} y1={m.y+47} x2={x(m.minute)} y2="447" stroke-dasharray="3 7"/>
+       <circle cx={x(m.minute)} cy={m.y+40} r="12" fill="#081c36"/>
+       <text x={x(m.minute)} y={m.y+46} text-anchor="middle" class="mw-ball">⚽</text>
+       <text x={x(m.minute)} y={m.y} text-anchor="middle" class="mw-event-minute">{m.minute}′</text>
+       <text x={x(m.minute)} y={m.y+17} text-anchor="middle" class="mw-event-name">{m.label}</text>
+       <text x={x(m.minute)} y={m.y+32} text-anchor="middle" class="mw-event-score">{m.score}</text>
+      </g>
+     ))}
+     <g class="mw-axis">
+      <line x1="76" y1="452" x2="1140" y2="452"/>
+      {ticks.map(t=><g><line x1={x(t)} y1="452" x2={x(t)} y2="459"/><text x={x(t)} y="484" text-anchor="middle">{t}′</text></g>)}
+      <text x="607" y="511" text-anchor="middle" class="mw-axis-caption">TEMPS DE JEU · 90 MINUTES + PROLONGATION</text>
+     </g>
+     <line id="mw-cursor" x1={x(80)} y1="184" x2={x(80)} y2="452" stroke="#d9ecff" stroke-width="1.2" stroke-dasharray="5 5" opacity=".6" pointer-events="none"/>
+     <circle id="mw-dot" cx={x(80)} cy={y(chart[80].activity)} r="7" fill="#ff6f9d" stroke="#fff4f8" stroke-width="2" pointer-events="none"/>
+     <rect id="mw-hit" x="76" y="172" width="1064" height="285" fill="transparent" tabindex="0" aria-label="Déplacer le pointeur pour examiner l'activité par minute"/>
+    </svg>
+   </div>
+   <div class="mw-explorer" aria-label="Explorer une minute du match">
+    <div><span>EXPLORER LA COURBE</span><strong><output id="mw-readout" for="mw-minute">80′ · Activité 100/100</output></strong></div>
+    <input id="mw-minute" type="range" min="0" max="125" step="1" value="80" aria-label="Minute à examiner"/>
+    <span id="mw-actions" aria-live="polite">Actions recensées pendant cette minute : {chart[80].actions}</span>
+   </div>
+   <div class="mw-legend">
+    <span><i class="mw-legend-swatch blue"></i> Activité calculée</span>
+    <span><i class="mw-legend-swatch pink"></i> Périodes des buts de Mbappé</span>
+    <span>☁ Calme</span><span>☀ Éclaircie</span><span>⚡ Action décisive</span>
+   </div>
+  </section>
+  <section class="shell mw-insights">
+   <div class="mw-lead-insight"><p class="mw-kicker">LE POINT DE BASCULE</p>
+    <h2>Deux buts.<br/><em>{doubleSeconds ?? 95} secondes.</em></h2>
+    <p>Mbappé marque à la 80′ sur penalty puis à la 81′ dans le jeu. Deux actions déterminantes, un immense pic sur le profil.</p>
+   </div>
+   <div class="mw-numbers">
+    <div><span>BUTS</span><strong>{profile.summary.goals}</strong></div>
+    <div><span>TIRS</span><strong>{profile.summary.shots}</strong></div>
+    <div><span>DRIBBLES RÉUSSIS</span><strong>{profile.summary.successful_dribbles}<small> / {profile.summary.dribbles}</small></strong></div>
+    <div><span>ÉVÉNEMENTS</span><strong>{profile.summary.events}</strong></div>
+   </div>
+  </section>
+  <section class="shell mw-explain">
+   <div><p class="mw-kicker">LECTURE DU GRAPHIQUE</p><h2>Un relief footballistique.<br/>Pas un capteur GPS.</h2></div>
+   <div>
+    <p>L'indice de 0 à 100 est construit par DataFoot à partir d'actions horodatées : tirs, passes, conduites, dribbles, pressings et récupérations. Elles sont pondérées puis lissées. <strong>100 représente le maximum de Mbappé sur cette finale</strong>, pas une intensité physique.</p>
+    <p>Les buts des deux équipes servent de repères. La séance de tirs au but est exclue.</p>
+    <p><a href={profile.source.url} target="_blank" rel="noopener noreferrer">Source : StatsBomb Open Data ↗</a> · <a href={base+'/data/matches/2022-final-mbappe.json'}>Télécharger le JSON calculé ↗</a></p>
+    <p class="mw-source-credit">Données événementielles © StatsBomb / Hudl · Visualisation et pondérations DataFoot. Modèle : {profile.methodology.weights_version}. Attribution StatsBomb.</p>
+    <a class="mw-provider-brand" href="https://github.com/hudl/open-data" target="_blank" rel="noopener noreferrer" aria-label="StatsBomb, fournisseur des données de match">
+      <img src="https://raw.githubusercontent.com/hudl/open-data/master/img/SB%20-%20Icon%20Lockup%20-%20Colour%20positive.png" loading="lazy" alt="Logo StatsBomb" width="164"/>
+    </a>
+   </div>
+  </section>
+ </div>
+ <script is:inline define:vars={{timeline: chart}}>
+  (() => {
+   const svg=document.getElementById('mw-chart'), hit=document.getElementById('mw-hit');
+   const slider=document.getElementById('mw-minute'), cursor=document.getElementById('mw-cursor');
+   const dot=document.getElementById('mw-dot'), out=document.getElementById('mw-readout');
+   const actions=document.getElementById('mw-actions');
+   if(!svg||!hit||!slider||!cursor||!dot||!out||!actions)return;
+   const show=value=>{
+    const minute=Math.max(0,Math.min(125,Math.round(Number(value)||0))),p=timeline[minute];
+    const cx=76+minute/125*1064,cy=436-p.activity/100*234;
+    cursor.setAttribute('x1',cx);cursor.setAttribute('x2',cx);
+    dot.setAttribute('cx',cx);dot.setAttribute('cy',cy);slider.value=String(minute);
+    out.textContent=minute+'′ · Activité '+p.activity.toLocaleString('fr-FR',{maximumFractionDigits:1})+'/100';
+    actions.textContent='Actions recensées pendant cette minute : '+p.actions;
+   };
+   slider.addEventListener('input',()=>show(slider.value));
+   const pointer=e=>{
+    const rect=svg.getBoundingClientRect();
+    show((((e.clientX-rect.left)/rect.width*1200)-76)/1064*125);
+   };
+   hit.addEventListener('pointermove',pointer);
+   hit.addEventListener('click',pointer);
+   hit.addEventListener('keydown',e=>{
+    if(e.key==='ArrowLeft'||e.key==='ArrowRight'){
+     e.preventDefault();show(Number(slider.value)+(e.key==='ArrowRight'?1:-1));
+    }
+   });
+   show(80);
+  })();
+ </script>
+</BaseLayout>
