@@ -18,13 +18,14 @@ const teamView=profileKey==='france';
 const playerId=teamView?null:Number(profileKey);
 const profile=teamView?null:getProfile(game,playerId!);
 const name=teamView?'France · collectif':profile!.player.name;
-const primary=teamView?game.team:profile!.timeline;
-const comparison=teamView?null:game.team;
+type ChartPoint={minute:number;activity:number|null;players?:number};
+type RawEvent={minute:number;second:number;kind:string;outcome:string;playerId:number};
+const primary:ChartPoint[]=teamView?game.team:profile!.timeline;
+const comparison:ChartPoint[]|null=teamView?null:game.team;
 const scoreMax=matchComparisonScale(game);
 const left=58,right=1050,top=45,bottom=325;
 const x=(minute:number)=>left+minute/game.duration*(right-left);
 const y=(score:number)=>bottom-Math.max(0,score)/scoreMax*(bottom-top);
-type ChartPoint={minute:number;activity:number|null};
 const paths=(timeline:ChartPoint[])=>{
  const segments:ChartPoint[][]=[];
  let segment:ChartPoint[]=[];
@@ -41,13 +42,13 @@ const teamPath=comparison?paths(comparison):[];
 const axisStep=scoreMax>300?100:50;
 const yTicks=[...new Set([...Array.from({length:Math.floor(scoreMax/axisStep)+1},(_,i)=>i*axisStep),scoreMax])];
 const xTicks=[...new Set([...Array.from({length:Math.floor(game.duration/15)+1},(_,i)=>i*15),game.duration])];
-const names=new Map(game.players.map(p=>[p.id,p.name]));
-const rawEvents=teamView
- ? game.actions.map(a=>({minute:a.m,second:a.s,kind:a.k,outcome:a.o,playerId:a.p}))
- : profile!.actions.map(a=>({minute:a.minute,second:a.second,kind:a.kind,outcome:a.outcome,playerId:profile!.player.id}));
+const names=new Map<number,string>(game.players.map((p:{id:number;name:string})=>[p.id,p.name]));
+const rawEvents:RawEvent[]=teamView
+ ? game.actions.map((a:{p:number;m:number;s:number;k:string;o:string})=>({minute:a.m,second:a.s,kind:a.k,outcome:a.o,playerId:a.p}))
+ : profile!.actions.map((a:{minute:number;second:number;kind:string;outcome:string})=>({minute:a.minute,second:a.second,kind:a.kind,outcome:a.outcome,playerId:profile!.player.id}));
 const events=rawEvents.map(a=>({...a,label:actionLabel(a),impact:actionImpact(a),playerName:names.get(a.playerId)||'Joueur'}))
  .sort((a,b)=>a.minute-b.minute||a.second-b.second);
-const goals=teamView?teamGoals(game):playerGoals(game,playerId!);
+const goals:number[]=teamView?teamGoals(game):playerGoals(game,playerId!);
 const passes=events.filter(a=>a.kind==='Pass'&&a.outcome==='Complete').length;
 const dribbles=events.filter(a=>a.kind==='Dribble'&&a.outcome==='Complete').length;
 const stacks=new Map<number,number>();
@@ -71,7 +72,7 @@ const firstAvailable=primary.find(p=>p.activity!=null)?.minute??0;
 const initialMinute=startScore==null?firstAvailable:start;
 const initialScore=primary[initialMinute]?.activity??null;
 const durationLabel=teamView?game.duration+'′':profile!.player.entry+'′ – '+(profile!.player.exit==null?game.duration+'′ (fin)':profile!.player.exit+'′');
-const timelineForClient=primary.map(p=>({minute:p.minute,activity:p.activity,players:'players' in p?p.players:null}));
+const timelineForClient=primary.map(p=>({minute:p.minute,activity:p.activity,players:p.players??null}));
 const eventsForClient=events.map(a=>({minute:a.minute,second:a.second,label:a.label,impact:a.impact,playerName:teamView?a.playerName:null}));
 const detailHref=base+'/matchs/coupe-du-monde-2022/'+game.id+'/profils/';
 ---
