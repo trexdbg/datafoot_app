@@ -69,10 +69,10 @@ test('player dropdown, graph modes, minute slider and actions respond to clicks'
   actions:minute===peakMinute?1:0,penaltyGain:0
  }));
  const players=[
-  {id:101,name:'Premier Joueur',team:'France',entry:0,exit:null,
+  {id:101,name:'Premier Joueur',team:'France',entry:0,exit:null,presence:{share:44,above:40,played:91,longest:10,longestStart:11,longestEnd:20,strong:6},
    timeline:timeline(0,18,82),
    events:[{minute:18,second:22,kind:'Shot',outcome:'Goal',penalty:0}]},
-  {id:202,name:'Deuxième Joueur',team:'Argentina',entry:60,exit:null,
+  {id:202,name:'Deuxième Joueur',team:'Argentina',entry:60,exit:null,presence:{share:73,above:22,played:31,longest:15,longestStart:63,longestEnd:77,strong:9},
    timeline:timeline(60,75,94),
    events:[{minute:75,second:18,kind:'Pass',outcome:'Complete',goalAssist:true,penalty:0}]}
  ];
@@ -82,16 +82,25 @@ test('player dropdown, graph modes, minute slider and actions respond to clicks'
   document,location,history,URL,URLSearchParams,players,duration:90,defaultId:101,basePath:'/datafoot_app'
  },{timeout:4000}));
  assert.equal(node('wc-current-name').textContent,'Premier Joueur');
+ assert.ok(node('wc-above-share').innerHTML.includes('44'),'regularity is shown for initial player');
+ assert.equal(node('wc-presence-ribbon').children.length,91);
+ assert.equal(node('wc-sustained-area').attributes.display,'inline','glowing activity area must be visible');
  const priorPath=lines[0].attributes.d;
  const dropdown=node('wc-select-player');
  dropdown.value='202';dropdown.emit('change');
  assert.equal(node('wc-current-name').textContent,'Deuxième Joueur');
+ assert.ok(node('wc-above-share').innerHTML.includes('73'),'regularity updates on player selection');
+ assert.equal(node('wc-longest-streak').textContent,'15′','longest streak must update');
  assert.ok(node('wc-peak').innerHTML.includes('94'));
  assert.notEqual(lines[0].attributes.d,priorPath);
  assert.equal(new URL(location.href).searchParams.get('joueur'),'202');
  assert.ok(node('wc-minute-actions').children.some(chip=>String(chip.textContent).includes('PASSE DÉCISIVE')));
  modes[1].emit('click');
  assert.match(node('wc-mode-title').textContent,/Impact/,'changing mode updates the title');
+ assert.equal(node('wc-sustained-area').attributes.display,'none','activity-only 50 reference must not imply impact baseline');
+ assert.equal(node('wc-rhythm-reference').attributes.display,'none');
+ modes[0].emit('click');
+ assert.equal(node('wc-sustained-area').attributes.display,'inline','activity highlight restores correctly');
  const slider=node('wc-minute-slider');
  slider.value='62';slider.emit('input');
  assert.equal(node('wc-readout').textContent,'62′');
