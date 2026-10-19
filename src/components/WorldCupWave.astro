@@ -20,7 +20,7 @@ const paths=segments.map(points=>{
 const max=[...timeline].filter(p=>p[metric]!=null).sort((a,b)=>(b[metric]??0)-(a[metric]??0))[0];
 const presence=pulsePresence(timeline);
 const markers=timeline.filter(p=>(p.actions??0)>0);
-const xTicks=[0,45,90,duration].filter((v,i,a)=>v<=duration&&a.indexOf(v)===i);
+const xTicks=[0,45,90].filter(t=>t===0||duration-t>=10).concat([duration]).filter((v,i,a)=>v<=duration&&a.indexOf(v)===i);
 const encoded=JSON.stringify(timeline.map(p=>[p.activity,p.impact??null,p.actions??0,(p.events??[]).slice(0,5).map(e=>(e.playerName?e.playerName+' · ':'')+actionLabel(e)+(pulsePenalty(e)>0?' · malus −'+pulsePenalty(e).toFixed(2):'')),p.penaltyGain??0]));
 const clipPrefix='wc-bands-'+Math.random().toString(36).slice(2,11);
 ---
