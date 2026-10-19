@@ -67,3 +67,20 @@ test('le fichier de données réelles est disponible pour le déploiement Pages'
  assert.ok(data.modes.clubs.count>0);
  assert.deepEqual(data,pub);
 });
+
+
+test('602 matchs publics : Rival Wars peut parcourir tous les clubs sur plusieurs pages',()=>{
+ const data=JSON.parse(fs.readFileSync(new URL('../src/data/players/messi-encounters.json',import.meta.url),'utf8'));
+ const page=fs.readFileSync(new URL('../src/pages/joueurs/messi/affrontements.astro',import.meta.url),'utf8');
+ const engine=fs.readFileSync(new URL('../src/lib/messi-encounters-engine.mjs',import.meta.url),'utf8');
+ assert.equal(data.scope.full_open_data_scan,true);
+ assert.ok(data.scope.matches_count>=54);
+ assert.equal(data.scope.complete_career,false);
+ assert.equal(data.modes.clubs.count,data.modes.clubs.events.length);
+ assert.ok(data.modes.clubs.leaders.length>20,'Le classement des équipes doit dépasser une page');
+ for(const id of ['me-pages','me-prev','me-next','me-page-label','me-global-totals'])
+   assert.ok(page.includes('id="'+id+'"'),id+' absent');
+ assert.ok(engine.includes('allLeaders=rankOpponents(source,1000000)'));
+ assert.ok(engine.includes('leaders=allLeaders.slice(page*perPage,(page+1)*perPage)'));
+ assert.ok(engine.includes("say('me-global-totals'"));
+});
