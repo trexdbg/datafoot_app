@@ -84,6 +84,33 @@ export function layoutPlayerNodes(players, W=1200, H=780, CX=W/2, CY=H/2){
   return result;
 }
 
+/**
+ * La chronologie suit les mois réels couverts par les événements, et non
+ * un faux calendrier de 57 matchs uniformément espacés.
+ * Le slider peut traverser un mois sans aucun match : les totaux n'y changent pas.
+ */
+export function monthOrdinal(isoDate){
+  const match=/^(\d{4})-(0[1-9]|1[0-2])(?:-\d{2})?$/.exec(String(isoDate??''));
+  return match?Number(match[1])*12+Number(match[2])-1:null;
+}
+export function monthYearLabel(ordinal){
+  if(ordinal===null||!Number.isInteger(ordinal)||ordinal<0)return '--/----';
+  const year=Math.floor(ordinal/12),month=ordinal%12+1;
+  return String(month).padStart(2,'0')+'/'+String(year).padStart(4,'0');
+}
+export function eventsThroughMonth(events,ordinal){
+  if(!Number.isInteger(ordinal))return 0;
+  // Borne supérieure pour inclure TOUS les événements du mois affiché.
+  // Le flux StatsBomb est trié par match et date.
+  let lo=0,hi=events.length;
+  while(lo<hi){
+    const mid=(lo+hi)>>1,m=monthOrdinal(events[mid].date);
+    if(m!==null&&m<=ordinal)lo=mid+1;
+    else hi=mid;
+  }
+  return lo;
+}
+
 export function bootPassWars(){
   const root=document.querySelector('[data-pass-wars]');
   if(!root)return;
@@ -94,7 +121,7 @@ export function bootPassWars(){
   const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   let meta,original=[],filtered=[],events=[],players=[],positions=new Map(),counts=new Map(),palette=new Map();
   const colorOf=id=>palette.get(id)||playerColor(id);
-  let cursor=0,position=0,prev=0,lastText=0,playing=false,battle=false,speed=28,focus=null,sort='total';
+  let cursor=0,position=0,prev=0,lastText=0,playing=false,battle=false,speed=28,focus=null,sort='total',selectedMonth=null;
   let balls=[],ripples=[];
   // Photos Commons préchargées une seule fois par joueur ; si erreur réseau,
   // le Canvas et le classement conservent un monogramme coloré.
@@ -160,6 +187,48 @@ export function bootPassWars(){
   }
   function tally(list){ return eligiblePartners(list); }
   function locate(){positions=layoutPlayerNodes(players,W,H,CX,CY);}
+  function renderMonthTicks(first,last){
+    const ticks=$('pw-month-ticks');ticks.replaceChildren();
+    if(first===null||last===null){
+      for(const label of ['--/----','--/----']){
+        const el=document.createElement('span');el.textContent=label;ticks.append(el);
+      }
+      return;
+    }
+    const steps=last===first?1:6;
+    const ordinals=new Set(Array.from({length:steps},(_,i)=>
+      Math.round(first+(last-first)*(i/(steps-1||1)))));
+    for(const month of ordinals){
+      const tick=document.createElement('span');
+      tick.textContent=monthYearLabel(month);ticks.append(tick);
+    }
+  }
+  function configureMonthTimeline(){
+    const scrub=$('pw-month-scrub');
+    const first=events[0]?monthOrdinal(events[0].date):null;
+    const last=events.length?monthOrdinal(events.at(-1).date):null;
+    scrub.min=String(first??0);
+    scrub.max=String(last??Math.max(1,first??0));
+    scrub.value=String(first??0);
+    scrub.disabled=first===null||last===null||first===last;
+    renderMonthTicks(first,last);
+  }
+  function renderCurrentMonth(){
+    const sourceMonth=cursor>0?monthOrdinal(events[cursor-1].date):
+      events.length?monthOrdinal(events[0].date):null;
+    const month=selectedMonth??sourceMonth;
+    set('pw-now',monthYearLabel(month));
+    const scrub=$('pw-month-scrub');
+    if(month!==null){
+      scrub.value=String(month);
+      scrub.setAttribute('aria-valuetext',monthYearLabel(month));
+      const first=Number(scrub.min),last=Number(scrub.max);
+      const progress=last>first?(month-first)/(last-first)*100:0;
+      scrub.style.setProperty('--pw-date-progress',Math.max(0,Math.min(100,progress))+'%');
+    }else{
+      scrub.style.setProperty('--pw-date-progress','0%');
+    }
+  }
   function build(){
     const team=$('pw-team').value,season=$('pw-season').value,competition=$('pw-competition').value;
     filtered=original.filter(e=>(!team||e.team===team)&&(!season||e.season===season)&&(!competition||e.competition===competition));
@@ -169,7 +238,7 @@ export function bootPassWars(){
     renderPhotoCredits();
     const ids=new Set(players.map(p=>p.id));
     events=filtered.filter(e=>ids.has(e.partner_id));
-    $('pw-scrub').max=String(Math.max(events.length,1));focus=null;reset();
+    configureMonthTimeline();focus=null;reset();
     set('pw-coverage',new Set(filtered.map(e=>e.match_id)).size+' MATCHS · '+players.length+' PARTENAIRES (96+ PASSES)');
     $('pw-play').disabled=events.length===0;
     $('pw-battle').disabled=events.length===0;
@@ -180,9 +249,9 @@ export function bootPassWars(){
         ' Seuls les partenaires totalisant plus de 95 passes envoyées + reçues dans cette sélection apparaissent.');
   }
   function reset(){
-    playing=false;cursor=0;position=0;counts=new Map();balls=[];ripples=[];
+    playing=false;cursor=0;position=0;counts=new Map();balls=[];ripples=[];selectedMonth=null;
     paint.clearRect(0,0,W,H);
-    $('pw-scrub').value='0';updatePlay();renderBoard();renderLeaderboard();
+    updatePlay();renderBoard();renderLeaderboard();
   }
   function updatePlay(){
     $('pw-play').textContent=playing?'Ⅱ':'▶';
@@ -197,8 +266,9 @@ export function bootPassWars(){
       if(balls.length>240)balls=balls.slice(-240);
     }
   }
-  function seek(n){
+  function seek(n,month=null){
     const end=Math.max(0,Math.min(events.length,Number(n)||0));
+    selectedMonth=month;
     playing=false;position=end;cursor=0;counts=new Map();balls=[];ripples=[];
     paint.clearRect(0,0,W,H);
     while(cursor<end)count(events[cursor++],false,0);
@@ -224,9 +294,8 @@ export function bootPassWars(){
     set('pw-focus',p?displayPlayerName(p.id,p.name).toUpperCase()+' — '+score(p.id).given+' ENVOYÉES / '+score(p.id).received+' REÇUES':
       'TOUS LES JOUEURS · CLIQUEZ SUR UN NŒUD OU UN NOM POUR L’ISOLER.');
     const e=events[Math.max(cursor-1,0)];
-    set('pw-now',cursor&&e?e.date+' · '+e.minute+'′':'DÉPART');
+    renderCurrentMonth();
     set('pw-progress-text',format(cursor)+' / '+format(events.length)+' PASSES');
-    $('pw-scrub').value=String(cursor);
     for(const el of $('pw-leader').querySelectorAll('[data-count]'))el.textContent=format(score(Number(el.dataset.count)).total);
   }
   function selectPlayer(id){
@@ -434,6 +503,7 @@ export function bootPassWars(){
   function frame(t){
     const dt=prev?Math.min(.13,Math.max(0,(t-prev)/1000)):0;prev=t;
     if(playing&&events.length){
+      selectedMonth=null;
       position=Math.min(events.length,position+dt*(battle?175:speed));
       while(cursor<Math.floor(position))count(events[cursor++],true,t);
       if(cursor>=events.length){playing=false;updatePlay();}
@@ -457,7 +527,10 @@ export function bootPassWars(){
     if(battle)playing=true;updatePlay();
   });
   $('pw-speed').addEventListener('change',e=>speed=Number(e.target.value));
-  $('pw-scrub').addEventListener('input',e=>seek(e.target.value));
+  $('pw-month-scrub').addEventListener('input',e=>{
+    const month=Number(e.target.value);
+    seek(eventsThroughMonth(events,month),month);
+  });
   const load=async name=>{
     const response=await fetch(source+name);
     if(!response.ok)throw Error(name+' : HTTP '+response.status);
