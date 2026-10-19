@@ -2,6 +2,7 @@
 import CountryFlag from '../../../../components/CountryFlag.astro';
 import BaseLayout from '../../../../layouts/BaseLayout.astro';
 import {monotonePath,pulsePenalty,pulseWeight,PULSE_BANDS} from '../../../../lib/match-activity.mjs';
+import {pulsePresence} from '../../../../lib/pulse-presence.mjs';
 import {pulseRoleLabel} from '../../../../lib/pulse-scoring.mjs';
 import {games,matchUrl,countryUrl,playerUrl,labelCountry,flag,flagSrc,stageLabel,dateLabel,titleMatch,peak,mean} from '../../../../lib/worldcup-data';
 import '../../../../styles/worldcup.css';
@@ -14,13 +15,14 @@ const game=games.find(g=>g.id===matchId)!;
 const profiles=[...game.profiles].sort((a,b)=>a.player.team.localeCompare(b.player.team)||a.player.entry-b.player.entry||a.player.name.localeCompare(b.player.name,'fr'));
 const initial=profiles.find(p=>p.player.team===game.home&&p.player.entry===0)??profiles[0];
 const firstPeak=peak(initial.timeline);
+const initialPresence=pulsePresence(initial.timeline);
 const left=58,right=1071,top=30,bottom=317;
 const x=(minute:number)=>left+minute/game.duration*(right-left);
 const y=(score:number)=>bottom-Math.max(0,Math.min(100,score))/100*(bottom-top);
 const firstPoints=initial.timeline.filter(p=>p.activity!==null);
 const firstPath=monotonePath(firstPoints.map(p=>({x:x(p.minute),y:y(p.activity??0)})));
 const clientPlayers=profiles.map(p=>({
- id:p.player.id,name:p.player.name,team:p.player.team,teamLabel:labelCountry(p.player.team),position:p.player.position??'',roleLabel:p.player.position?pulseRoleLabel(p.player.position):'Poste non renseigné · barème milieu',flagSrc:flagSrc(p.player.team),entry:p.player.entry,exit:p.player.exit,
+ id:p.player.id,name:p.player.name,presence:pulsePresence(p.timeline),team:p.player.team,teamLabel:labelCountry(p.player.team),position:p.player.position??'',roleLabel:p.player.position?pulseRoleLabel(p.player.position):'Poste non renseigné · barème milieu',flagSrc:flagSrc(p.player.team),entry:p.player.entry,exit:p.player.exit,
  timeline:p.timeline.map(t=>({activity:t.activity,impact:t.impact,actions:t.actions,penaltyGain:t.penaltyGain})),
  events:p.actions.map(a=>({minute:a.minute,second:a.second,kind:a.kind,outcome:a.outcome,
   l:(a as any).location??null,e:(a as any).endLocation??null,xg:(a as any).xg??null,goalAssist:a.goalAssist===true,shotAssist:a.shotAssist===true,subtype:(a as any).subtype??'',gain:pulseWeight(a,p.player.position??'').activity,penalty:pulsePenalty(a)}))
@@ -48,6 +50,18 @@ const initialEventCount=initial.actions.filter(a=>a.minute===initialMinute).leng
    <div><span>ÉVÉNEMENTS</span><strong id="wc-event-total">{initial.actions.length}</strong><small>sur cette rencontre</small></div>
    <div><span>BUTS</span><strong id="wc-goals">{initial.actions.filter(a=>a.kind==='Shot'&&a.outcome==='Goal').length}</strong><small>hors séance de tirs au but</small></div>
   </div>
+  <div class="wc-presence" aria-label="Régularité du rythme d'activité">
+   <div class="wc-presence-main">
+    <span class="wc-presence-label">RYTHME SOUTENU · AU-DESSUS DE 50</span>
+    <strong id="wc-above-share">{initialPresence.share}<small>%</small></strong>
+    <small id="wc-above-detail">{initialPresence.above} minutes sur {initialPresence.played} évaluées</small>
+   </div>
+   <div class="wc-presence-side">
+    <div><span>PLUS LONGUE SÉQUENCE</span><strong id="wc-longest-streak">{initialPresence.longest}′</strong><small id="wc-longest-period">{initialPresence.longestStart==null?'Aucune séquence':'de '+initialPresence.longestStart+'′ à '+initialPresence.longestEnd+'′'}</small></div>
+    <div><span>TEMPS FORTS · >75</span><strong id="wc-strong-minutes">{initialPresence.strong}′</strong><small>minutes très actives</small></div>
+   </div>
+   <div class="wc-presence-timeline"><span>LES MINUTES DU JOUEUR</span><div class="wc-presence-ribbon" id="wc-presence-ribbon" aria-label="Chronologie de l'activité minute par minute">{initial.timeline.map(p=><span class:list={['wc-presence-step',p.activity==null?'off':p.activity>75?'hot':p.activity>50?'sustained':'quiet']} title={p.minute+'′ · '+(p.activity==null?'hors terrain':Math.round(p.activity)+'/100')}/>)}</div><small>Teintes : hors terrain · sous 50 · au-dessus de 50 · au-dessus de 75</small></div>
+  </div>
   <div class="wc-mode-head">
    <div class="wc-mode-copy"><p class="wc-eyebrow">PROFIL DU JOUEUR <span id="wc-mode-title">· Activité du match</span></p><p id="wc-mode-desc">L’activité valorise les gestes selon le poste et s’atténue pendant les temps calmes.</p></div>
    <div class="wc-mode-tabs" role="group" aria-label="Lecture du graphique">
@@ -61,6 +75,12 @@ const initialEventCount=initial.actions.filter(a=>a.minute===initialMinute).leng
     <desc id="wc-chart-description">Courbe d’activité 0–100 pour un seul joueur, points représentant les événements sous l’axe horizontal. Mode impact indicatif disponible. Le curseur permet l’inspection des minutes.</desc>
     <rect width="1140" height="456" fill="#071b30"/>
     <defs>
+     <linearGradient id="wc-sustained-gradient" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#B8F27C" stop-opacity=".32"/>
+      <stop offset="55%" stop-color="#66E4C4" stop-opacity=".20"/>
+      <stop offset="100%" stop-color="#55C8EE" stop-opacity=".045"/>
+     </linearGradient>
+     <clipPath id="wc-above-50"><rect x={left} y={top} width={right-left} height={y(50)-top}/></clipPath>
      <clipPath id="wc-band-low"><rect x="58" y="245.25" width="1013" height="71.75"/></clipPath>
      <clipPath id="wc-band-steady"><rect x="58" y="101.75" width="1013" height="143.5"/></clipPath>
      <clipPath id="wc-band-high"><rect x="58" y="30" width="1013" height="71.75"/></clipPath>
@@ -71,7 +91,9 @@ const initialEventCount=initial.actions.filter(a=>a.minute===initialMinute).leng
     {Array.from({length:Math.ceil(game.duration/15)+1},(_,i)=>i*15).filter(n=>n<=game.duration).concat([game.duration]).filter((n,i,a)=>a.indexOf(n)===i).map(minute=><g><line x1={x(minute)} x2={x(minute)} y1={top} y2={bottom} class="wc-profile-grid vertical"/><text x={x(minute)} y="345" text-anchor="middle" class="wc-profile-axis">{minute}′</text></g>)}
     <text class="wc-profile-chartlabel" x={left} y="20">INDICE PULSE /100</text>
     {game.duration>90&&<g><line x1={x(90)} x2={x(90)} y1={top} y2={bottom} stroke="#b6d8e7" stroke-dasharray="6 7" opacity=".6"/><text class="wc-profile-period" x={x(90)+8} y="48">APRÈS 90′</text></g>}
+    <g id="wc-rhythm-reference"><line x1={left} x2={right} y1={y(50)} y2={y(50)} stroke="#87F2CC" stroke-opacity=".7" stroke-width="1.6" stroke-dasharray="7 6"/><text x={right-6} y={y(50)-9} text-anchor="end" class="wc-reference-label">CAP DES 50</text></g>
     <path id="wc-line-area" d={firstPath+' L '+x(firstPoints.at(-1)?.minute??0)+' '+bottom+' L '+x(firstPoints[0]?.minute??0)+' '+bottom+' Z'} fill="#72dfff" opacity=".13"/>
+    <path id="wc-sustained-area" d={firstPath+' L '+x(firstPoints.at(-1)?.minute??0)+' '+y(50)+' L '+x(firstPoints[0]?.minute??0)+' '+y(50)+' Z'} clip-path="url(#wc-above-50)" fill="url(#wc-sustained-gradient)"/>
     {(['low','steady','high'] as const).map(band=><path class="wc-band-line" data-band={band} d={firstPath} fill="none" stroke={PULSE_BANDS[band].color} stroke-width="4.7" stroke-linecap="round" stroke-linejoin="round" clip-path={'url(#wc-band-'+band+')'}/>)}
     <g id="wc-goal-marks"></g>
     <line x1={left} x2={right} y1={bottom} y2={bottom} stroke="#b3d6e5" opacity=".8"/>
