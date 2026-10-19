@@ -100,3 +100,27 @@ test('aucune des deux visualisations Messi ne trace de traits (ni liens, ni gril
   assert.ok(newer.includes('stampPaint(p.id,p.direction,p.index)'));
   assert.ok(old.includes('splatter(p.partner_id,p.direction,p.index)'));
 });
+
+
+test('la vignette Messi de l’accueil ne contient AUCUN trait SVG',async()=>{
+  const {readFileSync}=await import('node:fs');
+  const html=readFileSync(new URL('../src/pages/index.astro',import.meta.url),'utf8');
+  const begin=html.indexOf('<section class="shell mw-home-feature" aria-labelledby="orbit-home-title">');
+  assert.ok(begin>=0,'La vignette Messi doit exister');
+  const end=html.indexOf('</section>',begin);
+  const preview=html.slice(begin,end);
+  assert.ok(!/<path\b|<line\b|stroke=|stroke-width=|<polyline\b/.test(preview),'Il ne doit rester aucun segment sur la vignette Messi');
+  assert.ok(preview.includes('/joueurs/messi/paintball/'),'La vignette doit mener à la nouvelle version non mise en cache');
+  assert.ok(preview.includes('PAINTBALL V3 · ZÉRO TRAIT'));
+});
+
+test('la route paintball v3 neuve est cohérente avec le réseau sans traits',async()=>{
+  const {readFileSync}=await import('node:fs');
+  const fresh=readFileSync(new URL('../src/pages/joueurs/messi/paintball.astro',import.meta.url),'utf8');
+  const old=readFileSync(new URL('../src/pages/joueurs/messi/pass-wars.astro',import.meta.url),'utf8');
+  const core=readFileSync(new URL('../src/lib/pass-wars-engine.mjs',import.meta.url),'utf8');
+  assert.ok(fresh.includes('bootPassWars()'));
+  assert.ok(fresh.includes('PAINTBALL V3 · 0 TRAIT'));
+  assert.ok(old.includes('PAINTBALL V3 · AUCUN TRAIT'));
+  assert.ok(!/ctx\.stroke\s*\(|ctx\.setLineDash|drawEdges\s*\(/.test(core));
+});
