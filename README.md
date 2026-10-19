@@ -170,13 +170,13 @@ Le fichier réel `src/data/matches/2022-final-messi-passes.json` est construit d
 
 ## Messi Pass Wars — réseau de passes multi-saisons
 
-Page : `/datafoot_app/joueurs/messi/pass-wars/`. Elle exploite les **vraies passes réussies** issues du collecteur unifié `datafoot.messi_full_open_data` (StatsBomb Open Data), pour tous les matchs de Messi identifiés dans les données publiques à chaque exécution : ce n’est pas un bilan exhaustif de carrière. Jusqu’à 30 partenaires, uniquement ceux ayant **strictement plus de 95 passes** échangées dans la sélection (96 au minimum). Le top se recalcule avec les filtres équipe, saison, compétition : couleur par joueur, positions aléatoires à chaque chargement, stables pendant la lecture et sans chevauchement, ni ordre d'horloge ni traits, projectiles paintball, éclaboussures, Battle et classement. Aucune statistique simulée en cas de source absente : un message d’erreur explicite s’affiche.
+Page : `/datafoot_app/joueurs/messi/pass-wars/`. Elle exploite les **vraies passes réussies** issues du collecteur unifié `datafoot.messi_full_open_data` (StatsBomb Open Data), pour tous les matchs de Messi identifiés dans les données publiques à chaque exécution : ce n’est pas un bilan exhaustif de carrière. Jusqu’à 30 partenaires, uniquement ceux ayant **reçu plus de 500 passes de Messi** sur l’ensemble des matchs ouverts (501 au minimum). Les filtres équipe, saison et compétition actualisent les volumes, sans faire disparaître les partenaires qualifiés sur leur parcours : couleur par joueur, positions aléatoires à chaque chargement, stables pendant la lecture et sans chevauchement, ni ordre d'horloge ni traits, projectiles paintball, éclaboussures, Battle et classement. Aucune statistique simulée en cas de source absente : un message d’erreur explicite s’affiche.
 
 Les fichiers `src/data/players/messi-pass-wars*.json` et `public/data/players/messi-pass-wars*.json` sont produits par le workflow hebdomadaire `datafoot/.github/workflows/pass-wars.yml`, qui peut aussi être lancé manuellement. Les événements raw StatsBomb ne sont pas copiés sur GitHub Pages : seul le JSON dérivé utile à l’animation est exposé. Credits StatsBomb/Hudl visibles.
 
 
 ### Pass Wars — paintball sans liens (interface)
-Les traits de connexion et les sillages ont été supprimés : seuls les projectiles isolés, les éclaboussures persistantes et les nœuds sont dessinés. Chaque partenaire possède une couleur déterministe, attribuée une seule fois depuis le classement global des joueurs StatsBomb puis conservée pour les filtres et les tris. La même teinte est appliquée aux projectiles des deux sens, à la peinture, au contour du nœud et au classement. Les directions restent lisibles par le sens du déplacement et les compteurs ↗ (Messi donne) / ↙ (Messi reçoit). Le seuil de **plus de 95 passes échangées** (96 minimum) est recalculé pour chaque filtre.
+Les traits de connexion et les sillages ont été supprimés : seuls les projectiles isolés, les éclaboussures persistantes et les nœuds sont dessinés. Chaque partenaire possède une couleur déterministe, attribuée une seule fois depuis le classement global des joueurs StatsBomb puis conservée pour les filtres et les tris. La même teinte est appliquée aux projectiles des deux sens, à la peinture, au contour du nœud et au classement. Les directions restent lisibles par le sens du déplacement et les compteurs ↗ (Messi donne) / ↙ (Messi reçoit). Le seuil de **plus de 500 passes reçues de Messi** (501 au minimum) est établi globalement ; le classement des passes entre les partenaires éligibles est ensuite actualisé selon le filtre.
 
 
 ### Aucune ligne dans les visualisations Messi
@@ -186,11 +186,11 @@ Les vues `/joueurs/messi/pass-wars/` et `/matchs/finale-2022/messi/` ne dessinen
 
 ### Messi Paintball V3 : portraits et noms usuels
 
-Le module \`src/lib/messi-player-profiles.mjs\` normalise les noms d'affichage des joueurs par **identifiant StatsBomb** (ex. \`20131\` → **Xavi**, \`19757\` → **Deco**, \`25879\` → **Ronaldinho**) sans modifier les événements ni les noms bruts du JSON source. Les **11 partenaires** au-dessus du seuil de **95 passes** dans le jeu actuel, plus Messi, ont une photographie Wikimedia Commons attribuée à leur auteur et liée à sa licence. Les photos sont affichées dans les cercles Canvas et dans le classement. Sur échec de chargement, les initiales remplacent le portrait, sans cacher le joueur ni bloquer l'animation. Le panneau « Crédits photos » liste les auteurs, licences et fichiers. Si de nouveaux joueurs entrent dans le top à l'avenir, ils restent lisibles même sans portrait. Les coordonnées sont tirées avec une nouvelle graine à chaque chargement, indépendamment de l’ordre du classement, avec protection contre les collisions et exclusion du centre ; les portraits restent en place pendant la lecture.
+Le module \`src/lib/messi-player-profiles.mjs\` normalise les noms d'affichage des joueurs par **identifiant StatsBomb** (ex. \`20131\` → **Xavi**, \`19757\` → **Deco**, \`25879\` → **Ronaldinho**) sans modifier les événements ni les noms bruts du JSON source. Les **11 partenaires** dépassant le seuil de **500 passes reçues de Messi** dans le jeu publié, plus Messi, sont identifiés par leurs noms usuels ; une photographie Wikimedia Commons est utilisée lorsqu’une image libre est connue, sinon leurs initiales s’affichent. Les photos sont affichées dans les cercles Canvas et dans le classement. Sur échec de chargement, les initiales remplacent le portrait, sans cacher le joueur ni bloquer l'animation. Le panneau « Crédits photos » liste les auteurs, licences et fichiers. Si de nouveaux joueurs entrent dans le top à l'avenir, ils restent lisibles même sans portrait. Les coordonnées sont tirées avec une nouvelle graine à chaque chargement, indépendamment de l’ordre du classement, avec protection contre les collisions et exclusion du centre ; les portraits restent en place pendant la lecture.
 
 ### Frise mois / année directement sous Messi Paintball
 
-Les deux pages Messi Paintball affichent désormais un indicateur **MM/AAAA** dans l'aire du graphique et un curseur mensuel immédiatement dessous, au-dessus de la légende. La piste parcourt les vrais mois du premier au dernier événement observé (2004–2022 sur l'échantillon courant). Le glissement recalcule les passes cumulées et les taches au dernier événement du mois choisi, y compris les mois sans match couvert. Pendant l'animation, chaque mois occupe désormais la même durée, même sans match, et les passes arrivent selon la vraie date des événements. Les graduations sont proportionnelles aux mois calendaires. L'encart MM/AAAA est placé hors du Canvas pour ne plus masquer un portrait. Lecture, pause et vitesse restent dans les commandes habituelles. La période affichée sur le tableau latéral passe aussi au format mois/année. Tests dans tests/pass-wars.test.mjs.
+Les deux pages Messi Paintball affichent désormais un indicateur **MM/AAAA** dans l'aire du graphique et un curseur mensuel immédiatement dessous, au-dessus de la légende. La piste parcourt les vrais mois du premier au dernier événement observé (2004–2024 sur l'ensemble ouvert actuellement publié). Le glissement recalcule les passes cumulées et les taches au dernier événement du mois choisi, y compris les mois sans match couvert. Pendant l'animation, chaque mois occupe désormais la même durée, même sans match, et les passes arrivent selon la vraie date des événements. Les graduations sont proportionnelles aux mois calendaires. L'encart MM/AAAA est placé hors du Canvas pour ne plus masquer un portrait. Lecture, pause et vitesse restent dans les commandes habituelles. La période affichée sur le tableau latéral passe aussi au format mois/année. Tests dans tests/pass-wars.test.mjs.
 
 
 ## StatsBomb Open Data : toutes les rencontres de Messi disponibles
@@ -222,14 +222,19 @@ mois/année reste proportionnel au calendrier réel, et chaque passe est
 **intégralement prise en compte** dans les compteurs, filtres, classements
 et recherches de partenaires.
 
-Pour préserver des mouvements lisibles à l’échelle de toute la période,
-les billes sont un **échantillon de passes réelles**, lancé à cadence
-régulière avec une file bornée. Le mode Battle accélère le débit,
-sans produire de rafale après un retour d’onglet ou un changement de date.
-Un joueur isolé ne reçoit que les animations de ses propres échanges.
-Le jeu ne synthétise aucune fausse passe : seules les visualisations animées
-sont échantillonnées, les totaux restent exhaustifs pour la couverture
-StatsBomb téléchargée.
+Depuis la nouvelle visualisation, chaque passe entre Messi et un partenaire ayant
+**reçu plus de 500 passes de Messi sur les matchs ouverts** engendre **une véritable mini-bille**.
+La lecture conserve les deux directions. Chaque mini-bille possède une courbe de Bézier
+pseudo-aléatoire et reproductible, et termine au bon joueur (ou à Messi en retour).
+Aucun échantillonnage ni écrêtage de la file de passes : les événements sont parcourus
+une seule fois et les compteurs restent exacts. Le moteur borne les billes simultanément
+visibles à 1 200 et régule les lancements par frame ; en cas de retard, la frise
+attend que les projectiles restants soient partis avant de terminer.
+Le mode Battle augmente la cadence sans abandonner de passes.
+Le seuil de qualification est calculé globalement sur la carrière **accessible** de Messi ;
+les filtres de saison affichent seulement les événements de ces mêmes partenaires.
+Un changement explicite de mois saute les animations antérieures tout en reconstruisant
+les compteurs de la période ; pendant une lecture continue, chaque passe retenue a une bille.
 
 Les tests `tests/pass-wars.test.mjs` vérifient la sélection de véritables
 événements, la file limitée, le filtrage joueur et la chronologie linéaire.
