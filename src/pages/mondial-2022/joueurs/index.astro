@@ -21,7 +21,7 @@ const sorted=[...playerIndex].sort((a,b)=>a.name.localeCompare(b.name,'fr'));
  {sorted.map(player=><a class="wc-person" href={playerUrl(base,player.id)} data-player-name={player.name} data-player-country={player.country}><span class="wc-country-flag">{flag(player.country)}</span><div><strong>{player.name}</strong><small>{labelCountry(player.country)} · {player.matches.length} match{player.matches.length>1?'s':''}</small></div><span>↗</span></a>)}
  </div>
  <p class="wc-empty" id="wc-player-empty" hidden>Aucun joueur trouvé avec ces critères.</p>
- <p class="wc-footnote">Les fiches incluent les joueurs présents dans les données StatsBomb de la compétition, titulaires ou remplaçants. L'absence d’événement n'est pas assimilée à une mauvaise performance.</p>
+ <p class="wc-footnote">Les fiches incluent les joueurs présents dans les données StatsBomb de la compétition, titulaires ou remplaçants. L'absence d’événement n'est pas assimilée à une mauvaise performance. <a href={base+'/data/worldcup-2022/players.json'}>Données des joueurs en JSON ↗</a></p>
 </div></div>
 <script is:inline>
 (()=>{const query=document.getElementById('wc-player-find'),country=document.getElementById('wc-player-team');if(!query)return;const cards=[...document.querySelectorAll('[data-player-name]')],count=document.getElementById('wc-player-count'),empty=document.getElementById('wc-player-empty');const norm=s=>String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
