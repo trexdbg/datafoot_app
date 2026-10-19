@@ -45,7 +45,7 @@ const finale=fixtures.find(f=>f.stage==='Final')!;
   </div>
   <p class="wc-empty" id="wc-empty" hidden>Aucun match correspondant. Essaye un autre pays ou retire un filtre.</p>
  </section>
- <p class="wc-footnote"><strong>Couverture : les 64 matchs officiels de 2022.</strong> Événements publics © StatsBomb / Hudl. Les tirs au but de séance sont exclus des courbes ; le score affiché est celui du match avant séance. Pulse est un indicateur éditorial d’activité, pas une mesure physique ni une note officielle. <a href="https://github.com/hudl/open-data" target="_blank" rel="noopener noreferrer">Consulter la source ↗</a></p>
+ <p class="wc-footnote"><strong>Couverture : les 64 matchs officiels de 2022.</strong> Événements publics © StatsBomb / Hudl. Les tirs au but de séance sont exclus des courbes ; le score affiché est celui du match avant séance. Pulse est un indicateur éditorial d’activité, pas une mesure physique ni une note officielle. <a href="https://github.com/hudl/open-data" target="_blank" rel="noopener noreferrer">Consulter la source ↗</a> · <a href={base+'/data/worldcup-2022/index.json'}>Télécharger l’index JSON des 64 matchs ↗</a></p>
 </div></div>
 <script is:inline>
 (()=>{const find=document.getElementById('wc-match-find'),stage=document.getElementById('wc-stage'),team=document.getElementById('wc-team'),cards=[...document.querySelectorAll('.wc-fixture')],count=document.getElementById('wc-match-count'),empty=document.getElementById('wc-empty');if(!find)return;
