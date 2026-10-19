@@ -32,8 +32,21 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Cache World Cup open-data export
+        id: worldcup-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            src/data/worldcup/2022/
+            src/data/worldcup/2022-players.json
+          key: worldcup-2022-v2-${{ hashFiles('scripts/build-worldcup-2022.mjs') }}
+
       - name: Generate all 64 World Cup games
+        if: steps.worldcup-cache.outputs.cache-hit != 'true'
         run: npm run data:worldcup
+
+      - name: Verify World Cup extraction rules
+        run: npm run test:worldcup
 
       - name: Test Pulse engine
         run: npm run test:pulse
