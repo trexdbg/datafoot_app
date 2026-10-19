@@ -8,13 +8,14 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
   description="Messi Pass Wars : sans traits de connexion, chaque joueur possède sa couleur de billes et d'éclaboussures, à partir de 80 passes échangées."
   canonicalPath={base + '/joueurs/messi/pass-wars/'}
 >
-  <main class="pw-page" data-pass-wars data-base={base}>
+  <main class="pw-page" data-pass-wars data-base={base} data-revision="paintball-v3-zero-trait">
     <section class="shell pw-hero">
       <div class="pw-overline"><a href={base + '/'}>DATAFOOT</a> <span>/</span> FOOTBALL LAB <span>/</span> EXPÉRIENCE 003</div>
       <div class="pw-hero-row">
         <div><p class="pw-chapter">LE RÉSEAU · 2004—2022 / MATCHS DISPONIBLES</p><h1>MESSI<br/><em>PASS WARS<span>.</span></em></h1><p class="pw-deck">Seuls les alliés avec au moins 80 échanges apparaissent. Chaque partenaire a sa couleur : les billes fusent dans les deux sens, puis explosent en peinture à l’impact. Aucun trait entre les joueurs !</p></div>
         <div class="pw-hero-aside"><span class="pw-dot"></span><span>DATA VISUAL EXPERIMENT</span><strong>10</strong><small>LE POINT DE DÉPART</small></div>
       </div>
+      <p class="pw-scope-warning"><strong>Version V3 sans traits :</strong> <a href={base + '/joueurs/messi/paintball/'}>ouvrir la nouvelle adresse de vérification ↗</a>.</p>
       <p class="pw-scope-warning"><strong>Couverture partielle :</strong> matchs publics échantillonnés sur plusieurs saisons, et non la carrière complète de Messi. Aucun chiffre inventé.</p>
     </section>
     <section class="shell pw-workbench">
@@ -26,7 +27,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
       </div>
       <div class="pw-board">
         <div class="pw-arena">
-          <div class="pw-arena-head"><div><span class="pw-spark">✳</span> PAINTBALL · 80+ PASSES</div><div id="pw-state">CHARGEMENT DES DONNÉES…</div></div>
+          <div class="pw-arena-head"><div><span class="pw-spark">✳</span> PAINTBALL V3 · AUCUN TRAIT · 80+ PASSES</div><div id="pw-state">CHARGEMENT DES DONNÉES…</div></div>
           <div class="pw-canvas-scroll"><canvas id="pw-canvas" width="1200" height="780" role="img" aria-label="Messi au centre avec ses partenaires ayant au moins 80 passes. Chaque partenaire possède une couleur propre. Les petites billes se déplacent entre Messi et son partenaire et produisent des éclaboussures à l'arrivée. Aucun lien fixe entre les joueurs."></canvas></div>
           <div class="pw-canvas-legend"><span><i class="pw-swatch palette"></i> 1 COULEUR = 1 JOUEUR</span><span>↗ MESSI <b>→</b> PARTENAIRE</span><span>↙ PARTENAIRE <b>→</b> MESSI</span><span>IMPACTS PAINTBALL · AUCUN TRAIT</span><span>80 PASSES MINIMUM / JOUEUR</span></div>
         </div>
