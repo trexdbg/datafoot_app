@@ -293,3 +293,12 @@
  .wc-duel-mirror .wc-duel-stat{padding:10px}
  .wc-duel-mirror .wc-duel-stat-values strong{font-size:19px}
 }
+
+
+/* Thermomètre Pulse sous les mini courbes, lisible sur toutes les tailles. */
+.wc-wave-thermal-key{padding:9px 11px 8px;border-top:1px solid #334861;background:#0C2032}
+.wc-wave-thermal-bar{height:7px;border-radius:99px;box-shadow:0 0 7px #FF935C29;border:1px solid #DAE3F34D}
+.wc-wave-thermal-labels{display:flex;justify-content:space-between;gap:8px;font-size:10px;color:#A9C2D6;margin-top:7px;font-weight:730}
+.wc-wave-shell .wc-wave-line{filter:drop-shadow(0 0 3px #F5A4B544)}
+.wc-wave-shell .wc-wave-presence{border-top:1px solid #384B65;background:#19243B}
+.wc-wave-shell .wc-wave-presence strong{color:#FFD49E}
