@@ -23,6 +23,7 @@
 .md-key span{display:inline-flex;align-items:center;gap:8px}
 .md-key-swatch{display:inline-block;height:3px;width:23px;border-radius:3px}
 .md-key-swatch.primary{background:#fc8ab9;box-shadow:0 0 8px #fc8ab966}
+.md-key-swatch.primary.team{background:#5ac9ff;box-shadow:0 0 8px #5ac9ff77}
 .md-key-swatch.compare{background:#58c9ff;box-shadow:0 0 8px #58c9ff77}
 .md-key-dot{display:inline-block;border-radius:50%;height:9px;width:9px;background:#ff638e;border:1px solid white}
 .md-chart-scroll{overflow-x:auto;overscroll-behavior-x:contain;max-width:100%;background:#081b30}
