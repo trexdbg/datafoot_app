@@ -2,7 +2,8 @@
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import WorldCupNav from '../../../components/WorldCupNav.astro';
 import WorldCupWave from '../../../components/WorldCupWave.astro';
-import {games,matchUrl,countryUrl,playerUrl,detailUrl,peak,mean,flag,labelCountry,stageLabel,dateLabel,titleMatch} from '../../../lib/worldcup-data';
+import WorldCupMatchComparison from '../../../components/WorldCupMatchComparison.astro';
+import {games,matchUrl,countryUrl,playerUrl,detailUrl,peak,mean,flag,labelCountry,stageLabel,dateLabel,titleMatch,teamTimeline} from '../../../lib/worldcup-data';
 import '../../../styles/worldcup.css';
 export function getStaticPaths(){return games.map(game=>({params:{id:String(game.id)},props:{matchId:game.id}}));}
 interface Props {matchId:number}
@@ -12,11 +13,13 @@ const base=import.meta.env.BASE_URL.replace(/\/$/,'');
 const teams=[game.home,game.away];
 const allPlayers=[...game.profiles].sort((a,b)=>a.player.team.localeCompare(b.player.team)||a.player.entry-b.player.entry||a.player.name.localeCompare(b.player.name,'fr'));
 const actions=game.actions.length;
+const firstTeam=teamTimeline(game,game.home);
+const secondTeam=teamTimeline(game,game.away);
 ---
 <BaseLayout title={titleMatch(game)+' · profils des deux équipes | DataFoot Atlas'} description={'Toutes les actions et tous les profils joueurs du match '+titleMatch(game)+' au Mondial 2022.'} canonicalPath={matchUrl(base,game.id)}>
 <div class="wc-root"><div class="shell wc-wrap">
  <nav class="wc-crumb"><a href={base+'/mondial-2022/'}>64 MATCHS</a><span>/</span>{stageLabel(game.stage)}<span>/</span>{titleMatch(game)}</nav>
- <div class="wc-section-head"><div><p class="wc-eyebrow">{dateLabel(game.date)} · {stageLabel(game.stage)}{game.group?' · GROUPE '+game.group:''}</p><h2>La rencontre, action par action.</h2><p>Tous les joueurs des deux sélections, sans comparaison avec le collectif. Sélectionne un joueur et manipule sa courbe directement.</p></div><span class="wc-filter-count">{game.duration} minutes couvertes</span></div>
+ <div class="wc-section-head"><div><p class="wc-eyebrow">{dateLabel(game.date)} · {stageLabel(game.stage)}{game.group?' · GROUPE '+game.group:''}</p><h2>La rencontre, action par action.</h2><p>Compare le rythme des deux sélections sur un seul graphique. Plus bas, chaque joueur conserve sa courbe individuelle et interactive, sans ligne d'équipe superposée.</p></div><span class="wc-filter-count">{game.duration} minutes couvertes</span></div>
  <div class="wc-match-board" aria-label={titleMatch(game)}>
   <a href={countryUrl(base,game.home)}><span class="wc-country-flag">{flag(game.home)}</span>{labelCountry(game.home)}</a>
   <strong>{game.homeScore}–{game.awayScore}</strong>
@@ -24,6 +27,7 @@ const actions=game.actions.length;
  </div>
  <WorldCupNav active="matches"/>
  <div class="wc-stat-bar"><span>Événements <strong>{actions.toLocaleString('fr-FR')}</strong></span><span>Joueurs recensés <strong>{allPlayers.length}</strong></span><span>Buts <strong>{game.goals.length}</strong></span><span>Durée <strong>{game.duration}′</strong></span></div>
+ <WorldCupMatchComparison home={labelCountry(game.home)} away={labelCountry(game.away)} homeFlag={flag(game.home)} awayFlag={flag(game.away)} first={firstTeam} second={secondTeam} duration={game.duration} goals={game.goals.map(goal=>({minute:goal.minute,team:goal.team===game.home?labelCountry(game.home):labelCountry(game.away)}))}/>
  <div class="wc-country-shortcuts" aria-label="Accès aux pays">
    <span>Explorer les sélections séparément :</span>
    {teams.map(team=><a href={countryUrl(base,team)}>{flag(team)} {labelCountry(team)} · parcours du pays →</a>)}
