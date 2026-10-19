@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import ActivityMiniChart from '../../components/ActivityMiniChart.astro';
-import {games,playerList,playedGames,playerComparisonScale,getProfile,mbappeId,matchHref,playerHref,formattedDate,matchTitle,opposingTeam,playerGoals} from '../../lib/explorer-data.mjs';
+import {games,playerList,playedGames,playerComparisonScale,getProfile,mbappeId,matchHref,playerHref,formattedDate,matchTitle,opposingTeam,playerGoals,matchProfileHref} from '../../lib/explorer-data.mjs';
 import '../../styles/match-explorer.css';
 export function getStaticPaths(){
  return playerList.map(player=>({params:{id:player.id===mbappeId?'mbappe':String(player.id)},props:{playerId:player.id}}));
@@ -36,7 +36,7 @@ const sharedScale=playerComparisonScale(playerId);
     <a href={matchHref(base,game)} class="ax-match-title">{matchTitle(game)} <span>↗</span></a>
     <p class="ax-card-meta">{profile.actions.length} actions · {made} passes réussies · {won} dribbles réussis</p>
     <ActivityMiniChart duration={game.duration} maxScale={sharedScale} series={[{label:player.name,timeline:profile.timeline,color:'#fc8ab9'},{label:'France',timeline:game.team,color:'#59caff'}]} goals={playerGoals(game,playerId)} caption={'Activité de '+player.name+' face à '+opposingTeam(game)+' comparée à la France'}/>
-    <div class="ax-card-footer"><a href={matchHref(base,game)}>Afficher l’analyse du match <span>→</span></a><a href={base+'/equipes/france/'}>Tous les matchs</a></div>
+    <div class="ax-card-footer"><a class="ax-detail-link" href={matchProfileHref(base,game,playerId)}>Voir les actions et points <span>↗</span></a><a href={matchHref(base,game)}>Tous les joueurs →</a></div>
    </article>;
   })}
   </div>
