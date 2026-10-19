@@ -22,7 +22,7 @@ const yTicks=[...new Set([...Array.from({length:Math.floor(maxScale/step)+1},(_,
 ---
 <svg class="ax-mini-chart" viewBox="0 0 500 202" role="img" aria-label={caption}>
  <defs><linearGradient id="ax-glow" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0b416b" stop-opacity=".26"/><stop offset="1" stop-color="#0b223c" stop-opacity=".04"/></linearGradient></defs>
- <rect width="500" height="174" fill="url(#ax-glow)" rx="8"/>
+ <rect width="500" height="202" fill="url(#ax-glow)" rx="8"/>
  {yTicks.map(t=><g><line class="ax-mini-grid" x1={left} x2={right} y1={y(t)} y2={y(t)}/><text class="ax-mini-tick" x="24" y={y(t)+3} text-anchor="end">{t}</text></g>)}
  {[0,45,90,duration].filter((t,i,a)=>a.indexOf(t)===i).map(t=><g><line class="ax-mini-grid" x1={x(t)} x2={x(t)} y1={top} y2={bottom}/><text class="ax-mini-tick" x={x(t)} y="169" text-anchor="middle">{t}′</text></g>)}
  {paths.map(s=>s.paths.map(path=><path d={path} fill="none" stroke={s.color} stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round" class="ax-mini-line" />))}
