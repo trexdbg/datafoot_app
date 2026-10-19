@@ -88,3 +88,21 @@
 @media(max-width:850px){.wc-inspector-head{flex-direction:column;align-items:stretch}.wc-player-chooser{max-width:100%;width:100%}.wc-current-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.wc-current-stats>div:nth-child(2){border-right:0}.wc-current-stats>div:nth-child(-n+2){border-bottom:1px solid #31566f}.wc-action-bottom{grid-template-columns:1fr}}
 @media(max-width:520px){.wc-inspector-head,.wc-mode-head,.wc-minute-reader{padding:18px 14px}.wc-current-stats>div{padding:13px}.wc-current-stats strong{font-size:29px}.wc-mode-tabs{width:100%}.wc-mode-tabs button{flex:1;padding:9px;font-size:11px}.wc-profile-legend,.wc-highlights{padding:12px 14px}.wc-profile-legend small{margin-left:0}.wc-minute-head{align-items:stretch}.wc-readout-numbers{width:100%}.wc-readout-numbers>span{flex:1}.wc-event-row{grid-template-columns:75px minmax(0,1fr) 40px;gap:7px;padding:11px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
+/* Pulse bands refer to the value (not the slope): below 25, 25–75, above 75. */
+.wc-profile-chart-scroll{position:relative}
+.wc-band-line{filter:drop-shadow(0 0 4px #87d6ff5e)}
+.wc-profile-zones{display:flex;gap:10px 20px;align-items:center;flex-wrap:wrap;background:#0b2a42;border-top:1px solid #315e78;padding:13px 27px}
+.wc-profile-zones span{display:inline-flex;align-items:center;gap:7px;font-size:11px;color:#d2eaf8}
+.wc-profile-zones i{display:inline-block;width:17px;height:4px;border-radius:3px}
+.wc-profile-zones i.low{background:#a695ff}.wc-profile-zones i.steady{background:#73ddff}.wc-profile-zones i.high{background:#ffb368}
+.wc-profile-zones small{font-size:10px;color:#9fc4d9;margin-left:auto}
+.wc-profile-tooltip{display:flex;flex-direction:column;gap:7px;position:absolute;z-index:5;left:50%;top:10px;transform:translateX(-50%);padding:13px 15px;width:min(300px,45%);max-height:185px;overflow:hidden;border:1.5px solid #73ddff;background:#071b2ff5;box-shadow:0 15px 35px #0008;border-radius:11px;color:#e8f7ff;pointer-events:none}
+.wc-profile-tooltip[hidden]{display:none!important}
+.wc-profile-tooltip>strong{font-size:14px;color:#f8fdff;font-weight:850}
+.wc-profile-tooltip>span{font-size:11px;color:#b9dbee}
+#wc-tooltip-actions{display:flex;flex-wrap:wrap;gap:4px}
+.wc-tip-action{font-size:10px;line-height:1.3;color:#dceefe;border:1px solid #3b6480;border-radius:5px;padding:3px 5px;background:#19384c}
+.wc-tip-action.goal{color:#ffc4d8;border-color:#9d5873;background:#542c49}
+.wc-tip-action.positive{color:#a4f2e0;border-color:#377c72}
+@media(max-width:600px){.wc-profile-tooltip{width:min(270px,67%);padding:10px}.wc-profile-zones{padding:12px 14px;gap:8px 12px}.wc-profile-zones small{margin-left:0}}
