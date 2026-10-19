@@ -1,5 +1,5 @@
 ---
-import {monotonePath,actionLabel,pulsePenalty,PULSE_BANDS} from '../lib/match-activity.mjs';
+import {monotonePath,actionLabel,pulsePenalty} from '../lib/match-activity.mjs';
 import {pulsePresence} from '../lib/pulse-presence.mjs';
 import {THERMAL_STOPS,THERMAL_GRADIENT} from '../lib/pulse-temperature.mjs';
 interface Point {minute:number;activity:number|null;impact?:number|null;actions?:number;penaltyGain?:number;events?:Array<{kind:string;outcome:string;playerName?:string}>}
