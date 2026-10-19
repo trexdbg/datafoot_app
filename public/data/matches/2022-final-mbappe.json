@@ -88,31 +88,31 @@
       "minute": 0,
       "activity": 0.1,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 1,
       "activity": 0.6,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 2,
       "activity": 1.9,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 3,
       "activity": 4.4,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 4,
       "activity": 7.5,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 5,
@@ -130,43 +130,43 @@
       "minute": 7,
       "activity": 6.5,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 8,
       "activity": 3.5,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 9,
       "activity": 1.5,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 10,
       "activity": 0.8,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 11,
       "activity": 1.1,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 12,
       "activity": 2.2,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 13,
       "activity": 3.7,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 14,
@@ -178,23 +178,23 @@
       "minute": 15,
       "activity": 5.1,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 16,
       "activity": 5.7,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 17,
-      "activity": 7,
+      "activity": 7.0,
       "actions": 1,
       "raw_weight": 0.5
     },
     {
       "minute": 18,
-      "activity": 8,
+      "activity": 8.0,
       "actions": 3,
       "raw_weight": 2.6
     },
@@ -208,25 +208,25 @@
       "minute": 20,
       "activity": 5.9,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 21,
       "activity": 3.8,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 22,
       "activity": 2.9,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 23,
       "activity": 3.6,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 24,
@@ -244,43 +244,43 @@
       "minute": 26,
       "activity": 4.5,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 27,
       "activity": 2.9,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 28,
       "activity": 1.7,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 29,
       "activity": 1.5,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 30,
       "activity": 2.4,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 31,
-      "activity": 4,
+      "activity": 4.0,
       "actions": 2,
-      "raw_weight": 1
+      "raw_weight": 1.0
     },
     {
       "minute": 32,
       "activity": 5.6,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 33,
@@ -292,13 +292,13 @@
       "minute": 34,
       "activity": 7.7,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 35,
       "activity": 8.7,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 36,
@@ -316,7 +316,7 @@
       "minute": 38,
       "activity": 9.3,
       "actions": 1,
-      "raw_weight": 1
+      "raw_weight": 1.0
     },
     {
       "minute": 39,
@@ -334,25 +334,25 @@
       "minute": 41,
       "activity": 3.1,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 42,
       "activity": 1.7,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 43,
       "activity": 1.4,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 44,
       "activity": 2.4,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 45,
@@ -364,7 +364,7 @@
       "minute": 46,
       "activity": 8.5,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 47,
@@ -376,7 +376,7 @@
       "minute": 48,
       "activity": 20.4,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 49,
@@ -406,7 +406,7 @@
       "minute": 53,
       "activity": 16.3,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 54,
@@ -418,7 +418,7 @@
       "minute": 55,
       "activity": 9.7,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 56,
@@ -430,7 +430,7 @@
       "minute": 57,
       "activity": 7.9,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 58,
@@ -448,19 +448,19 @@
       "minute": 60,
       "activity": 4.6,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 61,
       "activity": 4.4,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 62,
       "activity": 5.5,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 63,
@@ -470,7 +470,7 @@
     },
     {
       "minute": 64,
-      "activity": 7,
+      "activity": 7.0,
       "actions": 3,
       "raw_weight": 2.6
     },
@@ -478,7 +478,7 @@
       "minute": 65,
       "activity": 6.3,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 66,
@@ -490,13 +490,13 @@
       "minute": 67,
       "activity": 9.1,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 68,
       "activity": 15.1,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 69,
@@ -520,7 +520,7 @@
       "minute": 72,
       "activity": 23.6,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 73,
@@ -544,7 +544,7 @@
       "minute": 76,
       "activity": 17.4,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 77,
@@ -556,7 +556,7 @@
       "minute": 78,
       "activity": 48.8,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 79,
@@ -566,7 +566,7 @@
     },
     {
       "minute": 80,
-      "activity": 100,
+      "activity": 100.0,
       "actions": 1,
       "raw_weight": 39.48
     },
@@ -580,19 +580,19 @@
       "minute": 82,
       "activity": 72.8,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 83,
       "activity": 42.5,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 84,
       "activity": 21.5,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 85,
@@ -604,11 +604,11 @@
       "minute": 86,
       "activity": 10.4,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 87,
-      "activity": 10,
+      "activity": 10.0,
       "actions": 4,
       "raw_weight": 5.3
     },
@@ -616,13 +616,13 @@
       "minute": 88,
       "activity": 9.7,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 89,
       "activity": 9.8,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 90,
@@ -634,17 +634,17 @@
       "minute": 91,
       "activity": 17.8,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 92,
       "activity": 25.4,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 93,
-      "activity": 32,
+      "activity": 32.0,
       "actions": 5,
       "raw_weight": 17.63
     },
@@ -676,7 +676,7 @@
       "minute": 98,
       "activity": 25.5,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 99,
@@ -688,97 +688,97 @@
       "minute": 100,
       "activity": 13.7,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 101,
       "activity": 7.8,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 102,
       "activity": 3.4,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 103,
       "activity": 1.1,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 104,
       "activity": 0.3,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 105,
-      "activity": 0,
+      "activity": 0.0,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 106,
-      "activity": 0,
+      "activity": 0.0,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 107,
-      "activity": 0,
+      "activity": 0.0,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 108,
-      "activity": 0,
+      "activity": 0.0,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 109,
-      "activity": 0,
+      "activity": 0.0,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 110,
-      "activity": 0,
+      "activity": 0.0,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 111,
       "activity": 0.3,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 112,
       "activity": 1.3,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 113,
       "activity": 4.8,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 114,
       "activity": 12.5,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 115,
-      "activity": 26,
+      "activity": 26.0,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 116,
@@ -790,7 +790,7 @@
       "minute": 117,
       "activity": 59.3,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 118,
@@ -802,7 +802,7 @@
       "minute": 119,
       "activity": 54.1,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 120,
@@ -814,19 +814,19 @@
       "minute": 121,
       "activity": 22.8,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 122,
       "activity": 17.2,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 123,
       "activity": 17.9,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     },
     {
       "minute": 124,
@@ -838,7 +838,7 @@
       "minute": 125,
       "activity": 15.4,
       "actions": 0,
-      "raw_weight": 0
+      "raw_weight": 0.0
     }
   ],
   "methodology": {
@@ -855,6 +855,6 @@
     "url": "https://github.com/hudl/open-data/blob/master/data/events/3869685.json",
     "license_notice": "Attribution StatsBomb et logo requis pour publication ; vérifier les conditions avant réutilisation commerciale.",
     "match_id": 3869685,
-    "sha256": ""
+    "sha256": "a0b0036d50c10a4c8879d1ee9f24a7502ec2cfb264a61951c8d500dfc897ec35"
   }
 }
