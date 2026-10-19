@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { eligiblePartners, MIN_PARTNER_PASSES } from '../src/lib/pass-wars-engine.mjs';
+import { eligiblePartners, MIN_PARTNER_PASSES, playerColor } from '../src/lib/pass-wars-engine.mjs';
 
 const make = (id, direction, name='Joueur '+id)=>({partner_id:id,partner_name:name,direction});
 
@@ -42,4 +42,27 @@ test('les données réelles publiées correspondent au seuil de la visualisation
   const actual=eligiblePartners(events.events).map(p=>p.id);
   assert.deepEqual(actual,expected);
   assert.ok(actual.length<30,'Le nouveau réseau doit être plus clair pour cet échantillon');
+});
+
+
+test('une couleur distincte et stable par joueur, quel que soit le sens ou le tri',async()=>{
+  const {readFileSync}=await import('node:fs');
+  const summary=JSON.parse(readFileSync(new URL('../src/data/players/messi-pass-wars.json',import.meta.url),'utf8'));
+  const visible=summary.partners.filter(p=>p.total>=80).slice(0,30);
+  const colors=visible.map(p=>playerColor(p.id));
+  assert.equal(new Set(colors).size,visible.length,'Chaque joueur visible doit avoir sa couleur propre');
+  assert.ok(colors.every(color=>/^hsl\(\d+\.\d{3} \d+% \d+%\)$/.test(color)));
+  assert.equal(playerColor(5503),playerColor(5503));
+  assert.notEqual(playerColor(5503),playerColor(42));
+  assert.deepEqual(visible.slice().reverse().map(p=>playerColor(p.id)).reverse(),colors);
+});
+
+test('le réseau paintball ne dessine plus de connexions fixes',async()=>{
+  const {readFileSync}=await import('node:fs');
+  const engine=readFileSync(new URL('../src/lib/pass-wars-engine.mjs',import.meta.url),'utf8');
+  assert.ok(!engine.includes('drawEdges('));
+  assert.ok(!engine.includes('function line('));
+  assert.ok(engine.includes('const color=playerColor(p.id)'));
+  assert.ok(engine.includes('const color=playerColor(id)'));
+  assert.ok(engine.includes('stampPaint(p.id,p.direction,p.index)'));
 });
