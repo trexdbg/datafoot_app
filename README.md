@@ -182,3 +182,8 @@ Les traits de connexion fixes ont été supprimés : seuls les projectiles, les 
 ### Aucune ligne dans les visualisations Messi
 
 Les vues `/joueurs/messi/pass-wars/` et `/matchs/finale-2022/messi/` ne dessinent **aucun trait** : ni segments fixes entre joueurs, ni cercles de guidage, ni lignes de traînée, ni anneaux d'impact. Ne subsistent que les joueurs, des billes isolées en mouvement et des gouttes de peinture à l'arrivée. Les identités colorées des partenaires sont conservées. Le contrôle `tests/pass-wars.test.mjs` protège les deux vues contre le retour de traits.
+
+
+### Messi Paintball V3 : portraits et noms usuels
+
+Le module \`src/lib/messi-player-profiles.mjs\` normalise les noms d'affichage des joueurs par **identifiant StatsBomb** (ex. \`20131\` → **Xavi**, \`19757\` → **Deco**, \`25879\` → **Ronaldinho**) sans modifier les événements ni les noms bruts du JSON source. Les 16 partenaires au-dessus du seuil de 80 passes, plus Messi, ont une photographie Wikimedia Commons attribuée à leur auteur et liée à sa licence. Les photos sont affichées dans les cercles Canvas et dans le classement. Sur échec de chargement, les initiales remplacent le portrait, sans cacher le joueur ni bloquer l'animation. Le panneau « Crédits photos » liste les auteurs, licences et fichiers. Si de nouveaux joueurs entrent dans le top à l'avenir, ils restent lisibles même sans portrait.
