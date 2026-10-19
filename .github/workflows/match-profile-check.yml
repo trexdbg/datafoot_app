@@ -151,5 +151,18 @@ jobs:
           JS
       - name: Verify paintball pass selection threshold
         run: node --test tests/pass-wars.test.mjs
+      - name: Cache World Cup open-data export
+        id: worldcup-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            src/data/worldcup/2022/
+            src/data/worldcup/2022-players.json
+          key: worldcup-2022-v2-${{ hashFiles('scripts/build-worldcup-2022.mjs') }}
+      - name: Generate World Cup dataset when absent
+        if: steps.worldcup-cache.outputs.cache-hit != 'true'
+        run: npm run data:worldcup
+      - name: Verify World Cup extraction rules
+        run: npm run test:worldcup
       - name: Astro typecheck and static build
         run: npm run build
