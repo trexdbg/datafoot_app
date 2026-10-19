@@ -39,7 +39,7 @@ export function compactMatch(fixture,raw) {
     if(!player?.id)return;
     const existing=roster.get(player.id);
     if(existing){
-      if(entry<existing.entry)existing.entry=entry;
+      // Ne jamais écraser l'entrée d'un remplaçant par un événement ultérieur.
       if(position&&!existing.position)existing.position=position;
       return existing;
     }
