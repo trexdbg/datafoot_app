@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import ActivityMiniChart from '../../components/ActivityMiniChart.astro';
-import {games,playerList,playedGames,playerComparisonScale,getProfile,mbappeId,matchHref,playerHref,formattedDate,matchTitle,opposingTeam,playerGoals,matchProfileHref} from '../../lib/explorer-data.mjs';
+import {games,playerList,playedGames,pulsePeak,pulseAverage,getProfile,mbappeId,matchHref,playerHref,formattedDate,matchTitle,opposingTeam,playerGoals,matchProfileHref} from '../../lib/explorer-data.mjs';
 import '../../styles/match-explorer.css';
 export function getStaticPaths(){
  return playerList.map(player=>({params:{id:player.id===mbappeId?'mbappe':String(player.id)},props:{playerId:player.id}}));
@@ -13,7 +13,6 @@ const player=playerList.find(p=>p.id===playerId)!;
 const selected=[...playedGames(playerId)].reverse();
 const goals=selected.reduce((sum,game)=>sum+playerGoals(game,playerId).length,0);
 const main=playerId===mbappeId;
-const sharedScale=playerComparisonScale(playerId);
 ---
 <BaseLayout title={player.name+' · matchs et courbes de la Coupe du monde 2022 | DataFoot'} description={'Retrouver les profils événementiels de '+player.name+' pour chaque rencontre avec la France au Mondial 2022.'} canonicalPath={base+'/joueurs/'+(main?'mbappe':playerId)+'/'}>
  <div class="ax-root"><div class="shell ax-wrap">
@@ -21,27 +20,30 @@ const sharedScale=playerComparisonScale(playerId);
   <div class="ax-header"><div>
    <p class="ax-eyebrow">PROFILS DE JOUEURS · MONDIAL 2022</p>
    <h1>{player.name.split(' ').slice(0,-1).join(' ')}<br/><em>{player.name.split(' ').at(-1)}</em></h1>
-   <p>{selected.length} rencontre{selected.length>1?'s':''} disponible{selected.length>1?'s':''} avec la France dans cette compétition. Un graphique compact par match pour comparer les évolutions du joueur avec la moyenne de l’équipe.</p>
+   <p>{selected.length} rencontre{selected.length>1?'s':''} disponible{selected.length>1?'s':''} avec la France dans cette compétition. Une courbe Pulse par match, sans comparaison avec l’équipe. Repère les temps forts, explore les actions et retrouve ses meilleures séquences.</p>
   </div><div class="ax-header-stat"><strong>{String(selected.length).padStart(2,'0')}</strong><span>MATCHS ANALYSÉS</span><small>{goals} but{goals>1?'s':''} · compétition</small></div></div>
   <div class="ax-subnav"><a href={base+'/equipes/france/'}>France · tous les matchs</a><a class={main?'active':''} href={playerHref(base,mbappeId)}>Mbappé · tous les matchs</a><a href={matchHref(base,games.at(-1))}>Finale · tous les joueurs</a></div>
-  <div class="ax-context"><span class="ax-dot pink"></span> Rose : {player.name} <span class="ax-dot blue"></span> Bleu : moyenne de la France <span class="ax-dot goal"></span> Points : buts du joueur</div>
+  <div class="ax-context"><span class="ax-dot blue"></span> Courbe cyan : activité du joueur <span class="ax-dot goal"></span> Rose : buts <span class="ax-dot"></span> Points sous la courbe : minutes avec actions <span class="ax-model-tag">PULSE V3 · 0–100</span></div>
   <div class="ax-search-row"><label for="ax-filter">Rechercher un match</label><input type="search" id="ax-filter" autocomplete="off" placeholder="Adversaire ou date…"/><span id="ax-filter-count">{selected.length} matchs</span></div>
   <div class="ax-card-grid" id="ax-cards">
   {selected.map(game=>{
    const profile=getProfile(game,playerId)!;
    const made=profile.actions.filter((a: {kind:string;outcome:string})=>a.kind==='Pass'&&a.outcome==='Complete').length;
    const won=profile.actions.filter((a: {kind:string;outcome:string})=>a.kind==='Dribble'&&a.outcome==='Complete').length;
+   const peak=pulsePeak(profile.timeline);
+   const average=pulseAverage(profile.timeline);
    return <article class="ax-match-card" id={'match-'+game.id} data-search={(opposingTeam(game)+' '+game.date+' '+matchTitle(game)).toLocaleLowerCase('fr')}>
     <div class="ax-card-kicker">{formattedDate(game.date)} · {profile.player.entry===0?'TITULAIRE':'ENTRÉE '+profile.player.entry+'′'}</div>
-    <a href={matchHref(base,game)} class="ax-match-title">{matchTitle(game)} <span>↗</span></a>
+    <a href={matchProfileHref(base,game,playerId)} class="ax-match-title">{matchTitle(game)} <span>↗</span></a>
     <p class="ax-card-meta">{profile.actions.length} actions · {made} passes réussies · {won} dribbles réussis</p>
-    <ActivityMiniChart duration={game.duration} maxScale={sharedScale} series={[{label:player.name,timeline:profile.timeline,color:'#fc8ab9'},{label:'France',timeline:game.team,color:'#59caff'}]} goals={playerGoals(game,playerId)} caption={'Activité de '+player.name+' face à '+opposingTeam(game)+' comparée à la France'}/>
+    <div class="ax-pulse-metrics"><span>Pic <strong>{peak?.activity?.toFixed(0)??'—'}</strong> <small>à {peak?.minute??0}′</small></span><span>Activité moy. <strong>{average.toFixed(0)}</strong></span></div>
+    <ActivityMiniChart duration={game.duration} timeline={profile.timeline} goals={playerGoals(game,playerId)} caption={'Courbe Pulse de '+player.name+' contre '+opposingTeam(game)}/>
     <div class="ax-card-footer"><a class="ax-detail-link" href={matchProfileHref(base,game,playerId)}>Voir les actions et points <span>↗</span></a><a href={matchHref(base,game)}>Tous les joueurs →</a></div>
    </article>;
   })}
   </div>
   <p class="ax-no-results" id="ax-empty" hidden>Aucun match correspondant à cette recherche.</p>
-  <div class="ax-method"><strong>Comparaison juste.</strong> Toutes les courbes ont la même échelle verticale. L’indice commence à 50 à l’entrée en jeu de chaque joueur, évolue selon les actions réussies et s’arrête à la sortie. Lissage visuel uniquement, sans modification des scores calculés.</div>
+  <div class="ax-method"><strong>DataFoot Pulse V3.</strong> Chaque action crée une impulsion qui s’atténue : mémoire courte (3 min) et longue (10 min). Indice d’activité de 0 à 100, échelle fixe pour comparer les matchs du même joueur. Le détail propose aussi un impact indicatif séparé. Une période sans événements fait redescendre la courbe vers zéro.</div>
   <p class="ax-source">Source : <a href="https://github.com/hudl/open-data" target="_blank" rel="noopener noreferrer">StatsBomb Open Data / Hudl</a>. Seuls les matchs de la France au Mondial 2022 sont affichés, pas l’ensemble de la carrière du joueur.</p>
  </div></div>
  <script is:inline>
