@@ -1,5 +1,5 @@
 ---
-import {monotonePath,actionLabel,PULSE_BANDS} from '../lib/match-activity.mjs';
+import {monotonePath,actionLabel,pulsePenalty,PULSE_BANDS} from '../lib/match-activity.mjs';
 interface Point {minute:number;activity:number|null;impact?:number|null;actions?:number;penaltyGain?:number;events?:Array<{kind:string;outcome:string;playerName?:string}>}
 interface Props {timeline:Point[];duration:number;goals?:number[];title?:string;accent?:string;metric?:'activity'|'impact';compact?:boolean}
 const {timeline,duration,goals=[],title='Activité sur le match',accent='#66d8ff',metric='activity',compact=false}=Astro.props;
@@ -19,7 +19,7 @@ const paths=segments.map(points=>{
 const max=[...timeline].filter(p=>p[metric]!=null).sort((a,b)=>(b[metric]??0)-(a[metric]??0))[0];
 const markers=timeline.filter(p=>(p.actions??0)>0);
 const xTicks=[0,45,90,duration].filter((v,i,a)=>v<=duration&&a.indexOf(v)===i);
-const encoded=JSON.stringify(timeline.map(p=>[p.activity,p.impact??null,p.actions??0,(p.events??[]).slice(0,5).map(e=>(e.playerName?e.playerName+' · ':'')+actionLabel(e)),p.penaltyGain??0]));
+const encoded=JSON.stringify(timeline.map(p=>[p.activity,p.impact??null,p.actions??0,(p.events??[]).slice(0,5).map(e=>(e.playerName?e.playerName+' · ':'')+actionLabel(e)+(pulsePenalty(e)>0?' · malus −'+pulsePenalty(e).toFixed(2):'')),p.penaltyGain??0]));
 const clipPrefix='wc-bands-'+Math.random().toString(36).slice(2,11);
 ---
 <div class:list={['wc-wave-shell',compact&&'small']} data-pulse-wave data-duration={duration} data-values={encoded} data-metric={metric} data-name={title}>
