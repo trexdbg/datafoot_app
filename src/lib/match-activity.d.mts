@@ -6,7 +6,7 @@ export declare function actionLabel(action: MatchAction): string;
 export declare function computeActivity(events: MatchAction[], duration?: number, options?: {entry?: number; exit?: number}): {timeline: ActivityPoint[]; byMinute: MatchAction[][]};
 export declare function monotonePath(points: {x:number;y:number}[]): string;
 
-export declare function smoothVisual(timeline: ActivityPoint[], sigma?: number): ActivityPoint[];
+export declare function smoothVisual<T extends {minute:number;activity:number|null}>(timeline: T[], sigma?: number): T[];
 export declare function computeMatchProfiles(match: {
  duration: number;
  players: Array<{id:number;name:string;entry:number;exit:number|null}>;
