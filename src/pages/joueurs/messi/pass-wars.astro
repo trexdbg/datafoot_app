@@ -5,14 +5,14 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 <BaseLayout
   title="Messi Pass Wars — la guerre des passes de Messi | DataFoot"
-  description="Messi Pass Wars : sans traits de connexion, chaque joueur possède sa couleur de billes et d'éclaboussures, à partir de 80 passes échangées."
+  description="Messi Pass Wars : sans traits de connexion, chaque joueur possède sa couleur de billes et d'éclaboussures, à partir de 96 passes échangées."
   canonicalPath={base + '/joueurs/messi/pass-wars/'}
 >
   <main class="pw-page" data-pass-wars data-base={base} data-revision="paintball-v3-zero-trait">
     <section class="shell pw-hero">
       <div class="pw-overline"><a href={base + '/'}>DATAFOOT</a> <span>/</span> FOOTBALL LAB <span>/</span> EXPÉRIENCE 003</div>
       <div class="pw-hero-row">
-        <div><p class="pw-chapter">LE RÉSEAU · 2004—2022 / MATCHS DISPONIBLES</p><h1>MESSI<br/><em>PASS WARS<span>.</span></em></h1><p class="pw-deck">Seuls les alliés avec au moins 80 échanges apparaissent. Chaque partenaire a sa couleur : les billes fusent dans les deux sens, puis explosent en peinture à l’impact. Aucun trait entre les joueurs !</p></div>
+        <div><p class="pw-chapter">LE RÉSEAU · 2004—2022 / MATCHS DISPONIBLES</p><h1>MESSI<br/><em>PASS WARS<span>.</span></em></h1><p class="pw-deck">Seuls les alliés avec au moins 96 échanges apparaissent. Chaque partenaire a sa couleur et son portrait, avec un vrai nom de footballeur : Xavi, Iniesta, Dani Alves… Les billes fusent, éclaboussent leur destination, et toujours aucun trait !</p></div>
         <div class="pw-hero-aside"><span class="pw-dot"></span><span>DATA VISUAL EXPERIMENT</span><strong>10</strong><small>LE POINT DE DÉPART</small></div>
       </div>
       <p class="pw-scope-warning"><strong>Version V3 sans traits :</strong> <a href={base + '/joueurs/messi/paintball/'}>ouvrir la nouvelle adresse de vérification ↗</a>.</p>
@@ -27,9 +27,9 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
       </div>
       <div class="pw-board">
         <div class="pw-arena">
-          <div class="pw-arena-head"><div><span class="pw-spark">✳</span> PAINTBALL V3 · AUCUN TRAIT · 80+ PASSES</div><div id="pw-state">CHARGEMENT DES DONNÉES…</div></div>
-          <div class="pw-canvas-scroll"><canvas id="pw-canvas" width="1200" height="780" role="img" aria-label="Messi au centre avec ses partenaires ayant au moins 80 passes. Chaque partenaire possède une couleur propre. Les petites billes se déplacent entre Messi et son partenaire et produisent des éclaboussures à l'arrivée. Aucun lien fixe entre les joueurs."></canvas></div>
-          <div class="pw-canvas-legend"><span><i class="pw-swatch palette"></i> 1 COULEUR = 1 JOUEUR</span><span>↗ MESSI <b>→</b> PARTENAIRE</span><span>↙ PARTENAIRE <b>→</b> MESSI</span><span>IMPACTS PAINTBALL · AUCUN TRAIT</span><span>80 PASSES MINIMUM / JOUEUR</span></div>
+          <div class="pw-arena-head"><div><span class="pw-spark">✳</span> PAINTBALL V3 · AUCUN TRAIT · 96+ PASSES</div><div id="pw-state">CHARGEMENT DES DONNÉES…</div></div>
+          <div class="pw-canvas-scroll"><canvas id="pw-canvas" width="1200" height="780" role="img" aria-label="Messi au centre avec ses partenaires ayant plus de 95 passes. Chaque partenaire possède une couleur propre. Les petites billes se déplacent entre Messi et son partenaire et produisent des éclaboussures à l'arrivée. Aucun lien fixe entre les joueurs."></canvas></div>
+          <div class="pw-canvas-legend"><span><i class="pw-swatch palette"></i> 1 COULEUR = 1 JOUEUR</span><span>↗ MESSI <b>→</b> PARTENAIRE</span><span>↙ PARTENAIRE <b>→</b> MESSI</span><span>IMPACTS PAINTBALL · AUCUN TRAIT</span><span>96 PASSES MINIMUM / JOUEUR</span></div>
         </div>
         <aside class="pw-aside">
           <div class="pw-side-title"><span>LE SCOREBOARD</span><span>01 / RÉSEAU</span></div>
@@ -41,7 +41,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
           <div class="pw-score-ratio"><div id="pw-ratio-given"></div><div id="pw-ratio-received"></div></div>
           <div class="pw-meta"><span id="pw-coverage">CHARGEMENT…</span><span id="pw-dates">—</span></div>
           <div class="pw-focus" id="pw-focus">TOUS LES JOUEURS · CLIQUEZ SUR UN NŒUD OU UN NOM POUR L’ISOLER.</div>
-          <div class="pw-leader-title"><span>ALLIÉS · 80+ PASSES</span><span>↗ / ↙</span></div>
+          <div class="pw-leader-title"><span>ALLIÉS · 96+ PASSES</span><span>↗ / ↙</span></div>
           <div class="pw-leader" id="pw-leader" aria-label="Classement des partenaires de Messi"></div>
         </aside>
       </div>
@@ -54,7 +54,12 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     </section>
     <section class="shell pw-method">
       <div><p class="pw-chapter">SOUS LE CAPOT</p><h2>Des trajectoires,<br/>pas des <em>positions.</em></h2></div>
-      <div><p>Chaque petite boule représente <strong>une passe réussie</strong>. Seuls les partenaires ayant échangé au moins 80 passes réussies (envoyées + reçues) avec Messi dans la période sélectionnée sont placés autour de lui (30 au maximum), indépendamment de leurs positions sur le terrain. Chaque partenaire possède une couleur unique, réutilisée pour ses billes, ses éclaboussures, son nœud et sa ligne dans le classement. Le sens de la passe est représenté uniquement par le déplacement de la bille. Il n’y a plus de trait entre Messi et les joueurs : à l’arrivée, chaque bille laisse une éclaboussure persistante jusqu’à la remise à zéro.</p><p>Le classement et le seuil des 80 passes sont recalculés après chaque filtre. Les passes des autres partenaires restent dans les données pour les filtres, mais ne sont pas dessinées dans le réseau. Si personne n’atteint ce seuil, la constellation sera vide. La chronologie accélère les événements : elle ne reproduit pas le rythme réel des matchs.</p><p>Nous utilisons les événements <a href="https://github.com/hudl/open-data" target="_blank" rel="noopener noreferrer">StatsBomb Open Data ↗</a> provenant d'un échantillon de saisons de Liga et des Coupes du monde disponibles. Les matchs réellement couverts et les manques sont indiqués dans les fichiers dérivés : <a href={base + '/data/players/messi-pass-wars.json'}>agrégats</a> et <a href={base + '/data/players/messi-pass-wars-events.json'}>événements</a>. L'échantillon ne doit pas être pris pour un bilan exhaustif de carrière.</p><div class="pw-credit"><span>EVENT DATA © STATSBOMB / HUDL</span><a href="https://github.com/hudl/open-data" target="_blank" rel="noopener noreferrer"><img src="https://raw.githubusercontent.com/hudl/open-data/master/img/SB%20-%20Icon%20Lockup%20-%20Colour%20positive.png" alt="Logo StatsBomb" width="152" loading="lazy"/></a></div></div>
+      <div><p>Chaque petite boule représente <strong>une passe réussie</strong>. Seuls les partenaires ayant échangé plus de 95 passes réussies (envoyées + reçues) avec Messi dans la période sélectionnée sont répartis librement autour de lui (30 au maximum), sans respecter l’ordre du classement ni leur position sur le terrain : chaque joueur conserve une place stable pendant la lecture. Chaque partenaire possède une couleur unique, réutilisée pour ses billes, ses éclaboussures, son nœud et sa ligne dans le classement. Le sens de la passe est représenté uniquement par le déplacement de la bille. Il n’y a plus de trait entre Messi et les joueurs : à l’arrivée, chaque bille laisse une éclaboussure persistante jusqu’à la remise à zéro.</p><p>Le classement et le seuil des 96 passes sont recalculés après chaque filtre. Les passes des autres partenaires restent dans les données pour les filtres, mais ne sont pas dessinées dans le réseau. Si personne n’atteint ce seuil, la constellation sera vide. La chronologie accélère les événements : elle ne reproduit pas le rythme réel des matchs.</p><p>Nous utilisons les événements <a href="https://github.com/hudl/open-data" target="_blank" rel="noopener noreferrer">StatsBomb Open Data ↗</a> provenant d'un échantillon de saisons de Liga et des Coupes du monde disponibles. Les matchs réellement couverts et les manques sont indiqués dans les fichiers dérivés : <a href={base + '/data/players/messi-pass-wars.json'}>agrégats</a> et <a href={base + '/data/players/messi-pass-wars-events.json'}>événements</a>. L'échantillon ne doit pas être pris pour un bilan exhaustif de carrière.</p><details class="pw-photo-credits">
+        <summary>Crédits photos · Wikimedia Commons (portraits recadrés)</summary>
+        <p>Photographies sous licences Creative Commons, créditées à leurs auteurs. Le nom de chaque photographe renvoie au fichier d’origine et aux conditions de réutilisation.</p>
+        <div id="pw-photos-list" class="pw-photos-list"></div>
+      </details>
+      <div class="pw-credit"><span>EVENT DATA © STATSBOMB / HUDL</span><a href="https://github.com/hudl/open-data" target="_blank" rel="noopener noreferrer"><img src="https://raw.githubusercontent.com/hudl/open-data/master/img/SB%20-%20Icon%20Lockup%20-%20Colour%20positive.png" alt="Logo StatsBomb" width="152" loading="lazy"/></a></div></div>
     </section>
   </main>
 </BaseLayout>

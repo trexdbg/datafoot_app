@@ -1,7 +1,9 @@
+import { MESSI_ID, displayPlayerName, playerInitials, photoFor, photoCredits } from './messi-player-profiles.mjs';
+
 /** Messi Pass Wars — Canvas 2D, événements StatsBomb réels seulement. */
 // Critère d'affichage : passes réussies ENVOYÉES + REÇUES dans le filtre actif.
 // Les 118 partenaires restent dans le JSON source ; seuls les éligibles sont dessinés.
-export const MIN_PARTNER_PASSES = 80;
+export const MIN_PARTNER_PASSES = 96;
 
 export function eligiblePartners(events, minimum=MIN_PARTNER_PASSES, maximum=30){
   const tally = new Map();
@@ -48,6 +50,40 @@ export function createPlayerPalette(partners){
   }));
 }
 
+/**
+ * Disposition organique reproductible. Le placement ne dépend PAS du rang des
+ * passes : chaque joueur reçoit des coordonnées via sa propre graine.
+ * Rejet des collisions avec le portrait central et les autres joueurs.
+ * Pas de lignes, pas de couronne régulière, pas de classement en horloge.
+ */
+export function layoutPlayerNodes(players, W=1200, H=780, CX=W/2, CY=H/2){
+  const result=new Map();
+  const ids=[...players].sort((a,b)=>Number(a.id)-Number(b.id));
+  const paddingX=92,paddingY=105;
+  for(const p of ids){
+    let seed=(Math.imul(Number(p.id)||1,2654435761)^0x9e3779b9)>>>0;
+    const random=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;};
+    let best=null,bestDistance=-Infinity;
+    for(let attempt=0;attempt<700;attempt++){
+      const x=paddingX+random()*(W-2*paddingX);
+      const y=paddingY+random()*(H-2*paddingY);
+      const dCenter=Math.hypot(x-CX,y-CY);
+      if(dCenter<185)continue;
+      const existing=[...result.values()];
+      const closest=existing.length
+        ? Math.min(...existing.map(point=>Math.hypot(x-point.x,y-point.y)))
+        : 1000;
+      const border=Math.min(x-paddingX,W-paddingX-x,y-paddingY,H-paddingY-y);
+      const quality=closest+border*.13;
+      if(quality>bestDistance){bestDistance=quality;best={x,y};}
+      // Première position viable, semée différemment pour chaque ID.
+      if(closest>146&&border>22){best={x,y};break;}
+    }
+    if(best)result.set(p.id,best);
+  }
+  return result;
+}
+
 export function bootPassWars(){
   const root=document.querySelector('[data-pass-wars]');
   if(!root)return;
@@ -60,6 +96,51 @@ export function bootPassWars(){
   const colorOf=id=>palette.get(id)||playerColor(id);
   let cursor=0,position=0,prev=0,lastText=0,playing=false,battle=false,speed=28,focus=null,sort='total';
   let balls=[],ripples=[];
+  // Photos Commons préchargées une seule fois par joueur ; si erreur réseau,
+  // le Canvas et le classement conservent un monogramme coloré.
+  const portraits=new Map();
+  function preloadPortrait(id){
+    if(portraits.has(id))return;
+    const url=photoFor(id,180);
+    if(!url){portraits.set(id,null);return;}
+    const img=new Image();
+    const state={image:img,ready:false};
+    portraits.set(id,state);
+    img.onload=()=>{state.ready=img.naturalWidth>0&&img.naturalHeight>0;};
+    img.onerror=()=>{state.ready=false;};
+    img.decoding='async';
+    img.src=url;
+  }
+  function drawPortrait(id,x,y,r){
+    const entry=portraits.get(id);
+    if(!entry?.ready)return false;
+    const img=entry.image,w=img.naturalWidth,h=img.naturalHeight;
+    if(!w||!h)return false;
+    // Carré central recadré dans un disque : pas de traits de liaison.
+    const side=Math.min(w,h),sx=(w-side)/2,sy=Math.max(0,(h-side)*.18);
+    ctx.save();ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.clip();
+    ctx.drawImage(img,sx,sy,side,side,x-r,y-r,r*2,r*2);
+    ctx.restore();return true;
+  }
+  function drawMonogram(id,raw,x,y,size){
+    const chars=playerInitials(id,raw);
+    ctx.save();ctx.fillStyle='#edf9ff';ctx.textAlign='center';
+    ctx.font='800 '+size+'px system-ui';ctx.fillText(chars,x,y+size*.34);
+    ctx.restore();
+  }
+  function renderPhotoCredits(){
+    const list=$('pw-photos-list');if(!list)return;
+    list.replaceChildren();
+    for(const p of [{id:MESSI_ID,name:'Lionel Messi'},...players]){
+      const credit=photoCredits(p.id);
+      if(!credit)continue;
+      const a=document.createElement('a');
+      a.href=credit.source;a.target='_blank';a.rel='noopener noreferrer';
+      a.textContent=credit.name+' — '+credit.author+' ('+credit.license+') ↗';
+      a.title=credit.modified+' ; licence et détails sur Wikimedia Commons';
+      list.append(a);
+    }
+  }
   // Toile de peinture persistante : une passe laisse une éclaboussure à l'impact.
   // La couche est réinitialisée en changeant de filtre / au redémarrage.
   const paintCanvas=document.createElement('canvas');
@@ -78,33 +159,25 @@ export function bootPassWars(){
     for(const value of values){const el=document.createElement('option');el.value=value;el.textContent=value;$(id).append(el);}
   }
   function tally(list){ return eligiblePartners(list); }
-  function locate(){
-    positions=new Map();
-    players.forEach((p,i)=>{
-      const twoRings=players.length>18;
-      const inner=twoRings?12:players.length;
-      const outer=twoRings&&i>=inner;
-      const n=outer?players.length-inner:inner,j=outer?i-inner:i;
-      const angle=Math.PI*2*j/Math.max(1,n)-Math.PI/2+(outer?.08:0);
-      positions.set(p.id,{x:CX+Math.cos(angle)*(outer?485:(twoRings?295:425)),
-                          y:CY+Math.sin(angle)*(outer?325:(twoRings?215:290))});
-    });
-  }
+  function locate(){positions=layoutPlayerNodes(players,W,H,CX,CY);}
   function build(){
     const team=$('pw-team').value,season=$('pw-season').value,competition=$('pw-competition').value;
     filtered=original.filter(e=>(!team||e.team===team)&&(!season||e.season===season)&&(!competition||e.competition===competition));
     players=tally(filtered);locate();
+    preloadPortrait(MESSI_ID);
+    players.forEach(p=>preloadPortrait(p.id));
+    renderPhotoCredits();
     const ids=new Set(players.map(p=>p.id));
     events=filtered.filter(e=>ids.has(e.partner_id));
     $('pw-scrub').max=String(Math.max(events.length,1));focus=null;reset();
-    set('pw-coverage',new Set(filtered.map(e=>e.match_id)).size+' MATCHS · '+players.length+' PARTENAIRES (80+ PASSES)');
+    set('pw-coverage',new Set(filtered.map(e=>e.match_id)).size+' MATCHS · '+players.length+' PARTENAIRES (96+ PASSES)');
     $('pw-play').disabled=events.length===0;
     $('pw-battle').disabled=events.length===0;
     set('pw-dates',(filtered[0]?.date||'—')+' → '+(filtered.at(-1)?.date||'—')+' · '+format(filtered.length)+' PASSES SOURCÉES');
     set('pw-message',players.length===0
-      ? 'Aucun partenaire avec au moins 80 passes échangées sur cette sélection. Change de saison ou élargis les filtres.'
+      ? 'Aucun partenaire avec plus de 95 passes échangées sur cette sélection. Change de saison ou élargis les filtres.'
       : 'StatsBomb Open Data : '+meta.scope.matches_count+' matchs couverts. '+meta.scope.coverage_note+
-        ' Seuls les partenaires totalisant au moins 80 passes envoyées + reçues dans cette sélection apparaissent.');
+        ' Seuls les partenaires totalisant plus de 95 passes envoyées + reçues dans cette sélection apparaissent.');
   }
   function reset(){
     playing=false;cursor=0;position=0;counts=new Map();balls=[];ripples=[];
@@ -148,7 +221,7 @@ export function bootPassWars(){
     const share=(given+received)?100*given/(given+received):50;
     $('pw-ratio-given').style.width=share+'%';$('pw-ratio-received').style.width=(100-share)+'%';
     const p=players.find(p=>p.id===focus);
-    set('pw-focus',p?p.name.toUpperCase()+' — '+score(p.id).given+' ENVOYÉES / '+score(p.id).received+' REÇUES':
+    set('pw-focus',p?displayPlayerName(p.id,p.name).toUpperCase()+' — '+score(p.id).given+' ENVOYÉES / '+score(p.id).received+' REÇUES':
       'TOUS LES JOUEURS · CLIQUEZ SUR UN NŒUD OU UN NOM POUR L’ISOLER.');
     const e=events[Math.max(cursor-1,0)];
     set('pw-now',cursor&&e?e.date+' · '+e.minute+'′':'DÉPART');
@@ -169,10 +242,13 @@ export function bootPassWars(){
     all.textContent='◉  TOUTES LES CONNEXIONS';all.addEventListener('click',()=>selectPlayer(null));list.append(all);
     [...players].sort((a,b)=>comparator(a,b,sort)).forEach((p,i)=>{
       const button=document.createElement('button');button.type='button';button.className='pw-partner';
-      button.dataset.partner=String(p.id);button.title='Isoler les passes avec '+p.name;
+      button.dataset.partner=String(p.id);button.title='Isoler les passes avec '+displayPlayerName(p.id,p.name);
       const n=document.createElement('small');n.textContent=String(i+1).padStart(2,'0');
       const content=document.createElement('div');content.className='pw-partner-main';
-      const label=document.createElement('span');label.textContent=p.name;content.append(label);
+      const label=document.createElement('span');
+      label.textContent=displayPlayerName(p.id,p.name);
+      label.title=p.name===label.textContent?p.name:p.name+' (nom source StatsBomb)';
+      content.append(label);
       const bars=document.createElement('span');bars.className='pw-partner-min';
       bars.style.setProperty('--player-color',colorOf(p.id));
       for(const key of ['given','received']){
@@ -188,7 +264,26 @@ export function bootPassWars(){
       n.style.color=colorOf(p.id);
       button.style.setProperty('--player-color',colorOf(p.id));
       const total=document.createElement('strong');total.dataset.count=String(p.id);total.textContent='0';
-      button.append(n,content,total);button.addEventListener('click',()=>selectPlayer(p.id));list.append(button);
+      const portrait=document.createElement('span');portrait.className='pw-rank-avatar';
+      portrait.style.setProperty('--player-color',colorOf(p.id));
+      const fallback=document.createElement('span');
+      fallback.className='pw-rank-initials';fallback.textContent=playerInitials(p.id,p.name);
+      portrait.append(fallback);
+      const url=photoFor(p.id,112);
+      if(url){
+        const photo=document.createElement('img');
+        photo.alt='Portrait de '+displayPlayerName(p.id,p.name);
+        photo.width=44;photo.height=44;photo.loading='lazy';
+        photo.style.objectPosition='50% 20%';
+        photo.referrerPolicy='no-referrer';
+        photo.addEventListener('load',()=>{
+          if(photo.naturalWidth>0){photo.classList.add('loaded');fallback.hidden=true;}
+        });
+        photo.addEventListener('error',()=>{photo.remove();fallback.hidden=false;});
+        photo.src=url;portrait.append(photo);
+      }
+      button.append(n,portrait,content,total);
+      button.addEventListener('click',()=>selectPlayer(p.id));list.append(button);
     });
     renderBoard();
   }
@@ -290,25 +385,37 @@ export function bootPassWars(){
   function drawNodes(){
     for(const p of players){
       const pos=positions.get(p.id),amount=score(p.id).total,active=focus===null||focus===p.id;
-      const r=18+Math.min(8,Math.sqrt(amount)*.7);
+      const r=23+Math.min(7,Math.sqrt(amount)*.7);
+      const color=colorOf(p.id);
       ctx.save();ctx.globalAlpha=active?1:.18;
-      ctx.shadowColor=colorOf(p.id);ctx.shadowBlur=amount?25:12;
-      ctx.fillStyle=colorOf(p.id);ctx.beginPath();ctx.arc(pos.x,pos.y,r+3,0,Math.PI*2);ctx.fill();
+      ctx.shadowColor=color;ctx.shadowBlur=amount?25:12;
+      ctx.fillStyle=color;ctx.beginPath();ctx.arc(pos.x,pos.y,r+3,0,Math.PI*2);ctx.fill();
       ctx.shadowBlur=0;
       ctx.fillStyle='#12304b';ctx.beginPath();ctx.arc(pos.x,pos.y,r-1,0,Math.PI*2);ctx.fill();
-      if(focus===p.id){
-        ctx.fillStyle='#ffffff';ctx.beginPath();ctx.arc(pos.x,pos.y,4,0,Math.PI*2);ctx.fill();
-      }
-      ctx.shadowBlur=0;ctx.textAlign='center';ctx.fillStyle='#fff';ctx.font='800 14px system-ui';ctx.fillText(amount,pos.x,pos.y+5);
-      ctx.font='600 12px system-ui';ctx.fillStyle='#d7ecfa';
-      const nm=p.name.length>17?p.name.split(' ').at(-1):p.name;
-      ctx.fillText(nm.length>18?nm.slice(0,17)+'…':nm,pos.x,pos.y+(pos.y<CY?-r-10:r+19));ctx.restore();
+      if(!drawPortrait(p.id,pos.x,pos.y,r-2))drawMonogram(p.id,p.name,pos.x,pos.y,14);
+      // Le compteur reste lisible dans une capsule sous la photo.
+      const countText=String(amount),pillX=pos.x+r*.68,pillY=pos.y+r*.60;
+      const badgeW=Math.max(25,12+countText.length*9);
+      ctx.fillStyle='#081827';ctx.beginPath();
+      ctx.roundRect(pillX-badgeW/2,pillY-10,badgeW,21,10);ctx.fill();
+      ctx.fillStyle=color;ctx.textAlign='center';ctx.font='800 13px system-ui';
+      ctx.fillText(countText,pillX,pillY+5);
+      if(focus===p.id){ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(pos.x+r*.75,pos.y-r*.65,5,0,Math.PI*2);ctx.fill();}
+      ctx.fillStyle='#e7f5ff';ctx.textAlign='center';ctx.font='800 13px system-ui';
+      const name=displayPlayerName(p.id,p.name);
+      ctx.fillText(name.length>18?name.slice(0,17)+'…':name,pos.x,pos.y+r+25);
+      ctx.restore();
     }
     ctx.save();ctx.shadowBlur=32;ctx.shadowColor=CYAN;
-    ctx.fillStyle='#96eeff';ctx.beginPath();ctx.arc(CX,CY,63,0,Math.PI*2);ctx.fill();
-    ctx.fillStyle='#0a304e';ctx.beginPath();ctx.arc(CX,CY,59,0,Math.PI*2);ctx.fill();ctx.restore();
-    ctx.textAlign='center';ctx.fillStyle='#fff';ctx.font='900 22px system-ui';ctx.fillText('MESSI',CX,CY+5);
-    ctx.fillStyle=CYAN;ctx.font='800 12px monospace';ctx.fillText('N° 10',CX,CY+26);ctx.textAlign='left';
+    ctx.fillStyle='#96eeff';ctx.beginPath();ctx.arc(CX,CY,68,0,Math.PI*2);ctx.fill();
+    ctx.shadowBlur=0;ctx.fillStyle='#0a304e';
+    ctx.beginPath();ctx.arc(CX,CY,64,0,Math.PI*2);ctx.fill();
+    if(!drawPortrait(MESSI_ID,CX,CY,62))drawMonogram(MESSI_ID,'Lionel Messi',CX,CY,23);
+    ctx.restore();
+    ctx.textAlign='center';ctx.fillStyle='#fff';
+    ctx.font='900 16px system-ui';ctx.fillText('MESSI',CX,CY+86);
+    ctx.fillStyle=CYAN;ctx.font='800 11px monospace';ctx.fillText('N° 10',CX,CY+102);
+    ctx.textAlign='left';
   }
   function draw(t){
     background();
@@ -318,7 +425,7 @@ export function bootPassWars(){
     if(players.length===0 && meta){
       ctx.fillStyle='#c4d9e9';ctx.textAlign='center';
       ctx.font='bold 21px system-ui';
-      ctx.fillText('AUCUN PARTENAIRE À 80 PASSES',CX,CY+110);
+      ctx.fillText('AUCUN PARTENAIRE AU-DESSUS DE 95 PASSES',CX,CY+110);
       ctx.font='14px system-ui';
       ctx.fillText('Élargissez la période pour afficher des joueurs.',CX,CY+140);
       ctx.textAlign='left';

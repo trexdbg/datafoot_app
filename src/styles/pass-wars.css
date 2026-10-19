@@ -98,3 +98,40 @@
 .pw-partner{border-left:3px solid transparent!important}
 .pw-partner:hover,.pw-partner.chosen{border-left-color:var(--player-color,#b6daee)!important}
 .pw-partner-main{gap:.27rem}
+
+
+/* PORTRAITS V3 — classement compact et reconnaissable */
+.pw-partner{
+  grid-template-columns:1.35rem 2.65rem minmax(0,1fr) 2.6rem;
+  column-gap:.45rem;
+  min-height:50px;
+  align-items:center;
+}
+.pw-rank-avatar{
+  position:relative;
+  width:42px;height:42px;display:grid;place-items:center;
+  flex:none;border-radius:50%;overflow:hidden;
+  border:2px solid var(--player-color,#78ddef);
+  background:#152d42;
+  box-shadow:0 0 13px color-mix(in srgb,var(--player-color,#78ddef) 27%,transparent);
+}
+.pw-rank-avatar img{
+  display:block;position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;object-position:50% 20%;opacity:0;
+  transition:opacity .2s ease;
+}
+.pw-rank-avatar img.loaded{opacity:1}
+.pw-rank-initials{font-size:.8rem;font-weight:900;color:var(--player-color,#78ddef);letter-spacing:-.03em}
+.pw-rank-initials[hidden]{display:none}
+.pw-partner-main>span:first-child{font-weight:760;color:#edf9ff}
+.pw-partner:hover .pw-rank-avatar,.pw-partner.chosen .pw-rank-avatar{box-shadow:0 0 18px var(--player-color,#78ddef)}
+.pw-photo-credits{margin:1.4rem 0;border-top:1px solid #2c5063;border-bottom:1px solid #2c5063;padding:1rem 0;color:#b8d2e1}
+.pw-photo-credits summary{cursor:pointer;font-size:.82rem;font-weight:800;color:#9ae7fc}
+.pw-photo-credits p{margin:.7rem 0 1rem!important;font-size:.76rem!important;line-height:1.5!important}
+.pw-photos-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.55rem 1rem}
+.pw-photos-list a{font-size:.71rem;line-height:1.4;overflow-wrap:anywhere;color:#b6dcef;text-decoration:underline;text-decoration-color:#46738a}
+@media(max-width:650px){
+  .pw-photos-list{grid-template-columns:1fr}
+  .pw-partner{grid-template-columns:1rem 2.4rem minmax(0,1fr) 2.4rem;column-gap:.3rem}
+  .pw-rank-avatar{height:36px;width:36px}
+}

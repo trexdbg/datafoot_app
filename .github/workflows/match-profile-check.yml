@@ -4,6 +4,7 @@ on:
     paths:
       - 'src/pages/matchs/**'
       - 'src/lib/pass-wars-engine.*'
+      - 'src/lib/messi-player-profiles.mjs'
       - 'tests/pass-wars.test.mjs'
       - 'src/styles/pass-wars.css'
       - 'src/data/players/**'
