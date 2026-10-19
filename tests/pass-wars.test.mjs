@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { eligiblePartners, MIN_PARTNER_PASSES, playerColor, createPlayerPalette, layoutPlayerNodes, monthOrdinal, monthYearLabel, eventsThroughMonth } from '../src/lib/pass-wars-engine.mjs';
+import { eligiblePartners, MIN_PARTNER_PASSES, playerColor, createPlayerPalette, layoutPlayerNodes, monthOrdinal, monthYearLabel, eventCalendarPosition, eventsThroughMonth } from '../src/lib/pass-wars-engine.mjs';
 
 const make = (id, direction, name='Joueur '+id)=>({partner_id:id,partner_name:name,direction});
 
@@ -199,11 +199,58 @@ test('les deux routes affichent 96+ passes sans perdre les photos',async()=>{
     assert.ok(!html.includes('80 PASSES MINIMUM'));
   }
   const code=readFileSync(new URL('../src/lib/pass-wars-engine.mjs',import.meta.url),'utf8');
-  assert.ok(code.includes('positions=layoutPlayerNodes(players,W,H,CX,CY)'));
+  assert.ok(code.includes('positions=layoutPlayerNodes(players,W,H,CX,CY,layoutSalt)'));
   assert.ok(code.includes('drawPortrait(p.id'));
   assert.ok(!code.includes('drawEdges('));
 });
 
+
+test('chaque rechargement peut changer le placement sans collisions ni joueur masqué',async()=>{
+  const {readFileSync}=await import('node:fs');
+  const data=JSON.parse(readFileSync(new URL('../src/data/players/messi-pass-wars.json',import.meta.url),'utf8'));
+  const roster=data.partners.filter(p=>p.total>=MIN_PARTNER_PASSES);
+  const base=layoutPlayerNodes(roster,1200,780,600,385,111);
+  const moved=layoutPlayerNodes(roster,1200,780,600,385,222);
+  assert.equal(base.size,roster.length);
+  assert.equal(moved.size,roster.length);
+  assert.ok(roster.some(p=>Math.hypot(base.get(p.id).x-moved.get(p.id).x,
+                                     base.get(p.id).y-moved.get(p.id).y)>60),
+    'Le placement doit changer d’une session à la suivante');
+  for(const salt of [0,1,111,222,987654321]){
+    const points=[...layoutPlayerNodes(roster,1200,780,600,385,salt).values()];
+    assert.equal(points.length,roster.length,'Aucun joueur ne doit disparaître');
+    assert.ok(points.every(p=>p.x>=100&&p.x<=1100&&p.y>=110&&p.y<=670),
+      'Portrait et légende doivent rester dans le canvas');
+    assert.ok(points.every(p=>Math.hypot(p.x-600,p.y-385)>=195),
+      'Aucun partenaire ne doit être caché derrière Messi');
+    for(let i=0;i<points.length;i++)for(let j=i+1;j<points.length;j++)
+      assert.ok(Math.hypot(points[i].x-points[j].x,points[i].y-points[j].y)>=150,
+        'Les portraits et étiquettes ne doivent pas se chevaucher');
+  }
+});
+
+test('la lecture du calendrier progresse à intervalle régulier, même les mois vides',async()=>{
+  const jan=monthOrdinal('2015-01-01');
+  assert.equal(monthOrdinal('2015-02-01')-jan,1);
+  assert.equal(monthOrdinal('2016-01-01')-jan,12);
+  assert.equal(eventCalendarPosition('2015-01-01'),jan);
+  assert.ok(eventCalendarPosition('2015-01-20')>jan);
+  assert.ok(eventCalendarPosition('2015-01-20')<jan+1);
+  assert.equal(eventCalendarPosition('2015-02-01'),jan+1);
+  assert.equal(eventCalendarPosition('date invalide'),null);
+  const {readFileSync}=await import('node:fs');
+  const core=readFileSync(new URL('../src/lib/pass-wars-engine.mjs',import.meta.url),'utf8');
+  assert.ok(core.includes('calendarPosition=Math.min(end,calendarPosition+dt*(battle?24:speed))'));
+  assert.ok(core.includes('eventCalendarPosition(events[cursor].date)<calendarPosition'));
+  assert.ok(core.includes('timelineFirst=first;timelineLast=last'));
+  assert.ok(core.includes('window.crypto.getRandomValues(bytes)'));
+  for(const route of ['paintball','pass-wars']){
+    const html=readFileSync(new URL('../src/pages/joueurs/messi/'+route+'.astro',import.meta.url),'utf8');
+    assert.ok(html.indexOf('id="pw-now"')<html.indexOf('id="pw-canvas"'),
+      'La date ne doit plus recouvrir un joueur');
+    assert.ok(html.includes('value="4" selected>×4'));
+  }
+});
 
 test('frise chronologique : uniquement mois/année sans jour ni minute',()=>{
   assert.equal(monthOrdinal('2004-10-24'),2004*12+9);
