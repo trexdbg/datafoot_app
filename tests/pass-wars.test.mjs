@@ -124,3 +124,47 @@ test('la route paintball v3 neuve est cohérente avec le réseau sans traits',as
   assert.ok(old.includes('PAINTBALL V3 · AUCUN TRAIT'));
   assert.ok(!/ctx\.stroke\s*\(|ctx\.setLineDash|drawEdges\s*\(/.test(core));
 });
+
+
+test('V3 : 16 noms usuels identifiés par ID StatsBomb et photothèque fiable', async()=>{
+  const {readFileSync}=await import('node:fs');
+  const {displayPlayerName,photoFor,profileFor,photoCredits,playerInitials,MESSI_ID}=await import('../src/lib/messi-player-profiles.mjs');
+  const summary=JSON.parse(readFileSync(new URL('../src/data/players/messi-pass-wars.json',import.meta.url),'utf8'));
+  const roster=summary.partners.filter(p=>p.total>=80);
+  assert.equal(roster.length,16);
+  assert.equal(displayPlayerName(20131,'Xavier Hernández Creus'),'Xavi');
+  assert.equal(displayPlayerName(19757,'Anderson Luís de Souza'),'Deco');
+  assert.equal(displayPlayerName(25879,'Ronaldo de Assis Moreira'),'Ronaldinho');
+  assert.equal(displayPlayerName(4324,'Daniel Alves da Silva'),'Dani Alves');
+  assert.equal(displayPlayerName(3958,'Pedro Eliezer Rodríguez Ledesma'),'Pedro');
+  assert.equal(displayPlayerName(999999,'Nom hors catalogue'),'Nom hors catalogue');
+  assert.equal(MESSI_ID,5503);
+  assert.equal(playerInitials(20131),'XA');
+  assert.equal(playerInitials(5503),'LM');
+  for(const p of roster){
+    const profile=profileFor(p.id);
+    assert.ok(profile,'Identité usuelle absente pour '+p.name);
+    assert.ok(profile.name.length>1);
+    const url=photoFor(p.id);
+    assert.match(url,/^https:\/\/commons\.wikimedia\.org\/wiki\/Special:FilePath\//);
+    assert.ok(url.includes('?width=160'));
+    const credit=photoCredits(p.id);
+    assert.ok(credit.author.length>2);
+    assert.match(credit.source,/^https:\/\/commons\.wikimedia\.org\/wiki\/File:/);
+    assert.ok(credit.license.startsWith('CC BY'));
+  }
+  assert.ok(photoFor(MESSI_ID,180));
+  assert.equal(photoFor(123456),null);
+});
+
+test('V3 : noms et portraits présents sans réintroduire de traits',async()=>{
+  const {readFileSync}=await import('node:fs');
+  const engine=readFileSync(new URL('../src/lib/pass-wars-engine.mjs',import.meta.url),'utf8');
+  const route=readFileSync(new URL('../src/pages/joueurs/messi/paintball.astro',import.meta.url),'utf8');
+  assert.ok(engine.includes('drawPortrait(p.id'));
+  assert.ok(engine.includes('drawPortrait(MESSI_ID'));
+  assert.ok(engine.includes('displayPlayerName(p.id,p.name)'));
+  assert.ok(engine.includes('renderPhotoCredits()'));
+  assert.ok(route.includes('id="pw-photos-list"'));
+  assert.ok(!/ctx\.stroke\s*\(|ctx\.setLineDash|drawEdges\s*\(/.test(engine));
+});
