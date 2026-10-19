@@ -68,3 +68,8 @@ footer{border-top:1px solid var(--line);color:var(--muted)}.footer-grid{display:
 .mw-home-signal svg{width:100%;height:auto;filter:drop-shadow(0 0 8px #ee568e66)}
 .mw-home-signal span{font-size:10px;color:#bdd7e2;letter-spacing:.15em;font-weight:800}
 @media(max-width:780px){.mw-home-feature{grid-template-columns:auto 1fr;padding:18px 15px;gap:10px}.mw-home-weather{font-size:38px}.mw-home-signal{grid-column:1/-1;max-width:320px;justify-self:end}.mw-home-feature h2{font-size:29px}}
+
+/* Navigation plus compacte pour le module Atlas et lisible sur les petits écrans */
+.nav{gap:20px}.nav nav{flex-wrap:wrap;justify-content:flex-end;gap:9px 19px}
+@media(max-width:850px){.nav{height:auto;min-height:72px;flex-wrap:wrap;align-items:center;padding:12px 0;justify-content:center}.nav .brand{margin-right:auto}.nav nav{justify-content:center;width:100%;gap:8px 15px;letter-spacing:.05em}}
+@media(max-width:440px){.nav{padding:10px 0}.nav nav{gap:7px 12px;font-size:.57rem}}
