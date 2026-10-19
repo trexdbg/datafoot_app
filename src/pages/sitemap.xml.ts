@@ -1,4 +1,5 @@
 import { getCollection } from 'astro:content';
+import {fixtures,countries,playerIndex,slug} from '../lib/worldcup-data';
 
 export async function GET() {
   const origin = 'https://trexdbg.github.io';
@@ -7,12 +8,17 @@ export async function GET() {
     { path: '/', priority: '1.0', changefreq: 'daily' },
     { path: '/articles/', priority: '0.9', changefreq: 'daily' },
     { path: '/stats/', priority: '0.8', changefreq: 'daily' },
-    { path: '/matchs/finale-2022/mbappe/', priority: '0.8', changefreq: 'monthly' },
+    { path: '/mondial-2022/', priority: '0.95', changefreq: 'monthly' },
+    { path: '/mondial-2022/pays/', priority: '0.9', changefreq: 'monthly' },
+    { path: '/mondial-2022/joueurs/', priority: '0.9', changefreq: 'monthly' },
     { path: '/methodologie/', priority: '0.6', changefreq: 'monthly' },
   ];
   const articles = await getCollection('articles');
   const urls = [
     ...staticUrls.map((item) => ({ loc: `${origin}${base}${item.path}`, lastmod: null, ...item })),
+    ...fixtures.map(match => ({ loc: `${origin}${base}/mondial-2022/matchs/${match.id}/`,lastmod:null,priority:'0.8',changefreq:'monthly' })),
+    ...countries.map(country => ({ loc: `${origin}${base}/mondial-2022/pays/${slug(country)}/`,lastmod:null,priority:'0.8',changefreq:'monthly' })),
+    ...playerIndex.map(player => ({ loc: `${origin}${base}/mondial-2022/joueurs/${player.id}/`,lastmod:null,priority:'0.7',changefreq:'monthly' })),
     ...articles.map((article) => ({
       loc: `${origin}${base}/articles/${article.id}/`,
       lastmod: article.data.publishedAt.toISOString(),
