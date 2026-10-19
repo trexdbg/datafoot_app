@@ -3,7 +3,7 @@ import { MESSI_ID, displayPlayerName, playerInitials, photoFor, photoCredits } f
 /** Messi Pass Wars — Canvas 2D, événements StatsBomb réels seulement. */
 // Critère d'affichage : passes réussies ENVOYÉES + REÇUES dans le filtre actif.
 // Les 118 partenaires restent dans le JSON source ; seuls les éligibles sont dessinés.
-export const MIN_PARTNER_PASSES = 80;
+export const MIN_PARTNER_PASSES = 96;
 
 export function eligiblePartners(events, minimum=MIN_PARTNER_PASSES, maximum=30){
   const tally = new Map();
@@ -48,6 +48,40 @@ export function createPlayerPalette(partners){
     const lightness=59+(Math.floor(index/3)%3)*3;
     return [partner.id,'hsl('+hue+' '+saturation+'% '+lightness+'%)'];
   }));
+}
+
+/**
+ * Disposition organique reproductible. Le placement ne dépend PAS du rang des
+ * passes : chaque joueur reçoit des coordonnées via sa propre graine.
+ * Rejet des collisions avec le portrait central et les autres joueurs.
+ * Pas de lignes, pas de couronne régulière, pas de classement en horloge.
+ */
+export function layoutPlayerNodes(players, W=1200, H=780, CX=W/2, CY=H/2){
+  const result=new Map();
+  const ids=[...players].sort((a,b)=>Number(a.id)-Number(b.id));
+  const paddingX=92,paddingY=105;
+  for(const p of ids){
+    let seed=(Math.imul(Number(p.id)||1,2654435761)^0x9e3779b9)>>>0;
+    const random=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;};
+    let best=null,bestDistance=-Infinity;
+    for(let attempt=0;attempt<700;attempt++){
+      const x=paddingX+random()*(W-2*paddingX);
+      const y=paddingY+random()*(H-2*paddingY);
+      const dCenter=Math.hypot(x-CX,y-CY);
+      if(dCenter<185)continue;
+      const existing=[...result.values()];
+      const closest=existing.length
+        ? Math.min(...existing.map(point=>Math.hypot(x-point.x,y-point.y)))
+        : 1000;
+      const border=Math.min(x-paddingX,W-paddingX-x,y-paddingY,H-paddingY-y);
+      const quality=closest+border*.13;
+      if(quality>bestDistance){bestDistance=quality;best={x,y};}
+      // Première position viable, semée différemment pour chaque ID.
+      if(closest>146&&border>22){best={x,y};break;}
+    }
+    if(best)result.set(p.id,best);
+  }
+  return result;
 }
 
 export function bootPassWars(){
@@ -125,18 +159,7 @@ export function bootPassWars(){
     for(const value of values){const el=document.createElement('option');el.value=value;el.textContent=value;$(id).append(el);}
   }
   function tally(list){ return eligiblePartners(list); }
-  function locate(){
-    positions=new Map();
-    players.forEach((p,i)=>{
-      const twoRings=players.length>18;
-      const inner=twoRings?12:players.length;
-      const outer=twoRings&&i>=inner;
-      const n=outer?players.length-inner:inner,j=outer?i-inner:i;
-      const angle=Math.PI*2*j/Math.max(1,n)-Math.PI/2+(outer?.08:0);
-      positions.set(p.id,{x:CX+Math.cos(angle)*(outer?485:(twoRings?295:425)),
-                          y:CY+Math.sin(angle)*(outer?325:(twoRings?215:290))});
-    });
-  }
+  function locate(){positions=layoutPlayerNodes(players,W,H,CX,CY);}
   function build(){
     const team=$('pw-team').value,season=$('pw-season').value,competition=$('pw-competition').value;
     filtered=original.filter(e=>(!team||e.team===team)&&(!season||e.season===season)&&(!competition||e.competition===competition));
@@ -147,14 +170,14 @@ export function bootPassWars(){
     const ids=new Set(players.map(p=>p.id));
     events=filtered.filter(e=>ids.has(e.partner_id));
     $('pw-scrub').max=String(Math.max(events.length,1));focus=null;reset();
-    set('pw-coverage',new Set(filtered.map(e=>e.match_id)).size+' MATCHS · '+players.length+' PARTENAIRES (80+ PASSES)');
+    set('pw-coverage',new Set(filtered.map(e=>e.match_id)).size+' MATCHS · '+players.length+' PARTENAIRES (96+ PASSES)');
     $('pw-play').disabled=events.length===0;
     $('pw-battle').disabled=events.length===0;
     set('pw-dates',(filtered[0]?.date||'—')+' → '+(filtered.at(-1)?.date||'—')+' · '+format(filtered.length)+' PASSES SOURCÉES');
     set('pw-message',players.length===0
-      ? 'Aucun partenaire avec au moins 80 passes échangées sur cette sélection. Change de saison ou élargis les filtres.'
+      ? 'Aucun partenaire avec plus de 95 passes échangées sur cette sélection. Change de saison ou élargis les filtres.'
       : 'StatsBomb Open Data : '+meta.scope.matches_count+' matchs couverts. '+meta.scope.coverage_note+
-        ' Seuls les partenaires totalisant au moins 80 passes envoyées + reçues dans cette sélection apparaissent.');
+        ' Seuls les partenaires totalisant plus de 95 passes envoyées + reçues dans cette sélection apparaissent.');
   }
   function reset(){
     playing=false;cursor=0;position=0;counts=new Map();balls=[];ripples=[];
@@ -402,7 +425,7 @@ export function bootPassWars(){
     if(players.length===0 && meta){
       ctx.fillStyle='#c4d9e9';ctx.textAlign='center';
       ctx.font='bold 21px system-ui';
-      ctx.fillText('AUCUN PARTENAIRE À 80 PASSES',CX,CY+110);
+      ctx.fillText('AUCUN PARTENAIRE AU-DESSUS DE 95 PASSES',CX,CY+110);
       ctx.font='14px system-ui';
       ctx.fillText('Élargissez la période pour afficher des joueurs.',CX,CY+140);
       ctx.textAlign='left';
