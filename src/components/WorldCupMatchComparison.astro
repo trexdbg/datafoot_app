@@ -1,8 +1,9 @@
 ---
+import CountryFlag from './CountryFlag.astro';
 import {monotonePath,actionLabel} from '../lib/match-activity.mjs';
 interface Point {minute:number;activity:number|null;actions?:number;events?:Array<{kind:string;outcome:string;playerName?:string}>}
-interface Props {home:string;away:string;homeFlag:string;awayFlag:string;first:Point[];second:Point[];duration:number;goals?:Array<{minute:number;team:string}>}
-const {home,away,homeFlag,awayFlag,first,second,duration,goals=[]}=Astro.props;
+interface Props {home:string;away:string;homeCountry:string;awayCountry:string;first:Point[];second:Point[];duration:number;goals?:Array<{minute:number;team:string}>}
+const {home,away,homeCountry,awayCountry,first,second,duration,goals=[]}=Astro.props;
 const COLORS={first:'#58D8F6',second:'#FFB783'};
 const left=57,right=1067,top=32,bottom=274;
 const X=(minute:number)=>left+minute/duration*(right-left);
@@ -18,8 +19,8 @@ const sample=JSON.stringify([first,second].map(series=>series.map(p=>[
  <div class="wc-duel-header">
   <div><p class="wc-eyebrow">VUE MATCH / ACTIVITÉ DES DEUX ÉQUIPES</p><h2 id="wc-duel-title">Le duel des rythmes.</h2><p>Deux sélections, une seule échelle 0–100. L'activité affichée est la moyenne des joueurs présents de chaque équipe, à chaque minute — pas une note du résultat.</p></div>
   <div class="wc-duel-legend" aria-label="Couleurs des équipes">
-   <div><i style={'background:'+COLORS.first}></i><strong>{homeFlag} {home}</strong></div>
-   <div><i style={'background:'+COLORS.second}></i><strong>{awayFlag} {away}</strong></div>
+   <div><i style={'background:'+COLORS.first}></i><strong><CountryFlag country={homeCountry} /> {home}</strong></div>
+   <div><i style={'background:'+COLORS.second}></i><strong><CountryFlag country={awayCountry} /> {away}</strong></div>
   </div>
  </div>
  <div class="wc-duel-chart">
@@ -41,11 +42,11 @@ const sample=JSON.stringify([first,second].map(series=>series.map(p=>[
  <div class="wc-duel-inspection" aria-live="off">
   <div class="wc-duel-inspection-time"><span>MINUTE</span><strong data-duel-minute>—</strong><small>Déplace le curseur pour comparer</small></div>
   <div class="wc-duel-inspection-team" style={'--duel-accent:'+COLORS.first}>
-   <span>{homeFlag} {home}</span><strong data-duel-score="0">—</strong><small data-duel-actions="0">Activité moyenne · actions</small>
+   <span><CountryFlag country={homeCountry} /> {home}</span><strong data-duel-score="0">—</strong><small data-duel-actions="0">Activité moyenne · actions</small>
    <p data-duel-events="0">Les actions de l'équipe apparaîtront ici.</p>
   </div>
   <div class="wc-duel-inspection-team" style={'--duel-accent:'+COLORS.second}>
-   <span>{awayFlag} {away}</span><strong data-duel-score="1">—</strong><small data-duel-actions="1">Activité moyenne · actions</small>
+   <span><CountryFlag country={awayCountry} /> {away}</span><strong data-duel-score="1">—</strong><small data-duel-actions="1">Activité moyenne · actions</small>
    <p data-duel-events="1">Les actions de l'équipe apparaîtront ici.</p>
   </div>
  </div>
