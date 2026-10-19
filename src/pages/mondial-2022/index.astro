@@ -30,13 +30,13 @@ const finale=fixtures.find(f=>f.stage==='Final')!;
  <section aria-labelledby="wc-all-matches">
   <div class="wc-section-head"><div><p class="wc-eyebrow">64 RENCONTRES · DU 20 NOVEMBRE AU 18 DÉCEMBRE</p><h2 id="wc-all-matches">Tous les matchs.</h2><p>Filtre par pays, phase ou adversaire. Chaque match donne accès aux deux équipes et à tous les joueurs recensés.</p></div></div>
   <div class="wc-toolbar">
-   <label for="wc-match-find">RECHERCHER</label><input id="wc-match-find" type="search" placeholder="Ex. Argentine, Maroc, 18 décembre…" autocomplete="off"/>
+   <label for="wc-match-find">RECHERCHER</label><input id="wc-match-find" type="search" placeholder="Ex. Argentine, Maroc, 18 déc.…" autocomplete="off"/>
    <label for="wc-stage">PHASE</label><select id="wc-stage"><option value="">Toutes les phases</option>{stages.map(s=><option value={s}>{stageLabel(s)}</option>)}</select>
    <label for="wc-team">PAYS</label><select id="wc-team"><option value="">Tous les pays</option>{countries.map(team=><option value={team}>{flag(team)} {labelCountry(team)}</option>)}</select>
    <span class="wc-filter-count" id="wc-match-count">{sorted.length} matchs</span>
   </div>
   <div class="wc-card-grid" id="wc-matches">
-   {sorted.map(game=><a class="wc-card wc-fixture" href={matchUrl(base,game.id)} data-stage={game.stage} data-home={game.home} data-away={game.away} data-search={(game.date+' '+labelCountry(game.home)+' '+labelCountry(game.away)+' '+game.home+' '+game.away+' '+stageLabel(game.stage)).toLowerCase()}>
+   {sorted.map(game=><a class="wc-card wc-fixture" href={matchUrl(base,game.id)} data-stage={game.stage} data-home={game.home} data-away={game.away} data-search={(game.date+' '+dateLabel(game.date)+' '+labelCountry(game.home)+' '+labelCountry(game.away)+' '+game.home+' '+game.away+' '+stageLabel(game.stage)).toLowerCase()}>
     <div class="wc-card-kicker"><span>{dateLabel(game.date)}</span><span>{stageLabel(game.stage)}{game.group?' · Groupe '+game.group:''}</span></div>
     <h3 class="wc-card-title">{flag(game.home)} {labelCountry(game.home)} <span class="wc-score">{game.homeScore}–{game.awayScore}</span> {flag(game.away)} {labelCountry(game.away)}</h3>
     <div class="wc-card-meta">Actions, profils d’activité et moments clés des deux équipes.</div>
