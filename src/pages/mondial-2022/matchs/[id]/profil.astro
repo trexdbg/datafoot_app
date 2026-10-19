@@ -133,13 +133,14 @@ const initialEventCount=initial.actions.filter(a=>a.minute===initialMinute).leng
 <script is:inline define:vars={{players:clientPlayers,duration:game.duration,defaultId:initial.player.id,basePath:base}}>
 (()=>{
  const svg=document.getElementById('wc-profile-chart'),select=document.getElementById('wc-select-player');
- const lines=[...document.querySelectorAll('#wc-profile-chart .wc-band-line')],area=document.getElementById('wc-line-area'),marks=document.getElementById('wc-event-markers'),goals=document.getElementById('wc-goal-marks');
+ const lines=[...document.querySelectorAll('#wc-profile-chart .wc-band-line')],area=document.getElementById('wc-line-area'),sustainedArea=document.getElementById('wc-sustained-area'),rhythmReference=document.getElementById('wc-rhythm-reference'),marks=document.getElementById('wc-event-markers'),goals=document.getElementById('wc-goal-marks');
  const cursor=document.getElementById('wc-inspect-cursor'),dot=document.getElementById('wc-inspect-dot');
  const slider=document.getElementById('wc-minute-slider'),count=document.getElementById('wc-minute-count'),chips=document.getElementById('wc-minute-actions');
  const readout=document.getElementById('wc-readout'),currA=document.getElementById('wc-now-activity'),currI=document.getElementById('wc-now-impact'),log=document.getElementById('wc-log');
  const minutes=document.getElementById('wc-moments');
+ const rhythmRibbon=document.getElementById('wc-presence-ribbon'),aboveShare=document.getElementById('wc-above-share'),aboveDetail=document.getElementById('wc-above-detail'),streak=document.getElementById('wc-longest-streak'),streakPeriod=document.getElementById('wc-longest-period'),strongMinutes=document.getElementById('wc-strong-minutes');
  const tooltip=document.getElementById('wc-profile-tooltip'),tipTitle=document.getElementById('wc-tooltip-title'),tipNumbers=document.getElementById('wc-tooltip-numbers'),tipActions=document.getElementById('wc-tooltip-actions');
- if(!svg||!select||lines.length!==3||!area||!marks||!goals||!slider||!count||!chips||!readout||!log||!minutes||!tooltip||!tipTitle||!tipNumbers||!tipActions)return;
+ if(!svg||!select||lines.length!==3||!area||!sustainedArea||!rhythmReference||!marks||!goals||!slider||!count||!chips||!readout||!log||!minutes||!tooltip||!tipTitle||!tipNumbers||!tipActions||!rhythmRibbon||!aboveShare||!aboveDetail||!streak||!streakPeriod||!strongMinutes)return;
  const ns='http://www.w3.org/2000/svg',fromX=m=>58+m/duration*1013,fromY=v=>317-v/100*287;
  let player,mode='activity',minute=0,filter='all';
  const label=a=>a.kind==='Pass'?(a.goalAssist?'PASSE DÉCISIVE':a.shotAssist?'Passe créant un tir':a.outcome==='Complete'?'Passe réussie':'Passe non réussie'):
@@ -167,6 +168,9 @@ const initialEventCount=initial.actions.filter(a=>a.minute===initialMinute).leng
   for(const path of lines)path.setAttribute('d',d);
   area.setAttribute('d',segments.map(s=>monotone(s)+' L '+s.at(-1).x+' 317 L '+s[0].x+' 317 Z').join(' '));
   area.setAttribute('fill',mode==='activity'?'#79e1ff':'#ffc77e');
+  sustainedArea.setAttribute('d',segments.map(s=>monotone(s)+' L '+s.at(-1).x+' '+fromY(50)+' L '+s[0].x+' '+fromY(50)+' Z').join(' '));
+  sustainedArea.setAttribute('display',mode==='activity'?'inline':'none');
+  rhythmReference.setAttribute('display',mode==='activity'?'inline':'none');
   marks.replaceChildren();goals.replaceChildren();
   const stacks=new Map();
   for(const a of player.events){
@@ -231,6 +235,22 @@ const initialEventCount=initial.actions.filter(a=>a.minute===initialMinute).leng
   }
   if(!relevant.length){const node=document.createElement('p');node.className='wc-no-action';node.textContent='Aucun événement de ce type pour ce joueur.';log.append(node);}
  }
+ function renderPresence(){
+  const summary=player.presence||{above:0,played:0,share:0,longest:0,longestStart:null,longestEnd:null,strong:0};
+  aboveShare.innerHTML=summary.share+'<small>%</small>';
+  aboveDetail.textContent=summary.above+' minutes sur '+summary.played+' évaluées';
+  streak.textContent=summary.longest+'′';
+  streakPeriod.textContent=summary.longestStart==null?'Aucune séquence':'de '+summary.longestStart+'′ à '+summary.longestEnd+'′';
+  strongMinutes.textContent=summary.strong+'′';
+  rhythmRibbon.replaceChildren();
+  for(let m=0;m<points().length;m++){
+   const score=points()[m].activity;
+   const segment=document.createElement('span');
+   segment.className='wc-presence-step '+(score==null?'off':score>75?'hot':score>50?'sustained':'quiet');
+   segment.title=m+'′ · '+(score==null?'hors terrain':Math.round(score)+'/100');
+   rhythmRibbon.append(segment);
+  }
+ }
  function choose(value,updateUrl=true){
   player=players.find(p=>p.id===Number(value))||players[0];if(!player)return;
   select.value=String(player.id);
@@ -246,7 +266,7 @@ const initialEventCount=initial.actions.filter(a=>a.minute===initialMinute).leng
   document.getElementById('wc-event-total').textContent=player.events.length;
   document.getElementById('wc-goals').textContent=player.events.filter(a=>a.kind==='Shot'&&a.outcome==='Goal').length;
   document.getElementById('wc-chart-title').textContent='Profil de '+player.name+' sur '+duration+' minutes';
-  chart();renderMoments();renderLog();setMinute(high?.m??player.entry);
+  chart();renderPresence();renderMoments();renderLog();setMinute(high?.m??player.entry);
  }
  select.addEventListener('change',()=>choose(select.value));
  document.querySelectorAll('[data-mode]').forEach(button=>button.addEventListener('click',()=>{
