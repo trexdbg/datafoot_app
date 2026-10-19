@@ -20,7 +20,7 @@ export function actionLabel(action) {
   })[kind] || kind;
 }
 
-export function computeActivity(events, duration = 125) {
+export function computeActivity(events, duration = 125, {entry = 0, exit = duration + 1} = {}) {
   const byMinute = Array.from({length: duration + 1}, () => []);
   for (const event of events) {
     if (Number.isInteger(event.minute) && event.minute >= 0 && event.minute <= duration)
@@ -28,7 +28,8 @@ export function computeActivity(events, duration = 125) {
   }
   let activity = ACTIVITY_RULES.start;
   const timeline = byMinute.map((items, minute) => {
-    if (minute > 0) activity = Math.max(ACTIVITY_RULES.floor, activity - ACTIVITY_RULES.decay);
+    if (minute < entry || minute >= exit) return {minute, activity: null, gain: 0, actions: 0, events: []};
+    if (minute > entry) activity = Math.max(ACTIVITY_RULES.floor, activity - ACTIVITY_RULES.decay);
     const gain = items.reduce((sum, event) => sum + actionImpact(event), 0);
     activity += gain;
     return {minute, activity, gain, actions: items.length, events: items};
@@ -54,4 +55,36 @@ export function monotonePath(points) {
     path += ` C ${(p.x+third).toFixed(2)} ${(p.y+tangent[i]*third).toFixed(2)} ${(q.x-third).toFixed(2)} ${(q.y-tangent[i+1]*third).toFixed(2)} ${q.x.toFixed(2)} ${q.y.toFixed(2)}`;
   }
   return path;
+}
+
+
+/** Lissage du TRACÉ seulement : le curseur et la donnée restent exacts. */
+export function smoothVisual(timeline, sigma = 1.55) {
+  const radius = Math.ceil(3 * sigma);
+  return timeline.map((p, i) => {
+    if (p.activity == null) return {...p};
+    let total = 0, weight = 0;
+    for(let j = Math.max(0,i-radius);j<=Math.min(timeline.length-1,i+radius);j++) {
+      if(timeline[j].activity == null) continue;
+      const w = Math.exp(-0.5*((i-j)/sigma)**2);
+      total+=timeline[j].activity*w;weight+=w;
+    }
+    return {...p, activity:Math.max(0,total/weight)};
+  });
+}
+
+/** Reconstitution d'un profil par joueur et de la moyenne des joueurs présents. */
+export function computeMatchProfiles(match) {
+  const profiles = match.players.map(player => {
+    const actions = match.actions.filter(a=>a.p===player.id).map(a=>({
+      minute:a.m,second:a.s,kind:a.k,outcome:a.o,playerId:a.p
+    }));
+    const {timeline} = computeActivity(actions,match.duration,{entry:player.entry,exit:player.exit??match.duration+1});
+    return {player,actions,timeline};
+  });
+  const team = Array.from({length:match.duration+1},(_, minute)=>{
+    const active=profiles.map(p=>p.timeline[minute]).filter(p=>p.activity!=null);
+    return {minute, activity:active.length?Number((active.reduce((sum,p)=>sum+p.activity,0)/active.length).toFixed(2)):0,actions:active.reduce((sum,p)=>sum+p.actions,0),players:active.length};
+  });
+  return {team, profiles};
 }
