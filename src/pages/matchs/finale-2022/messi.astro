@@ -1,0 +1,284 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import '../../../styles/messi-constellation.css';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const dataUrl = base + '/data/matches/2022-final-messi-passes.json';
+---
+<BaseLayout
+  title="La constellation de Messi — ses passes pendant la finale 2022 | DataFoot"
+  description="Une visualisation animée des passes de Lionel Messi, avec ses dix principaux partenaires en finale de la Coupe du monde 2022."
+  canonicalPath={base + '/matchs/finale-2022/messi/'}
+>
+  <div class="orbit-page">
+    <section class="shell orbit-hero">
+      <a class="orbit-back" href={base + '/'}>← RETOUR À DATAFOOT</a>
+      <div class="orbit-eyebrow">DATAFOOT / L'ATELIER DES VISUALISATIONS / 002</div>
+      <h1>La constellation <em>de Messi.</em></h1>
+      <p>Les passes comme des éclairs. Les connexions qui durent deviennent des autoroutes lumineuses.</p>
+      <div class="orbit-match"><span class="orbit-flag">🇦🇷</span> ARGENTINE <b>3 — 3</b> FRANCE <span class="orbit-flag">🇫🇷</span><span class="orbit-match-sub">FINALE · 18 DÉCEMBRE 2022</span></div>
+    </section>
+    <section class="shell orbit-experience" aria-label="Visualisation interactive des échanges avec Messi">
+      <div class="orbit-top">
+        <div class="orbit-top-left"><span class="orbit-live-dot"></span><span>PASS NETWORK / ARGENTINE 2022</span></div>
+        <span id="orbit-mode" class="orbit-mode">CHARGEMENT DES DONNÉES…</span>
+      </div>
+      <div class="orbit-layout">
+        <div class="orbit-map">
+          <canvas id="orbit-canvas" width="1100" height="630" role="img" aria-label="Messi au centre, dix partenaires autour. Les liens bleus représentent les passes données, les liens orange les passes reçues."></canvas>
+          <div class="orbit-canvas-tag">MESSI <span>↗ ↙</span> 10 PARTENAIRES</div>
+        </div>
+        <aside class="orbit-sidebar" aria-label="Statistiques des passes affichées">
+          <div class="orbit-player-badge"><span>10</span><div><small>POINT CENTRAL</small><strong>LIONEL MESSI</strong><small>ARGENTINE · N°10</small></div></div>
+          <div class="orbit-main-numbers">
+            <div><span>PASSES VISIBLES</span><strong id="orbit-total">0</strong></div>
+            <div class="orbit-number-grid"><div><span>↗ DONNÉES</span><strong id="orbit-given">0</strong></div><div><span>↙ REÇUES</span><strong id="orbit-received">0</strong></div></div>
+          </div>
+          <div class="orbit-focus"><span>CONNEXION ANALYSÉE</span><strong id="orbit-focus-name">TOUS LES PARTENAIRES</strong><p id="orbit-focus-details">Sélectionne un joueur autour de Messi ou dans le classement.</p></div>
+          <div class="orbit-rank-head">LES 10 CONNEXIONS <span>↙ / ↗</span></div>
+          <div id="orbit-rank" class="orbit-rank" aria-label="Sélection des partenaires"></div>
+        </aside>
+      </div>
+      <div class="orbit-controls">
+        <div class="orbit-transport">
+          <button type="button" id="orbit-play" class="orbit-play" aria-label="Mettre en pause">Ⅱ</button>
+          <button type="button" id="orbit-reset" class="orbit-restart" aria-label="Recommencer l'animation">↺</button>
+          <span class="orbit-time" id="orbit-clock">00′</span>
+        </div>
+        <div class="orbit-scrub"><label for="orbit-slider">PROGRESSION DU MATCH</label><input id="orbit-slider" type="range" min="0" max="125" step="0.1" value="0" aria-label="Aller à une minute du match" /><div><span>COUP D’ENVOI</span><span>90′</span><span>PROLONGATIONS · 125′</span></div></div>
+        <label class="orbit-speed" for="orbit-speed">VITESSE <select id="orbit-speed" aria-label="Vitesse de lecture"><option value="3">×1</option><option value="7" selected>×2</option><option value="14">×4</option><option value="28">×8</option></select></label>
+      </div>
+      <div class="orbit-foot">
+        <span><i class="orbit-swatch blue"></i> PASSE DE MESSI</span>
+        <span><i class="orbit-swatch amber"></i> PASSE VERS MESSI</span>
+        <span>L'ÉPAISSEUR = CUMUL DES PASSES RÉUSSIES</span>
+      </div>
+    </section>
+    <section class="shell orbit-notice" id="orbit-data-notice" aria-live="polite">
+      Le réseau se met à jour selon les données chargées.
+    </section>
+    <section class="shell orbit-explainer">
+      <div><div class="orbit-eyebrow">UNE AUTRE FAÇON DE LIRE LE JEU</div><h2>Ce ne sont pas<br/>des positions sur <em>un terrain.</em></h2></div>
+      <div>
+        <p>Messi occupe le centre de ce réseau : chaque joueur autour de lui représente une connexion, pas sa position sur le terrain. Chaque projectile lumineux correspond à une passe réussie ; plus deux joueurs échangent, plus leur liaison devient épaisse.</p>
+        <p>Les dix joueurs sont choisis selon leur <strong>nombre total de passes échangées avec Messi</strong> pendant la finale, prolongation incluse. Les passes impliquant d'autres partenaires ne sont pas dessinées. Les tirs au but sont exclus.</p>
+        <p>Lorsque les données réelles sont disponibles, elles proviennent des événements publics <a href="https://github.com/hudl/open-data" target="_blank" rel="noopener noreferrer">StatsBomb Open Data ↗</a> et d'un calcul reproductible dans DataFoot. <a href={dataUrl} id="orbit-download">JSON des passes ↗</a></p>
+        <div class="orbit-credit"><span>DONNÉES : STATSBOMB / HUDL</span><a href="https://github.com/hudl/open-data" target="_blank" rel="noopener noreferrer"><img loading="lazy" src="https://raw.githubusercontent.com/hudl/open-data/master/img/SB%20-%20Icon%20Lockup%20-%20Colour%20positive.png" alt="Logo StatsBomb" width="146" /></a></div>
+      </div>
+    </section>
+  </div>
+</BaseLayout>
+<script is:inline define:vars={{ dataUrl }}>
+  (() => {
+    'use strict';
+    const W = 1100, H = 630, CX = 550, CY = 315;
+    const canvas = document.getElementById('orbit-canvas');
+    const ctx = canvas?.getContext('2d');
+    if (!canvas || !ctx) return;
+    const el = (id) => document.getElementById(id);
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const names = ['Rodrigo De Paul', 'Enzo Fernández', 'Alexis Mac Allister', 'Julián Álvarez', 'Ángel Di María', 'Nahuel Molina', 'Cristian Romero', 'Nicolás Otamendi', 'Marcos Acuña', 'Leandro Paredes'];
+    const demo = () => {
+      // Exclusivement une simulation graphique. Ne jamais afficher ces valeurs
+      // comme des statistiques de la finale.
+      let seed = 2022;
+      const random = () => ((seed = (1664525 * seed + 1013904223) >>> 0) / 4294967296);
+      const players = names.map((name, i) => ({id:i+1,name,given:0,received:0,total:0}));
+      const passes = Array.from({length:170}, (_, i) => ({
+        minute:Math.min(124, 4 + Math.floor(i * 120 / 170 + random() * 2)),
+        second:Math.floor(random() * 60),index:i+1,
+        partner_id:1 + Math.floor(Math.pow(random(), 1.65) * 10),
+        direction:random() < .59 ? 'given' : 'received'
+      })).sort((a,b) => a.minute-b.minute || a.second-b.second || a.index-b.index);
+      for (const p of passes) {const n=players[p.partner_id-1];n[p.direction]++;n.total++;}
+      return {players,passes,match:{duration_minutes:125},summary:{shown_passes:passes.length},demo:true};
+    };
+    let dataset = demo();
+    let players = [];
+    let events = [];
+    let count = new Map();
+    let pulses = [];
+    let ripples = [];
+    let current = 0;
+    let cursor = 0;
+    let selected = null;
+    let playing = !reducedMotion;
+    let speed = 7;
+    let prev = 0;
+    let timestamp = 0;
+    const starfield = Array.from({length:80}, (_,i) => ({x:(i*379.19%W),y:(i*181.73%H),r:(i%4===0 ? 1.25 : .5),a:.11+(i%7)*.035}));
+
+    function endpoints(player) {
+      const i = players.findIndex(p=>p.id===player.id), theta = i / Math.max(1,players.length) * Math.PI*2 - Math.PI/2;
+      return {x:CX + Math.cos(theta)*372, y:CY + Math.sin(theta)*235};
+    }
+    const key = (id, direction) => id+':'+direction;
+    function resetState(position=0) {
+      current=Math.max(0,Math.min(125,position));cursor=0;count=new Map();pulses=[];ripples=[];
+      while(cursor<events.length && eventAt(events[cursor])<=current) {increase(events[cursor],false);cursor++;}
+      updateText();draw(timestamp);
+    }
+    const eventAt = (evt) => evt.minute + evt.second/60;
+    function increase(evt, animated) {
+      const k=key(evt.partner_id,evt.direction);
+      count.set(k,(count.get(k)||0)+1);
+      if (animated) {pulses.push({...evt,born:timestamp}); if(pulses.length>40)pulses.shift();}
+    }
+    function pair(id) {return {given:count.get(key(id,'given'))||0,received:count.get(key(id,'received'))||0};}
+    function startData(data) {
+      if (!data || !Array.isArray(data.players) || !Array.isArray(data.passes)) throw Error('Format réseau invalide');
+      players=data.players.slice(0,10).map(p=>({id:p.id,name:String(p.name),total:Number(p.total)||0}));
+      const ids=new Set(players.map(p=>p.id));
+      events=data.passes.filter(p=>ids.has(p.partner_id) && (p.direction==='given'||p.direction==='received'))
+        .map(p=>({...p,minute:Number(p.minute),second:Number(p.second)}))
+        .filter(p=>Number.isFinite(p.minute)&&Number.isFinite(p.second))
+        .sort((a,b)=>eventAt(a)-eventAt(b)||Number(a.index)-Number(b.index));
+      dataset=data;selected=null;
+      el('orbit-mode').textContent=data.demo?'MODE DÉMONSTRATION · TRAJETS SIMULÉS':'● DONNÉES RÉELLES · STATSBOMB';
+      el('orbit-mode').classList.toggle('is-real',!data.demo);
+      el('orbit-data-notice').textContent=data.demo
+        ? 'Démonstration graphique uniquement : les 170 trajectoires et leurs fréquences sont fictives. Aucune de ces valeurs ne doit être interprétée comme une statistique de Messi. Les vraies passes seront chargées dès publication du JSON StatsBomb dérivé.'
+        : 'Données réelles : passes réussies entre Messi et ses dix principaux partenaires, événements StatsBomb de la finale 2022. Les passes des autres coéquipiers ne figurent pas sur ce graphique.';
+      el('orbit-download').hidden=!!data.demo;
+      makeRank();
+      resetState();
+      refreshPlay();
+    }
+    function makeRank() {
+      const rank=el('orbit-rank');rank.replaceChildren();
+      const all=document.createElement('button');all.type='button';all.className='orbit-rank-all';all.textContent='◉ Toutes les connexions';all.addEventListener('click',()=>choose(null));rank.append(all);
+      players.forEach((p,i)=>{
+        const b=document.createElement('button');b.type='button';b.className='orbit-rank-row';b.dataset.player=String(p.id);
+        const idx=document.createElement('span');idx.className='orbit-rank-num';idx.textContent=String(i+1).padStart(2,'0');
+        const nm=document.createElement('span');nm.textContent=p.name;
+        const val=document.createElement('strong');val.dataset.count=String(p.id);val.textContent='0';
+        b.append(idx,nm,val);b.title='Isoler les passes avec '+p.name;b.addEventListener('click',()=>choose(p.id));rank.append(b);
+      });
+    }
+    function choose(id) {selected=selected===id?null:id;updateText();draw(timestamp);}
+    function updateText() {
+      const ids=selected===null?players.map(p=>p.id):[selected];
+      let given=0,received=0;
+      ids.forEach(id=>{const pairCount=pair(id);given+=pairCount.given;received+=pairCount.received;});
+      el('orbit-total').textContent=String(given+received);
+      el('orbit-given').textContent=String(given);
+      el('orbit-received').textContent=String(received);
+      el('orbit-clock').textContent=String(Math.min(125,Math.floor(current))).padStart(2,'0')+'′';
+      el('orbit-slider').value=String(current);
+      const partner=players.find(p=>p.id===selected);
+      el('orbit-focus-name').textContent=partner?partner.name.toUpperCase():'TOUS LES PARTENAIRES';
+      el('orbit-focus-details').textContent=partner?given+' passes de Messi · '+received+' passes vers Messi':'Clique sur un partenaire pour isoler ses passes dans le temps.';
+      el('orbit-rank').querySelectorAll('[data-player]').forEach(node=>{
+        const id=Number(node.dataset.player),counts=pair(id);
+        node.classList.toggle('is-selected',id===selected);
+        node.querySelector('[data-count]').textContent=String(counts.given+counts.received);
+      });
+      el('orbit-rank').querySelector('.orbit-rank-all')?.classList.toggle('is-selected',selected===null);
+    }
+    function refreshPlay() {
+      const b=el('orbit-play');b.textContent=playing?'Ⅱ':'▶';b.setAttribute('aria-label',playing?'Mettre en pause':'Reprendre la lecture');
+    }
+    function drawBase(t) {
+      ctx.fillStyle='#07101f';ctx.fillRect(0,0,W,H);
+      const haze=ctx.createRadialGradient(CX,CY,20,CX,CY,550);
+      haze.addColorStop(0,'#15354c');haze.addColorStop(.45,'#0a1b31');haze.addColorStop(1,'#070f1c');
+      ctx.fillStyle=haze;ctx.fillRect(0,0,W,H);
+      for(const star of starfield){ctx.globalAlpha=star.a*(.88+.12*Math.sin(t*.001+star.x));ctx.fillStyle='#b5d9ff';ctx.beginPath();ctx.arc(star.x,star.y,star.r,0,Math.PI*2);ctx.fill();}
+      ctx.globalAlpha=1;
+      ctx.save();ctx.setLineDash([2,10]);ctx.strokeStyle='#5c86a625';ctx.lineWidth=1;
+      for(let r=100;r<=440;r+=85){ctx.beginPath();ctx.ellipse(CX,CY,r,r*.64,0,0,2*Math.PI);ctx.stroke();}
+      ctx.beginPath();ctx.moveTo(CX,26);ctx.lineTo(CX,H-26);ctx.moveTo(60,CY);ctx.lineTo(W-60,CY);ctx.stroke();ctx.restore();
+      ctx.fillStyle='#88aac1';ctx.font='12px monospace';ctx.fillText('CONNEXIONS / VUE RELATIONNELLE',34,34);
+      ctx.textAlign='right';ctx.fillText('TOP 10 · PARTENAIRES DU MATCH',W-34,34);ctx.textAlign='left';
+    }
+    function line(x1,y1,x2,y2,color,width,alpha=1,glow=0) {
+      ctx.save();ctx.globalAlpha=alpha;ctx.strokeStyle=color;ctx.lineWidth=width;ctx.lineCap='round';ctx.shadowBlur=glow;ctx.shadowColor=color;
+      ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();ctx.restore();
+    }
+    function drawEdges() {
+      for(const p of players){
+        const pos=endpoints(p),dx=pos.x-CX,dy=pos.y-CY,len=Math.hypot(dx,dy);
+        const nx=-dy/len*4,ny=dx/len*4,active=selected===null||p.id===selected;
+        const counts=pair(p.id);
+        line(CX,CY,pos.x,pos.y,'#52718a',.8,active?.24:.055);
+        for(const [direction,color,sgn] of [['given','#47e6ff',1],['received','#ffb667',-1]]){
+          const n=counts[direction];if(!n)continue;
+          const width=Math.min(18,.7+Math.sqrt(n)*2.5);
+          line(CX+nx*sgn,CY+ny*sgn,pos.x+nx*sgn,pos.y+ny*sgn,color,width*2.5,active?.11:.018,active?18:0);
+          line(CX+nx*sgn,CY+ny*sgn,pos.x+nx*sgn,pos.y+ny*sgn,color,width,active?.67:.08,active?10:0);
+          line(CX+nx*sgn,CY+ny*sgn,pos.x+nx*sgn,pos.y+ny*sgn,'#ffffff',Math.max(.8,width*.13),active?.38:.035);
+        }
+      }
+    }
+    function drawPulses(t) {
+      pulses=pulses.filter(p=>t-p.born<1050);
+      ripples=ripples.filter(p=>t-p.born<720);
+      for(const p of pulses) {
+        if(selected!==null&&selected!==p.partner_id)continue;
+        const pos=endpoints(players.find(n=>n.id===p.partner_id)),from=p.direction==='given'?{x:CX,y:CY}:pos,to=p.direction==='given'?pos:{x:CX,y:CY};
+        const s=Math.min(1,(t-p.born)/790),e=1-(1-s)*(1-s),x=from.x+(to.x-from.x)*e,y=from.y+(to.y-from.y)*e;
+        const c=p.direction==='given'?'#53e9ff':'#ffc07d';
+        const trail=Math.min(.25,e),tx=from.x+(to.x-from.x)*(e-trail),ty=from.y+(to.y-from.y)*(e-trail);
+        line(tx,ty,x,y,c,4,1,18);
+        ctx.save();ctx.fillStyle='#fff';ctx.shadowBlur=21;ctx.shadowColor=c;ctx.beginPath();ctx.arc(x,y,4.1,0,7);ctx.fill();ctx.restore();
+        if(s>=1&&!p.hit){p.hit=true;ripples.push({born:t,x:to.x,y:to.y,color:c});}
+      }
+      for(const p of ripples){const s=(t-p.born)/720;ctx.save();ctx.strokeStyle=p.color;ctx.globalAlpha=(1-s)*.7;ctx.lineWidth=2;ctx.beginPath();ctx.arc(p.x,p.y,9+22*s,0,7);ctx.stroke();ctx.restore();}
+    }
+    function drawNodes(t) {
+      for(const p of players){
+        const pos=endpoints(p),active=selected===null||selected===p.id,tot=pair(p.id),total=tot.given+tot.received;
+        ctx.save();ctx.globalAlpha=active?1:.22;
+        const glow=ctx.createRadialGradient(pos.x,pos.y,4,pos.x,pos.y,40);
+        glow.addColorStop(0,'#50ddff35');glow.addColorStop(1,'#50ddff00');ctx.fillStyle=glow;ctx.beginPath();ctx.arc(pos.x,pos.y,40,0,7);ctx.fill();
+        ctx.fillStyle='#112b46';ctx.strokeStyle=selected===p.id?'#ffffff':'#4a839e';ctx.lineWidth=selected===p.id?2.5:1.5;
+        ctx.beginPath();ctx.arc(pos.x,pos.y,22+Math.min(7,Math.sqrt(total)*.8),0,7);ctx.fill();ctx.stroke();
+        ctx.fillStyle='#e0f9ff';ctx.textAlign='center';ctx.font='700 15px ui-sans-serif,system-ui';ctx.fillText(String(total),pos.x,pos.y+5);
+        const name = p.name.length>21?p.name.slice(0,20)+'…':p.name;
+        ctx.font='600 12px ui-sans-serif,system-ui';ctx.fillStyle='#e1e9f8';
+        ctx.fillText(name,pos.x,pos.y+(pos.y<CY?-40:49));
+        ctx.restore();
+      }
+      const glow=ctx.createRadialGradient(CX,CY,10,CX,CY,108);
+      glow.addColorStop(0,'#40e4ff45');glow.addColorStop(1,'#40e4ff00');
+      ctx.fillStyle=glow;ctx.beginPath();ctx.arc(CX,CY,108,0,7);ctx.fill();
+      ctx.save();ctx.shadowBlur=28;ctx.shadowColor='#5feaff';ctx.fillStyle='#0a324b';ctx.strokeStyle='#6af0ff';ctx.lineWidth=3;
+      ctx.beginPath();ctx.arc(CX,CY,48+Math.sin(t/600)*1.2,0,7);ctx.fill();ctx.stroke();ctx.restore();
+      ctx.fillStyle='#edfbff';ctx.textAlign='center';ctx.font='800 19px ui-sans-serif,system-ui';ctx.fillText('MESSI',CX,CY+7);
+      ctx.fillStyle='#82bfd5';ctx.font='11px monospace';ctx.fillText('N° 10',CX,CY+23);ctx.textAlign='left';
+    }
+    function draw(t) {drawBase(t);drawEdges();drawPulses(t);drawNodes(t);}
+    function frame(t) {
+      if(!prev)prev=t;
+      const dt=Math.min(.08,Math.max(0,(t-prev)/1000));prev=t;timestamp=t;
+      if(playing) {
+        const next=Math.min(125,current+dt*speed);
+        while(cursor<events.length && eventAt(events[cursor])<=next){
+          increase(events[cursor],true);cursor++;
+        }
+        current=next;updateText();
+        if(current>=125){playing=false;refreshPlay();}
+      }
+      draw(t);requestAnimationFrame(frame);
+    }
+    canvas.addEventListener('click',(e)=>{
+      const rect=canvas.getBoundingClientRect(),x=(e.clientX-rect.left)/rect.width*W,y=(e.clientY-rect.top)/rect.height*H;
+      const target=players.find(p=>{const n=endpoints(p);return Math.hypot(x-n.x,y-n.y)<42;});
+      if(target)choose(target.id); else if(Math.hypot(x-CX,y-CY)<66)choose(null);
+    });
+    el('orbit-play').addEventListener('click',()=>{
+      if(current>=125)resetState(0);
+      playing=!playing;refreshPlay();
+    });
+    el('orbit-reset').addEventListener('click',()=>{resetState(0);playing=!reducedMotion;refreshPlay();});
+    el('orbit-slider').addEventListener('input',(e)=>resetState(Number(e.target.value)));
+    el('orbit-speed').addEventListener('change',(e)=>speed=Number(e.target.value));
+    startData(dataset);
+    fetch(dataUrl,{cache:'no-store'}).then(async res=>{
+      if(!res.ok) throw Error('Données non encore publiées');
+      const real=await res.json();
+      if(real.schema_version!==1||real.match?.id!==3869685||real.selection?.completed_only!==true||real.players?.length!==10||!real.passes?.length)throw Error('JSON StatsBomb invalide');
+      startData(real);
+    }).catch(()=>{/* Le mode démonstration reste explicitement indiqué. */});
+    requestAnimationFrame(frame);
+  })();
+</script>
