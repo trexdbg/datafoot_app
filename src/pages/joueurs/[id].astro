@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import ActivityMiniChart from '../../components/ActivityMiniChart.astro';
-import {games,playerList,playedGames,commonScale,getProfile,mbappeId,matchHref,playerHref,formattedDate,matchTitle,opposingTeam,playerGoals} from '../../lib/explorer-data.mjs';
+import {games,playerList,playedGames,playerComparisonScale,getProfile,mbappeId,matchHref,playerHref,formattedDate,matchTitle,opposingTeam,playerGoals} from '../../lib/explorer-data.mjs';
 import '../../styles/match-explorer.css';
 export function getStaticPaths(){
  return playerList.map(player=>({params:{id:player.id===mbappeId?'mbappe':String(player.id)},props:{playerId:player.id}}));
@@ -13,6 +13,7 @@ const player=playerList.find(p=>p.id===playerId)!;
 const selected=[...playedGames(playerId)].reverse();
 const goals=selected.reduce((sum,game)=>sum+playerGoals(game,playerId).length,0);
 const main=playerId===mbappeId;
+const sharedScale=playerComparisonScale(playerId);
 ---
 <BaseLayout title={player.name+' · matchs et courbes de la Coupe du monde 2022 | DataFoot'} description={'Retrouver les profils événementiels de '+player.name+' pour chaque rencontre avec la France au Mondial 2022.'} canonicalPath={base+'/joueurs/'+(main?'mbappe':playerId)+'/'}>
  <div class="ax-root"><div class="shell ax-wrap">
@@ -34,7 +35,7 @@ const main=playerId===mbappeId;
     <div class="ax-card-kicker">{formattedDate(game.date)} · {profile.player.entry===0?'TITULAIRE':'ENTRÉE '+profile.player.entry+'′'}</div>
     <a href={matchHref(base,game)} class="ax-match-title">{matchTitle(game)} <span>↗</span></a>
     <p class="ax-card-meta">{profile.actions.length} actions · {made} passes réussies · {won} dribbles réussis</p>
-    <ActivityMiniChart duration={game.duration} maxScale={commonScale} series={[{label:player.name,timeline:profile.timeline,color:'#fc8ab9'},{label:'France',timeline:game.team,color:'#59caff'}]} goals={playerGoals(game,playerId)} caption={'Activité de '+player.name+' face à '+opposingTeam(game)+' comparée à la France'}/>
+    <ActivityMiniChart duration={game.duration} maxScale={sharedScale} series={[{label:player.name,timeline:profile.timeline,color:'#fc8ab9'},{label:'France',timeline:game.team,color:'#59caff'}]} goals={playerGoals(game,playerId)} caption={'Activité de '+player.name+' face à '+opposingTeam(game)+' comparée à la France'}/>
     <div class="ax-card-footer"><a href={matchHref(base,game)}>Afficher l’analyse du match <span>→</span></a><a href={base+'/equipes/france/'}>Tous les matchs</a></div>
    </article>;
   })}
