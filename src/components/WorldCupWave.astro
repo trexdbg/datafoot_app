@@ -22,7 +22,7 @@ const xTicks=[0,45,90,duration].filter((v,i,a)=>v<=duration&&a.indexOf(v)===i);
 const encoded=JSON.stringify(timeline.map(p=>[p.activity,p.impact??null,p.actions??0,(p.events??[]).slice(0,5).map(e=>(e.playerName?e.playerName+' · ':'')+actionLabel(e)+(pulsePenalty(e)>0?' · malus −'+pulsePenalty(e).toFixed(2):'')),p.penaltyGain??0]));
 const clipPrefix='wc-bands-'+Math.random().toString(36).slice(2,11);
 ---
-<div class:list={['wc-wave-shell',compact&&'small']} data-pulse-wave data-duration={duration} data-values={encoded} data-metric={metric} data-name={title}>
+<div class:list={['wc-wave-shell',compact&&'small']} data-pulse-wave data-duration={duration} data-values={encoded} data-metric={metric} data-name={title} data-peak-minute={max?.minute??0}>
  <svg class="wc-wave" viewBox="0 0 580 198" role="img" aria-label={title+'. Graphique interactif : déplacer la souris, toucher le graphique ou utiliser les flèches pour lire chaque minute.'} tabindex="0">
   <rect width="580" height="198" rx="13" fill="#071a2d"/>
   <defs>
@@ -43,14 +43,13 @@ const clipPrefix='wc-bands-'+Math.random().toString(36).slice(2,11);
   <line data-wave-cursor x1="33" x2="33" y1={top} y2={bottom} stroke="#d9f5ff" stroke-dasharray="4 4" stroke-width="1.6" visibility="hidden" pointer-events="none"/>
   <circle data-wave-point cx="33" cy={bottom} r="6" fill="#f7ffff" stroke={accent} stroke-width="2.5" visibility="hidden" pointer-events="none"/>
  </svg>
- <div class="wc-wave-tooltip" data-wave-tooltip hidden aria-hidden="true"><strong data-tip-minute>—</strong><span data-tip-values>—</span><span data-tip-actions>—</span></div>
  <div class="wc-wave-readout" aria-live="off">
    <span data-wave-minute>Survole ou touche la courbe</span>
    <span data-wave-activity>Activité <strong>—</strong></span>
    <span data-wave-impact>Impact <strong>—</strong></span>
    <span data-wave-events>Actions <strong>—</strong></span>
  </div>
- <p class="wc-wave-action-summary" data-wave-event-list>Choisis une minute sur la courbe pour découvrir les actions.</p>
+ <div class="wc-wave-action-summary" data-wave-event-list aria-live="off"><strong data-wave-event-heading>À explorer</strong><div data-wave-event-tags>Survole, touche la courbe ou utilise les flèches pour retrouver les actions.</div></div>
 </div>
 <script>
 (() => {
@@ -65,11 +64,9 @@ const clipPrefix='wc-bands-'+Math.random().toString(36).slice(2,11);
   const impact=shell.querySelector<HTMLElement>('[data-wave-impact] strong');
   const events=shell.querySelector<HTMLElement>('[data-wave-events] strong');
   const eventList=shell.querySelector<HTMLElement>('[data-wave-event-list]');
-  const tooltip=shell.querySelector<HTMLElement>('[data-wave-tooltip]');
-  const tipMinute=shell.querySelector<HTMLElement>('[data-tip-minute]');
-  const tipValues=shell.querySelector<HTMLElement>('[data-tip-values]');
-  const tipActions=shell.querySelector<HTMLElement>('[data-tip-actions]');
-  if(!svg||!cursor||!point||!minuteLabel||!activity||!impact||!events||!eventList||!tooltip||!tipMinute||!tipValues||!tipActions)return;
+  const eventHeading=shell.querySelector<HTMLElement>('[data-wave-event-heading]');
+  const eventTags=shell.querySelector<HTMLElement>('[data-wave-event-tags]');
+  if(!svg||!cursor||!point||!minuteLabel||!activity||!impact||!events||!eventList||!eventHeading||!eventTags)return;
   const timeline=JSON.parse(shell.dataset.values||'[]') as Array<[number|null,number|null,number,string[],number]>;
   const duration=Number(shell.dataset.duration||'90');
   const metric=shell.dataset.metric==='impact'?1:0;
@@ -93,17 +90,31 @@ const clipPrefix='wc-bands-'+Math.random().toString(36).slice(2,11);
    impact.textContent=current[1]==null?'—':Math.round(current[1])+'/100';
    events.textContent=String(current[2]||0);
    const names=current[3]||[];
-   eventList.textContent=names.length?names.join(' · ')+(current[2]>names.length?' · +'+(current[2]-names.length)+' autres':''):current[2]?'Événements collectifs : ouvre le match pour les actions individuelles.':current[0]==null?'Joueur hors du terrain.':'Aucune action enregistrée : les impulsions décroissent.';
+   const activityLevel=current[metric]==null?'Hors terrain':current[metric]!<25?'Rythme discret':current[metric]!>75?'Temps fort':'Dans le jeu';
+   eventHeading.textContent=minute+'′ · '+activityLevel;
+   eventTags.replaceChildren();
+   if(names.length){
+     for(const label of names){
+       const chip=document.createElement('span');
+       chip.className='wc-wave-event-chip';
+       chip.textContent=label;
+       eventTags.append(chip);
+     }
+     if(current[2]>names.length){
+       const more=document.createElement('span');
+       more.className='wc-wave-event-more';
+       more.textContent='+'+(current[2]-names.length)+' autres actions';
+       eventTags.append(more);
+     }
+   } else {
+     const description=document.createElement('span');
+     description.textContent=current[0]==null?'Joueur hors du terrain.':current[2]?'Actions collectives à cette minute.':'Aucune action enregistrée : les impulsions précédentes s’atténuent.';
+     eventTags.append(description);
+   }
    const v=current[metric];
    const color=v==null?'#52D3EF':v<25?'#8A9DB8':v>75?'#B8F27C':'#52D3EF';
    point.setAttribute('stroke',color);
-   tooltip.hidden=false;
-   tooltip.style.left=Math.max(20,Math.min(80,x/580*100))+'%';
-   tooltip.style.top=Math.max(5,Math.min(svg.clientHeight-78,(v==null?70:156-v/100*137)/198*svg.clientHeight-81))+'px';
-   tooltip.style.borderColor=color;
-   tipMinute.textContent=minute+'′ · '+(v==null?'Hors terrain':v<25?'Rythme discret':v>75?'Temps fort':'Dans le jeu');
-   tipValues.textContent='Activité '+(current[0]==null?'—':Math.round(current[0])+'/100')+' · Impact '+(current[1]==null?'—':Math.round(current[1])+'/100');
-   tipActions.textContent=names.length?names.slice(0,3).join(' · ')+(current[2]>3?' · +'+(current[2]-3)+' autres':''):(current[0]==null?'Hors terrain':current[2]+' action'+(current[2]===1?'':'s')+' à cette minute');
+   eventList.style.borderLeftColor=color;
    shell.classList.add('is-inspecting');
   };
   const fromPointer=(event:PointerEvent)=>{
@@ -111,7 +122,7 @@ const clipPrefix='wc-bands-'+Math.random().toString(36).slice(2,11);
    select(((event.clientX-rect.left)/rect.width*580-33)/515*duration);
   };
   svg.addEventListener('pointermove',fromPointer);
-  svg.addEventListener('pointerdown',event=>{fromPointer(event);});
+  svg.addEventListener('pointerdown',fromPointer);
   svg.addEventListener('click',event=>{event.preventDefault();event.stopPropagation();});
   svg.addEventListener('keydown',event=>{
    if(['ArrowLeft','ArrowRight','Home','End'].includes(event.key)){
@@ -120,6 +131,8 @@ const clipPrefix='wc-bands-'+Math.random().toString(36).slice(2,11);
     select(next);
    }
   });
+  // Avoir immédiatement une information utile, même sans souris et sur mobile.
+  select(Number(shell.dataset.peakMinute||0));
  });
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply,{once:true});
  else apply();
