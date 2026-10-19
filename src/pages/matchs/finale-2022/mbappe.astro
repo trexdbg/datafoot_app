@@ -2,7 +2,7 @@
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import profile from '../../../data/matches/2022-final-mbappe.json';
 import actionsData from '../../../data/matches/2022-final-mbappe-actions.json';
-import {ACTIVITY_RULES, actionImpact, actionLabel, computeActivity, monotonePath} from '../../../lib/match-activity.mjs';
+import {actionImpact, actionLabel, computeActivity, monotonePath} from '../../../lib/match-activity.mjs';
 import '../../../styles/match-weather.css';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
@@ -11,8 +11,8 @@ const rawEvents = actionsData.events;
 const maxActivity = Math.max(...timeline.map(point => point.activity));
 const axisMax = Math.max(100, Math.ceil(maxActivity / 25) * 25);
 const left = 66, right = 1170, top = 218, bottom = 530;
-const x = minute => left + minute / profile.match.duration_minutes * (right - left);
-const y = activity => bottom - activity / axisMax * (bottom - top);
+const x = (minute: number) => left + minute / profile.match.duration_minutes * (right - left);
+const y = (activity: number) => bottom - activity / axisMax * (bottom - top);
 const smooth = monotonePath(timeline.map(p => ({x:x(p.minute),y:y(p.activity)})));
 const area = smooth + ' L ' + right + ' ' + bottom + ' L ' + left + ' ' + bottom + ' Z';
 const xTicks = [0,15,30,45,60,75,90,105,120];
