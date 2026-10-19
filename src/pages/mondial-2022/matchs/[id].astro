@@ -28,7 +28,7 @@ const secondTeam=teamTimeline(game,game.away);
  </div>
  <WorldCupNav active="matches"/>
  <div class="wc-stat-bar"><span>Événements <strong>{actions.toLocaleString('fr-FR')}</strong></span><span>Joueurs recensés <strong>{allPlayers.length}</strong></span><span>Buts <strong>{game.goals.length}</strong></span><span>Durée <strong>{game.duration}′</strong></span></div>
- <WorldCupMatchComparison home={labelCountry(game.home)} away={labelCountry(game.away)} homeFlag={flag(game.home)} awayFlag={flag(game.away)} first={firstTeam} second={secondTeam} duration={game.duration} goals={game.goals.map(goal=>({minute:goal.minute,team:goal.team===game.home?labelCountry(game.home):labelCountry(game.away)}))}/>
+ <WorldCupMatchComparison home={labelCountry(game.home)} away={labelCountry(game.away)} homeCountry={game.home} awayCountry={game.away} first={firstTeam} second={secondTeam} duration={game.duration} goals={game.goals.map(goal=>({minute:goal.minute,team:goal.team===game.home?labelCountry(game.home):labelCountry(game.away)}))}/>
  <div class="wc-country-shortcuts" aria-label="Accès aux pays">
    <span>Explorer les sélections séparément :</span>
    {teams.map(team=><a href={countryUrl(base,team)}><CountryFlag country={team} /> {labelCountry(team)} · parcours du pays →</a>)}
