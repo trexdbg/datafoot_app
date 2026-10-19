@@ -8,6 +8,7 @@
     "build": "astro check && astro build",
     "test:pulse": "node --test tests/match-pulse.test.mjs",
     "test:worldcup": "node --test tests/worldcup-ingestion.test.mjs",
+    "test:browser": "node --test tests/browser-inline-smoke.test.mjs",
     "data:worldcup": "node scripts/build-worldcup-2022.mjs",
     "preview": "astro preview",
     "check": "astro check"
