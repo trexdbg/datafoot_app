@@ -154,6 +154,7 @@ export function bootPassWars(){
   const source=root.dataset.base+'/data/players/';
   const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   let meta,original=[],filtered=[],events=[],players=[],positions=new Map(),counts=new Map(),palette=new Map();
+  let careerReceiverIds=new Set();
   const colorOf=id=>palette.get(id)||playerColor(id);
   let cursor=0,calendarPosition=0,timelineFirst=null,timelineLast=null;
   let prev=0,lastText=0,playing=false,battle=false,speed=4,focus=null,sort='total',selectedMonth=null;
@@ -285,7 +286,11 @@ export function bootPassWars(){
   function build(){
     const team=$('pw-team').value,season=$('pw-season').value,competition=$('pw-competition').value;
     filtered=original.filter(e=>(!team||e.team===team)&&(!season||e.season===season)&&(!competition||e.competition===competition));
-    players=tally(filtered);locate();
+    // Les 501 passes reçues sont un seuil de PARCOURS, pas un seuil par saison.
+    // Les filtres modifient les volumes, jamais la définition des partenaires.
+    players=eligiblePartners(filtered,0,Infinity)
+      .filter(p=>careerReceiverIds.has(p.id)).slice(0,30);
+    locate();
     preloadPortrait(MESSI_ID);
     players.forEach(p=>preloadPortrait(p.id));
     renderPhotoCredits();
@@ -325,7 +330,7 @@ export function bootPassWars(){
     // Crédit d'animation : débit constant, indépendant des paquets de dates.
     // On ne saute jamais une passe pour rattraper le calendrier.
     flightCredit=Math.min(160,flightCredit+dt*rate);
-    let budget=Math.min(100,Math.floor(flightCredit),
+    let budget=Math.min(battle?70:40,Math.floor(flightCredit),
       MAX_ACTIVE_BALLS-balls.length);
     while(budget>0&&releaseCursor<cursor){
       const event=events[releaseCursor++];
@@ -632,6 +637,7 @@ export function bootPassWars(){
          info.summary.total!==stream.events.length||info.scope.complete_career!==false)
         throw Error('Données de provenance ou de structure invalides');
       meta=info;original=stream.events;
+      careerReceiverIds=new Set(meta.partners.filter(p=>p.given>=MIN_PARTNER_PASSES).map(p=>p.id));
       palette=createPlayerPalette(meta.partners);
       choices('pw-team',meta.filters.teams);choices('pw-season',meta.filters.seasons);
       choices('pw-competition',meta.filters.competitions);
