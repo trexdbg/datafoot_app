@@ -20,7 +20,7 @@ const goals=matches.reduce((sum,g)=>sum+g.goals.filter(goal=>goal.team===country
  <header class="wc-detail-head"><div><p class="wc-eyebrow">SÉLECTION · COUPE DU MONDE 2022</p><h1><span aria-hidden="true"><CountryFlag country={country} /></span> <em>{labelCountry(country)}</em></h1><p>Son chemin dans la compétition, match après match, puis chaque joueur recensé. Les courbes sont propres à cette sélection, sans ligne adverse superposée.</p></div><div class="wc-detail-number"><strong>{matches.length}</strong><span>MATCHS DISPUTÉS</span></div></header>
  <WorldCupNav active="countries"/>
  <div class="wc-stat-bar"><span>Matchs <strong>{matches.length}</strong></span><span>Victoires avant séance de tirs au but <strong>{wins}</strong></span><span>Buts recensés <strong>{goals}</strong></span><span>Joueurs <strong>{players.length}</strong></span></div>
- <section><div class="wc-section-head"><div><p class="wc-eyebrow">PARCOURS DE {labelCountry(country).toUpperCase()}</p><h2>Les matchs, dans l’ordre.</h2><p>Chaque courbe indique l’activité moyenne des joueurs de {labelCountry(country)} présents à chaque minute. Ouvre la rencontre pour accéder aux profils individuels.</p></div></div>
+ <section><div class="wc-section-head"><div><p class="wc-eyebrow">PARCOURS DE {labelCountry(country).toUpperCase()}</p><h2>Les matchs, dans l’ordre.</h2><p>Chaque courbe indique l’activité moyenne des joueurs de champ de {labelCountry(country)} présents à chaque minute. Le gardien dispose d’une courbe propre, avec un niveau neutre sans intervention. Ouvre la rencontre pour accéder aux profils individuels.</p></div></div>
  <div class="wc-card-grid">
  {matches.map(game=>{
   const timeline=teamTimeline(game,country);
