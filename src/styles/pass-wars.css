@@ -31,9 +31,7 @@
 .pw-canvas-legend{display:flex;flex-wrap:wrap;gap:1.6rem;align-items:center;border-top:1px solid #21394f;padding:.9rem 1.15rem;color:#a7c6d9;font-size:.66rem;letter-spacing:.055em}
 .pw-canvas-legend b{color:#ebf8ff}
 .pw-swatch{width:18px;height:3px;display:inline-block;vertical-align:middle;margin-right:.25rem;border-radius:8px}
-.pw-swatch.cyan{background:#50e7ff;box-shadow:0 0 12px #50e7ff}
-.pw-swatch.orange{background:#ff9470;box-shadow:0 0 12px #ff9470}
-.pw-swatch.line{background:linear-gradient(90deg,#50e7ff,#ff9470);height:6px}
+.pw-swatch.palette{background:linear-gradient(90deg,#ff648d,#ffcd52,#62eaa9,#61aeff,#c67dff);height:6px;width:48px;box-shadow:0 0 10px #76b9ff77}
 .pw-aside{border-left:1px solid #314e64;background:linear-gradient(#152b3e,#0c1b2e);padding:1.25rem;min-width:0;display:flex;flex-direction:column}
 .pw-side-title,.pw-leader-title{display:flex;justify-content:space-between;color:#8aafc4;letter-spacing:.12em;font-size:.65rem;font-weight:850}
 .pw-side-title{padding-bottom:1.3rem;border-bottom:1px solid #3b576c}
@@ -42,11 +40,11 @@
 .pw-score-line strong{display:block;font-size:3.65rem;line-height:1.25;color:#f5ffff;letter-spacing:-.09em;font-variant-numeric:tabular-nums}
 .pw-duel{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin:.8rem 0 .65rem}
 .pw-duel span{font-size:.63rem;font-weight:800;letter-spacing:.04em}
-.pw-messi-given{color:#67edff}.pw-messi-received{color:#ffae83}
+.pw-messi-given{color:#daebf4}.pw-messi-received{color:#a9c2d1}
 .pw-duel strong{font-size:2rem;line-height:1.35;display:block;letter-spacing:-.035em;font-variant-numeric:tabular-nums}
 .pw-score-ratio{height:8px;display:flex;background:#223c51;border-radius:15px;overflow:hidden}
-#pw-ratio-given{background:#50e7ff;width:50%;box-shadow:0 0 12px #50e7ff}
-#pw-ratio-received{background:#ff9470;width:50%;box-shadow:0 0 12px #ff9470}
+#pw-ratio-given{background:#ccdfed;width:50%}
+#pw-ratio-received{background:#54718a;width:50%}
 .pw-meta{display:grid;gap:.35rem;color:#81aabd;font-size:.65rem;margin:1rem 0 1.1rem}
 .pw-focus{min-height:56px;border:1px solid #496378;background:#173b4b55;border-radius:6px;padding:.75rem;line-height:1.5;font-size:.66rem;color:#d0e6f1;font-weight:700}
 .pw-leader-title{padding:1.45rem 0 .7rem}
@@ -59,8 +57,8 @@
 .pw-partner-main{display:grid;gap:.35rem;min-width:0;font-size:.76rem}
 .pw-partner-main>span:first-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pw-partner-min{width:100%;height:3px;border-radius:6px;display:flex;overflow:hidden;background:#223d4f}
-.pw-partner-min i:first-child{background:#50e7ff}.pw-partner-min i:last-child{background:#ff9470}
-.pw-partner strong{text-align:right;color:#b5f9ff;font-size:.84rem;font-variant-numeric:tabular-nums}
+.pw-partner-min i:first-child{background:var(--player-color,#8bb7e2);opacity:1}.pw-partner-min i:last-child{background:var(--player-color,#8bb7e2);opacity:.38}
+.pw-partner strong{text-align:right;color:var(--player-color,#b5f9ff);font-size:.84rem;font-variant-numeric:tabular-nums}
 .pw-controls{display:grid;grid-template-columns:auto minmax(0,1fr) 100px;align-items:center;gap:1.6rem;padding:1.3rem 1.5rem;border-top:1px solid #355469}
 .pw-transport{display:flex;align-items:center;gap:.55rem}
 .pw-transport button{border:1px solid #385a70;border-radius:7px;color:#e3f8ff;background:#142d41;cursor:pointer;font-family:inherit;font-weight:900;height:40px;padding:0 .85rem}
@@ -93,3 +91,10 @@
 .pw-canvas-legend{border-top-color:#3b5367}
 #pw-play:disabled,#pw-battle:disabled{opacity:.36;cursor:not-allowed;box-shadow:none}
 .pw-leader-title span:first-child{color:#b3e6ff}
+
+/* Palette par partenaire : clair = passes envoyées, atténué = reçues.
+   Le numéro StatsBomb fixe la couleur ; le tri ne la modifie jamais. */
+.pw-direction-counts{font-size:.61rem;letter-spacing:.015em;color:#9db7c9;font-variant-numeric:tabular-nums}
+.pw-partner{border-left:3px solid transparent!important}
+.pw-partner:hover,.pw-partner.chosen{border-left-color:var(--player-color,#b6daee)!important}
+.pw-partner-main{gap:.27rem}
