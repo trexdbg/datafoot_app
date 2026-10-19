@@ -3,6 +3,10 @@ on:
   pull_request:
     paths:
       - 'src/pages/matchs/**'
+      - 'src/lib/pass-wars-engine.*'
+      - 'src/styles/pass-wars.css'
+      - 'src/data/players/**'
+      - 'public/data/players/**'
       - 'src/data/matches/**'
       - 'src/lib/match-activity.*'
       - 'src/lib/explorer-data.mjs'
@@ -99,6 +103,27 @@ jobs:
             assert.equal(network.summary.shown_passes,network.passes.length);
             assert.equal(network.summary.given+network.summary.received,network.passes.length);
             assert.ok(network.passes.every(p=>p.partner_id&&['given','received'].includes(p.direction)));
+          }
+          JS
+      - name: Validate Pass Wars engine and source consistency
+        run: |
+          node --input-type=module <<'JS'
+          import assert from 'node:assert/strict';
+          import fs from 'node:fs';
+          import { bootPassWars } from './src/lib/pass-wars-engine.mjs';
+          assert.equal(typeof bootPassWars,'function');
+          for(const file of ['messi-pass-wars.json','messi-pass-wars-events.json']) {
+            const src='src/data/players/'+file, dest='public/data/players/'+file;
+            if(fs.existsSync(src)) {
+              assert.deepEqual(JSON.parse(fs.readFileSync(src,'utf8')),JSON.parse(fs.readFileSync(dest,'utf8')));
+            }
+          }
+          if(fs.existsSync('src/data/players/messi-pass-wars.json')) {
+            const a=JSON.parse(fs.readFileSync('src/data/players/messi-pass-wars.json','utf8'));
+            const b=JSON.parse(fs.readFileSync('src/data/players/messi-pass-wars-events.json','utf8'));
+            assert.equal(a.schema_version,2);
+            assert.equal(a.summary.total,b.events.length);
+            assert.equal(a.scope.complete_career,false);
           }
           JS
       - name: Astro typecheck and static build

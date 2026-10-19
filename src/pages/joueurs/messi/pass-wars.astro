@@ -1,0 +1,63 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import '../../../styles/pass-wars.css';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+<BaseLayout
+  title="Messi Pass Wars — la guerre des passes de Messi | DataFoot"
+  description="30 partenaires autour de Messi, des orbes de passes animées et une bataille entre passes données et reçues, à partir d'un échantillon multi-saisons StatsBomb."
+  canonicalPath={base + '/joueurs/messi/pass-wars/'}
+>
+  <main class="pw-page" data-pass-wars data-base={base}>
+    <section class="shell pw-hero">
+      <div class="pw-overline"><a href={base + '/'}>DATAFOOT</a> <span>/</span> FOOTBALL LAB <span>/</span> EXPÉRIENCE 003</div>
+      <div class="pw-hero-row">
+        <div><p class="pw-chapter">LE RÉSEAU · 2004—2022 / MATCHS DISPONIBLES</p><h1>MESSI<br/><em>PASS WARS<span>.</span></em></h1><p class="pw-deck">Trente alliés en orbite. Deux armées de petites boules lumineuses. Une histoire de passes envoyées, reçues et accumulées au fil des années.</p></div>
+        <div class="pw-hero-aside"><span class="pw-dot"></span><span>DATA VISUAL EXPERIMENT</span><strong>10</strong><small>LE POINT DE DÉPART</small></div>
+      </div>
+      <p class="pw-scope-warning"><strong>Couverture partielle :</strong> matchs publics échantillonnés sur plusieurs saisons, et non la carrière complète de Messi. Aucun chiffre inventé.</p>
+    </section>
+    <section class="shell pw-workbench">
+      <div class="pw-toolbar" aria-label="Filtres du réseau">
+        <div class="pw-field"><label for="pw-team">ÉQUIPE</label><select id="pw-team"><option value="">TOUTES</option></select></div>
+        <div class="pw-field"><label for="pw-season">SAISON</label><select id="pw-season"><option value="">TOUTES</option></select></div>
+        <div class="pw-field"><label for="pw-competition">COMPÉTITION</label><select id="pw-competition"><option value="">TOUTES</option></select></div>
+        <div class="pw-field"><label for="pw-sort">CLASSEMENT</label><select id="pw-sort"><option value="total">TOTAL ÉCHANGÉ</option><option value="given">ENVOYÉES</option><option value="received">REÇUES</option><option value="ratio">RATIO ENVOYÉ</option></select></div>
+      </div>
+      <div class="pw-board">
+        <div class="pw-arena">
+          <div class="pw-arena-head"><div><span class="pw-spark">✳</span> CONSTELLATION 10 / 30</div><div id="pw-state">CHARGEMENT DES DONNÉES…</div></div>
+          <div class="pw-canvas-scroll"><canvas id="pw-canvas" width="1200" height="780" role="img" aria-label="Réseau circulaire de Messi et de ses partenaires : des boules cyan représentent les passes de Messi, des boules orange les passes vers Messi."></canvas></div>
+          <div class="pw-canvas-legend"><span><i class="pw-swatch cyan"></i> MESSI <b>→</b> PARTENAIRE</span><span><i class="pw-swatch orange"></i> PARTENAIRE <b>→</b> MESSI</span><span><i class="pw-swatch line"></i> ÉPAISSEUR = PASSES CUMULÉES</span></div>
+        </div>
+        <aside class="pw-aside">
+          <div class="pw-side-title"><span>LE SCOREBOARD</span><span>01 / RÉSEAU</span></div>
+          <div class="pw-score-line"><span>TOTAL DES PASSES AFFICHÉES</span><strong id="pw-total">—</strong></div>
+          <div class="pw-duel">
+            <div><span class="pw-messi-given">● PASSES ENVOYÉES</span><strong id="pw-given">—</strong></div>
+            <div><span class="pw-messi-received">● PASSES REÇUES</span><strong id="pw-received">—</strong></div>
+          </div>
+          <div class="pw-score-ratio"><div id="pw-ratio-given"></div><div id="pw-ratio-received"></div></div>
+          <div class="pw-meta"><span id="pw-coverage">CHARGEMENT…</span><span id="pw-dates">—</span></div>
+          <div class="pw-focus" id="pw-focus">TOUS LES JOUEURS · CLIQUEZ SUR UN NŒUD OU UN NOM POUR L’ISOLER.</div>
+          <div class="pw-leader-title"><span>TOP 30 · ALLIÉS</span><span>↗ / ↙</span></div>
+          <div class="pw-leader" id="pw-leader" aria-label="Classement des partenaires de Messi"></div>
+        </aside>
+      </div>
+      <div class="pw-controls">
+        <div class="pw-transport"><button id="pw-play" type="button" aria-label="Démarrer l'animation">▶</button><button id="pw-reset" type="button" aria-label="Recommencer">↺</button><button id="pw-battle" type="button" aria-pressed="false">⚡ BATTLE MODE</button></div>
+        <div class="pw-progress"><label for="pw-scrub"><span id="pw-now">DÉPART</span><span id="pw-progress-text">0 / 0 PASSES</span></label><input id="pw-scrub" type="range" min="0" max="1" step="1" value="0"/><div><span>PREMIER MATCH COUVERT</span><span>DERNIER MATCH COUVERT</span></div></div>
+        <div class="pw-speed"><label for="pw-speed">DÉBIT</label><select id="pw-speed"><option value="4">×1</option><option value="12">×2</option><option value="28" selected>×4</option><option value="60">×8</option></select></div>
+      </div>
+      <div id="pw-message" class="pw-message" role="status" aria-live="polite">Lecture des données réelles…</div>
+    </section>
+    <section class="shell pw-method">
+      <div><p class="pw-chapter">SOUS LE CAPOT</p><h2>Des trajectoires,<br/>pas des <em>positions.</em></h2></div>
+      <div><p>Chaque petite boule représente <strong>une passe réussie</strong>. Les 30 joueurs les plus connectés à Messi pendant la période sélectionnée sont placés autour de lui, indépendamment de leurs positions sur le terrain. Les deux couleurs correspondent au sens de la passe. Chaque lien grossit au fur et à mesure des échanges.</p><p>Le classement des 30 joueurs est recalculé après chaque filtre. Les passes des autres partenaires restent dans les données pour les filtres mais ne sont pas affichées dans le réseau. La chronologie accélère les événements : elle ne reproduit pas le rythme réel des matchs.</p><p>Nous utilisons les événements <a href="https://github.com/hudl/open-data" target="_blank" rel="noopener noreferrer">StatsBomb Open Data ↗</a> provenant d'un échantillon de saisons de Liga et des Coupes du monde disponibles. Les matchs réellement couverts et les manques sont indiqués dans les fichiers dérivés : <a href={base + '/data/players/messi-pass-wars.json'}>agrégats</a> et <a href={base + '/data/players/messi-pass-wars-events.json'}>événements</a>. L'échantillon ne doit pas être pris pour un bilan exhaustif de carrière.</p><div class="pw-credit"><span>EVENT DATA © STATSBOMB / HUDL</span><a href="https://github.com/hudl/open-data" target="_blank" rel="noopener noreferrer"><img src="https://raw.githubusercontent.com/hudl/open-data/master/img/SB%20-%20Icon%20Lockup%20-%20Colour%20positive.png" alt="Logo StatsBomb" width="152" loading="lazy"/></a></div></div>
+    </section>
+  </main>
+</BaseLayout>
+<script>
+  import { bootPassWars } from '../../../lib/pass-wars-engine.mjs';
+  bootPassWars();
+</script>
