@@ -81,7 +81,7 @@ npm run test:pulse
 npm run build
 ```
 
-Pulse est un **indice éditorial** d'activité à deux mémoires (3 et 10 minutes), pas une mesure GPS, de course ou une note de performance. La lecture « impact » est un indicateur heuristique de valeur des types d'actions, **pas** un xT/VAEP validé. Les événements sont horodatés et les remplacements / cartons rouges interrompent le profil. Le résultat final de séance de tirs au but n'entre pas dans le graphique. La source StatsBomb/Hudl est explicitement indiquée dans l'interface.
+Pulse est un **indice éditorial** d'activité à deux mémoires (3 et 10 minutes), pas une mesure GPS, de course ou une note de performance. La lecture « impact » est un indicateur heuristique : elle tient compte de la nature des actions, de la progression longitudinale des passes et des xG StatsBomb des tirs lorsque disponibles. Ce n'est **pas** un xT/VAEP validé. Les événements sont horodatés et les remplacements / cartons rouges interrompent le profil. Le résultat final de séance de tirs au but n'entre pas dans le graphique. La source StatsBomb/Hudl est explicitement indiquée dans l'interface.
 
 Les anciens parcours centrés sur la France (`/equipes/france/`, `/joueurs/mbappe/`, `/matchs/coupe-du-monde-2022/...`) restent accessibles par compatibilité, mais ne sont plus le chemin principal.
 
