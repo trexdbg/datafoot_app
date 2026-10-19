@@ -11,7 +11,7 @@ export interface Match {
  actions:Action[];goals:Goal[];source:string
 }
 export interface Point {minute:number;activity:number|null;impact:number|null;actions?:number;players?:number;gain?:number;penaltyGain?:number;impactGain?:number;events?:Array<{kind:string;outcome:string;playerName?:string}>}
-export interface Profile {player:Player;actions:Array<{minute:number;second:number;kind:string;outcome:string;playerId:number}>;timeline:Point[]}
+export interface Profile {player:Player;actions:Array<{minute:number;second:number;kind:string;outcome:string;playerId:number;goalAssist?:boolean;shotAssist?:boolean}>;timeline:Point[]}
 export interface EnrichedMatch extends Match {profiles:Profile[];team:Point[]}
 export interface PlayerIndex {id:number;name:string;country:string;matches:Array<{id:number;date:string;opponent:string}>}
 export interface Fixture {id:number;date:string;stage:string;home:string;away:string;homeScore:number;awayScore:number;group:string|null}
