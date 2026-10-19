@@ -1,4 +1,25 @@
 /** Messi Pass Wars — Canvas 2D, événements StatsBomb réels seulement. */
+// Critère d'affichage : passes réussies ENVOYÉES + REÇUES dans le filtre actif.
+// Les 118 partenaires restent dans le JSON source ; seuls les éligibles sont dessinés.
+export const MIN_PARTNER_PASSES = 80;
+
+export function eligiblePartners(events, minimum=MIN_PARTNER_PASSES, maximum=30){
+  const tally = new Map();
+  for(const e of events){
+    if(e.direction!=='given' && e.direction!=='received') continue;
+    const previous = tally.get(e.partner_id) || {
+      id:e.partner_id,name:e.partner_name,given:0,received:0,total:0
+    };
+    previous[e.direction]++;
+    previous.total++;
+    tally.set(e.partner_id, previous);
+  }
+  return Array.from(tally.values())
+    .filter(p=>p.total>=minimum)
+    .sort((a,b)=>b.total-a.total || String(a.name).localeCompare(String(b.name)) || a.id-b.id)
+    .slice(0,maximum);
+}
+
 export function bootPassWars(){
   const root=document.querySelector('[data-pass-wars]');
   if(!root)return;
@@ -10,6 +31,12 @@ export function bootPassWars(){
   let meta,original=[],filtered=[],events=[],players=[],positions=new Map(),counts=new Map();
   let cursor=0,position=0,prev=0,lastText=0,playing=false,battle=false,speed=28,focus=null,sort='total';
   let balls=[],ripples=[];
+  // Toile de peinture persistante : une passe laisse une éclaboussure à l'impact.
+  // La couche est réinitialisée en changeant de filtre / au redémarrage.
+  const paintCanvas=document.createElement('canvas');
+  paintCanvas.width=W;paintCanvas.height=H;
+  const paint=paintCanvas.getContext('2d');
+  if(!paint)return;
   const stars=Array.from({length:120},(_,i)=>({x:(i*239.73)%W,y:(i*159.17)%H,r:i%7?.65:1.3,a:.1+(i%5)*.035}));
   const format=n=>Number(n||0).toLocaleString('fr-FR');
   const set=(id,s)=>$(id).textContent=String(s);
@@ -21,22 +48,17 @@ export function bootPassWars(){
   function choices(id,values){
     for(const value of values){const el=document.createElement('option');el.value=value;el.textContent=value;$(id).append(el);}
   }
-  function tally(list){
-    const all=new Map();
-    for(const e of list){
-      const p=all.get(e.partner_id)||{id:e.partner_id,name:e.partner_name,given:0,received:0,total:0};
-      p[e.direction]++;p.total++;all.set(p.id,p);
-    }
-    return [...all.values()].sort((a,b)=>comparator(a,b)).slice(0,30);
-  }
+  function tally(list){ return eligiblePartners(list); }
   function locate(){
     positions=new Map();
     players.forEach((p,i)=>{
-      const inner=Math.min(12,players.length),outer=i>=inner;
+      const twoRings=players.length>18;
+      const inner=twoRings?12:players.length;
+      const outer=twoRings&&i>=inner;
       const n=outer?players.length-inner:inner,j=outer?i-inner:i;
-      const angle=Math.PI*2*j/Math.max(1,n)-Math.PI/2+(outer?.08:-.1);
-      positions.set(p.id,{x:CX+Math.cos(angle)*(outer?480:285),
-                          y:CY+Math.sin(angle)*(outer?322:214)});
+      const angle=Math.PI*2*j/Math.max(1,n)-Math.PI/2+(outer?.08:0);
+      positions.set(p.id,{x:CX+Math.cos(angle)*(outer?485:(twoRings?295:425)),
+                          y:CY+Math.sin(angle)*(outer?325:(twoRings?215:290))});
     });
   }
   function build(){
@@ -46,13 +68,18 @@ export function bootPassWars(){
     const ids=new Set(players.map(p=>p.id));
     events=filtered.filter(e=>ids.has(e.partner_id));
     $('pw-scrub').max=String(Math.max(events.length,1));focus=null;reset();
-    set('pw-coverage',new Set(filtered.map(e=>e.match_id)).size+' MATCHS · '+players.length+' PARTENAIRES');
+    set('pw-coverage',new Set(filtered.map(e=>e.match_id)).size+' MATCHS · '+players.length+' PARTENAIRES (80+ PASSES)');
+    $('pw-play').disabled=events.length===0;
+    $('pw-battle').disabled=events.length===0;
     set('pw-dates',(filtered[0]?.date||'—')+' → '+(filtered.at(-1)?.date||'—')+' · '+format(filtered.length)+' PASSES SOURCÉES');
-    set('pw-message','StatsBomb Open Data : '+meta.scope.matches_count+' matchs couverts. '+meta.scope.coverage_note+
-        ' Les 30 partenaires sont recalculés à chaque filtre ; les positions ne sont pas celles du terrain.');
+    set('pw-message',players.length===0
+      ? 'Aucun partenaire avec au moins 80 passes échangées sur cette sélection. Change de saison ou élargis les filtres.'
+      : 'StatsBomb Open Data : '+meta.scope.matches_count+' matchs couverts. '+meta.scope.coverage_note+
+        ' Seuls les partenaires totalisant au moins 80 passes envoyées + reçues dans cette sélection apparaissent.');
   }
   function reset(){
     playing=false;cursor=0;position=0;counts=new Map();balls=[];ripples=[];
+    paint.clearRect(0,0,W,H);
     $('pw-scrub').value='0';updatePlay();renderBoard();renderLeaderboard();
   }
   function updatePlay(){
@@ -64,14 +91,24 @@ export function bootPassWars(){
   function count(e,animate,t){
     const q=counts.get(e.partner_id)||empty();q[e.direction]++;q.total++;counts.set(e.partner_id,q);
     if(animate){
-      balls.push({id:e.partner_id,direction:e.direction,start:t,duration:650+(e.index%5)*75});
+      balls.push({id:e.partner_id,direction:e.direction,index:e.index,start:t,duration:650+(e.index%5)*75});
       if(balls.length>240)balls=balls.slice(-240);
     }
   }
   function seek(n){
     const end=Math.max(0,Math.min(events.length,Number(n)||0));
     playing=false;position=end;cursor=0;counts=new Map();balls=[];ripples=[];
+    paint.clearRect(0,0,W,H);
     while(cursor<end)count(events[cursor++],false,0);
+    // État visuel après scrubbing : un condensé des impacts précédents,
+    // calculé à partir des vrais compteurs (aucun événement inventé).
+    for(const p of players){
+      const q=score(p.id);
+      for(const direction of ['given','received']){
+        const n=Math.min(12,Math.ceil(Math.sqrt(q[direction])*1.1));
+        for(let i=0;i<n;i++) stampPaint(p.id,direction,i+1,0.55);
+      }
+    }
     updatePlay();renderBoard();draw(performance.now());
   }
   function renderBoard(){
@@ -145,27 +182,92 @@ export function bootPassWars(){
       }
     }
   }
+
+  // Hash déterministe -> formes différentes pour chaque impact, sans RNG
+  // dans la boucle de rendu. Ce sont des effets graphiques, pas de la data.
+  function randomSeed(seed){
+    let value=seed>>>0;
+    return ()=>{
+      value=(Math.imul(value,1664525)+1013904223)>>>0;
+      return value/4294967296;
+    };
+  }
+  function impactPosition(id,direction){
+    return direction==='given'?positions.get(id):{x:CX,y:CY};
+  }
+  function stampPaint(id,direction,index,opacity=1){
+    const target=impactPosition(id,direction);
+    if(!target)return;
+    const rng=randomSeed((Math.imul(Number(id)||1,2654435761)+Math.imul(Number(index)||0,374761393)+(direction==='given'?101:303))>>>0);
+    const color=direction==='given'?CYAN:ORANGE;
+    const x=target.x+(rng()-.5)*58,y=target.y+(rng()-.5)*58;
+    const radius=12+rng()*16;
+    paint.save();paint.translate(x,y);paint.rotate(rng()*Math.PI*2);
+    paint.fillStyle=color;paint.globalAlpha=.20*opacity;
+    // Tache principale irrégulière, comme de la peinture écrasée.
+    paint.beginPath();
+    for(let j=0;j<=15;j++){
+      const a=j/15*Math.PI*2, r=radius*(.65+rng()*.65);
+      const px=Math.cos(a)*r,py=Math.sin(a)*r;
+      if(j===0)paint.moveTo(px,py);else paint.lineTo(px,py);
+    }
+    paint.closePath();paint.fill();
+    // Gouttelettes projetées dans plusieurs directions.
+    for(let j=0;j<9;j++){
+      const a=rng()*Math.PI*2,d=radius*(.85+rng()*2.1);
+      const rad=1.8+rng()*5.5;
+      paint.globalAlpha=(.27+rng()*.35)*opacity;
+      paint.beginPath();paint.arc(Math.cos(a)*d,Math.sin(a)*d,rad,0,Math.PI*2);paint.fill();
+    }
+    paint.restore();
+  }
   function drawParticles(t){
     const survivors=[];
     for(const p of balls){
       const end=positions.get(p.id);if(!end)continue;
       const age=(t-p.start)/p.duration;
-      if(age>1.14)continue;survivors.push(p);
-      if(age<0||age>1||focus!==null&&focus!==p.id)continue;
-      const from=p.direction==='given'?{x:CX,y:CY}:end,to=p.direction==='given'?end:{x:CX,y:CY};
-      const d=1-(1-age)*(1-age),trail=Math.max(0,d-.19),color=p.direction==='given'?CYAN:ORANGE;
+      if(age>1.12)continue;
+      survivors.push(p);
+      const from=p.direction==='given'?{x:CX,y:CY}:end;
+      const to=p.direction==='given'?end:{x:CX,y:CY};
+      const color=p.direction==='given'?CYAN:ORANGE;
+      if(age>=1 && !p.hit){
+        p.hit=true;
+        stampPaint(p.id,p.direction,p.index);
+        ripples.push({start:t,x:to.x,y:to.y,color,
+                      seed:(p.index||0)+(p.id||0)*23});
+        if(ripples.length>120)ripples.shift();
+      }
+      if(age<0||age>1||(focus!==null&&focus!==p.id))continue;
+      const d=1-(1-age)*(1-age),trail=Math.max(0,d-.16);
       const x=from.x+(to.x-from.x)*d,y=from.y+(to.y-from.y)*d;
       const x0=from.x+(to.x-from.x)*trail,y0=from.y+(to.y-from.y)*trail;
-      line(x0,y0,x,y,color,5,.8,14);
-      ctx.save();ctx.shadowBlur=27;ctx.shadowColor=color;ctx.fillStyle=color;
-      ctx.beginPath();ctx.arc(x,y,8.2,0,7);ctx.fill();
-      ctx.fillStyle='#ffffff';ctx.beginPath();ctx.arc(x,y,3.6,0,7);ctx.fill();ctx.restore();
-      if(age>.93&&!p.hit){p.hit=true;ripples.push({start:t,x:to.x,y:to.y,color});}
+      line(x0,y0,x,y,color,5,.75,11);
+      ctx.save();ctx.shadowBlur=18;ctx.shadowColor=color;ctx.fillStyle=color;
+      ctx.beginPath();ctx.arc(x,y,7.4,0,7);ctx.fill();
+      ctx.fillStyle='#ffffff';ctx.beginPath();ctx.arc(x-1.8,y-1.6,2.7,0,7);ctx.fill();ctx.restore();
     }
     balls=survivors;ripples=ripples.filter(r=>t-r.start<600);
     for(const r of ripples){
-      const age=(t-r.start)/600;ctx.save();ctx.strokeStyle=r.color;ctx.globalAlpha=(1-age)*.65;ctx.lineWidth=2.5;
-      ctx.beginPath();ctx.arc(r.x,r.y,10+28*age,0,7);ctx.stroke();ctx.restore();
+      if(focus!==null && Math.hypot(r.x-CX,r.y-CY)>90){
+        const focused=positions.get(focus);
+        if(!focused || Math.hypot(r.x-focused.x,r.y-focused.y)>75)continue;
+      }
+      const age=(t-r.start)/600;
+      ctx.save();ctx.strokeStyle=r.color;ctx.globalAlpha=(1-age)*.78;
+      ctx.lineWidth=3.2;ctx.beginPath();ctx.arc(r.x,r.y,9+43*age,0,7);ctx.stroke();
+      const rng=randomSeed(r.seed>>>0);
+      ctx.fillStyle=r.color;
+      for(let j=0;j<12;j++){
+        const angle=(j+rng()*.65)/12*Math.PI*2;
+        const dist=9+age*(35+rng()*40);
+        ctx.globalAlpha=(1-age)*(.5+rng()*.45);
+        ctx.beginPath();
+        ctx.arc(r.x+Math.cos(angle)*dist,r.y+Math.sin(angle)*dist,
+                (2+rng()*5)*(1-age*.65),0,7);
+        ctx.fill();
+      }
+      ctx.restore();
     }
   }
   function drawNodes(){
@@ -185,7 +287,20 @@ export function bootPassWars(){
     ctx.textAlign='center';ctx.fillStyle='#fff';ctx.font='900 22px system-ui';ctx.fillText('MESSI',CX,CY+5);
     ctx.fillStyle=CYAN;ctx.font='800 12px monospace';ctx.fillText('N° 10',CX,CY+26);ctx.textAlign='left';
   }
-  function draw(t){background();drawEdges();drawParticles(t);drawNodes();}
+  function draw(t){
+    background();
+    // La peinture demeure sur la piste, même après la disparition des projectiles.
+    ctx.drawImage(paintCanvas,0,0);
+    drawEdges();drawParticles(t);drawNodes();
+    if(players.length===0 && meta){
+      ctx.fillStyle='#c4d9e9';ctx.textAlign='center';
+      ctx.font='bold 21px system-ui';
+      ctx.fillText('AUCUN PARTENAIRE À 80 PASSES',CX,CY+110);
+      ctx.font='14px system-ui';
+      ctx.fillText('Élargissez la période pour afficher des connexions.',CX,CY+140);
+      ctx.textAlign='left';
+    }
+  }
   function frame(t){
     const dt=prev?Math.min(.13,Math.max(0,(t-prev)/1000)):0;prev=t;
     if(playing&&events.length){
@@ -228,7 +343,7 @@ export function bootPassWars(){
       choices('pw-team',meta.filters.teams);choices('pw-season',meta.filters.seasons);
       choices('pw-competition',meta.filters.competitions);
       set('pw-state','● '+meta.scope.matches_count+' MATCHS RÉELS / STATSBOMB');
-      build();if(!reduced){playing=true;updatePlay();}
+      build();if(!reduced && events.length){playing=true;updatePlay();}
     }).catch(error=>{
       set('pw-state','DONNÉES INDISPONIBLES');
       set('pw-message','Chargement des passes réelles impossible : '+error.message+
