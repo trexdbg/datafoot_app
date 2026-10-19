@@ -3,7 +3,7 @@ import {layoutPlayerNodes,monthOrdinal,monthYearLabel,eventsThroughMonth} from '
 const TABS={
   goalkeepers:{title:'GARDIENS AFFRONTÉS',label:'TIRS RELIÉS À UN GARDIEN',singular:'TIR',limit:20},
   defenders:{title:'DÉFENSEURS DRIBBLÉS',label:'DRIBBLES RÉUSSIS ATTRIBUÉS',singular:'DRIBBLE',limit:20},
-  clubs:{title:'CLUBS · BUTS EN LIGA ET C1',label:'BUTS PAR CLUB',singular:'BUT',limit:1000},
+  clubs:{title:'ÉQUIPES · BUTS DANS LES MATCHS OUVERTS',label:'BUTS PAR ÉQUIPE',singular:'BUT',limit:1000},
 };
 export const MODE_IDS=Object.keys(TABS);
 // Surnoms et noms usuels par ID StatsBomb : les événements sources gardent
@@ -278,7 +278,9 @@ export function bootMessiEncounters(){
       if(data.schema_version!==1||data.scope.complete_career!==false||
          !MODE_IDS.every(k=>Array.isArray(data.modes?.[k]?.events)))
         throw new Error('fichier événements incomplet ou périmètre non déclaré');
-      db=data;populateFilters();say('me-sample',data.scope.liga_matches+' Liga + '+data.scope.ucl_matches+' finales C1');
+      db=data;populateFilters();
+      say('me-sample',Number(data.scope.matches_count||0).toLocaleString('fr-FR')+
+        ' MATCHS MESSI VÉRIFIÉS · '+Object.keys(data.scope.competition_counts||{}).length+' COMPÉTITIONS');
       setMode('defenders');
       playing=Boolean(visible.length&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches);
       $('me-play').textContent=playing?'Ⅱ':'▶';
