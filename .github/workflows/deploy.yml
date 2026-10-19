@@ -52,6 +52,9 @@ jobs:
       - name: Test Pulse engine
         run: npm run test:pulse
 
+      - name: Verify familiar player names
+        run: node --test tests/player-names.test.mjs
+
       - name: Test Messi Paintball / chronology
         run: node --test tests/pass-wars.test.mjs
 
