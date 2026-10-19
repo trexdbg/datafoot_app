@@ -58,7 +58,7 @@ const prev=games[index-1],next=games[index+1];
  </div>
  <p class="ax-no-results" id="ax-empty" hidden>Aucun joueur correspondant à cette recherche.</p>
  <div class="ax-match-pager"><span>{prev?<a href={matchHref(base,prev)}>← {opposingTeam(prev)}</a>:'Début du parcours'}</span><a href={base+'/equipes/france/'}>Liste des 7 matchs</a><span>{next?<a href={matchHref(base,next)}>{opposingTeam(next)} →</a>:'Fin du parcours'}</span></div>
- <div class="ax-method"><strong>Moyenne collective, pas note de performance.</strong> À chaque minute, on calcule la moyenne du score des joueurs sur le terrain : 50 à leur entrée, −1/min, +5/passe réussie ou dribble réussi, +45/but, jamais sous 0. Lissage purement visuel pour les courbes. L’échelle est identique sur toutes les rencontres afin de faciliter les comparaisons.</div>
+ <div class="ax-method"><strong>Moyenne collective, pas note de performance.</strong> À chaque minute, on calcule la moyenne du score des joueurs sur le terrain : 50 à leur entrée, −1/min, +5/passe réussie ou dribble réussi, +45/but, jamais sous 0. Lissage purement visuel pour les courbes. L’échelle est identique pour toutes les courbes de ce match afin de faciliter la comparaison.</div>
  <p class="ax-source">Données événementielles © StatsBomb / Hudl · <a href={game.source} target="_blank" rel="noopener noreferrer">Voir le flux public original ↗</a>. Les tirs au but d’après-match ne sont pas pris en compte.</p>
 </div></div>
 <script is:inline>
