@@ -63,7 +63,7 @@ sur les PR concernées. Le lien est présent sur l'accueil et dans la navigation
 Le nouvel explorateur global de 2022 est le point d'entrée principal :
 `/datafoot_app/mondial-2022/`. Il ne met en avant ni Mbappé ni la France par défaut.
 
-- **Par match** (`/mondial-2022/`) : les **64 rencontres** de la Coupe du monde 2022, filtrables par pays, phase et texte. Chaque match possède deux courbes collectives autonomes et une sélection des joueurs des deux équipes (`/mondial-2022/matchs/<id>/`).
+- **Par match** (`/mondial-2022/`) : les **64 rencontres** de la Coupe du monde 2022, filtrables par pays, phase et texte. Chaque match affiche les profils individuels des deux équipes, sans courbe collective superposée (`/mondial-2022/matchs/<id>/`).
 - **Par pays** (`/mondial-2022/pays/`) : les **32 sélections**, leur parcours match par match, et tous les joueurs observés (`/mondial-2022/pays/<slug>/`).
 - **Par joueur** (`/mondial-2022/joueurs/`) : annuaire alphabétique de tous les participants recensés, avec recherche par nom/pays et une fiche par joueur (`/mondial-2022/joueurs/<id>/`).
 - **Analyse détaillée** (`/mondial-2022/matchs/<id>/profil/?joueur=<player-id>`) : une seule page par match, sélecteur entre tous les joueurs, bascule activité / impact indicatif, points d'action sous l'axe X, moments clés, inspection minute par minute et journal filtrable. Les courbes individuelles ne superposent jamais le collectif.
@@ -81,7 +81,7 @@ npm run test:pulse
 npm run build
 ```
 
-Pulse est un **indice éditorial** d'activité à deux mémoires (3 et 10 minutes), pas une mesure GPS, de course ou une note de performance. La lecture « impact » est un indicateur heuristique : elle tient compte de la nature des actions, de la progression longitudinale des passes et des xG StatsBomb des tirs lorsque disponibles. Ce n'est **pas** un xT/VAEP validé. Les événements sont horodatés et les remplacements / cartons rouges interrompent le profil. Le résultat final de séance de tirs au but n'entre pas dans le graphique. La source StatsBomb/Hudl est explicitement indiquée dans l'interface.
+Pulse est un **indice éditorial** d'activité à deux mémoires (3 et 10 minutes), pas une mesure GPS, de course ou une note de performance. Chaque joueur commence à **50/100 à son entrée** sur le terrain (y compris les remplaçants). Cette réserve initiale décroît avec une demi-vie de **25 minutes** en l'absence d'actions. Les tentatives ratées comptent comme de l'activité mais entraînent un **malus très léger** (ex. passe incomplète −0,15, dribble raté −0,65 unité d'impulsion). Les courbes sont bornées de 0 à 100 et colorées **violet sous 25**, **cyan entre 25 et 75**, **orange au-dessus de 75**. Survoler ou toucher une courbe affiche les actions de la minute dans un encart. La lecture « impact » est un indicateur heuristique : elle tient compte de la nature des actions, de la progression longitudinale des passes et des xG StatsBomb des tirs lorsque disponibles. Ce n'est **pas** un xT/VAEP validé. Les événements sont horodatés et les remplacements / cartons rouges interrompent le profil. Le résultat final de séance de tirs au but n'entre pas dans le graphique. La source StatsBomb/Hudl est explicitement indiquée dans l'interface.
 
 Les anciens parcours centrés sur la France (`/equipes/france/`, `/joueurs/mbappe/`, `/matchs/coupe-du-monde-2022/...`) restent accessibles par compatibilité, mais ne sont plus le chemin principal.
 
