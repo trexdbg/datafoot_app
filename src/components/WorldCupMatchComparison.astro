@@ -1,0 +1,107 @@
+---
+import {monotonePath,actionLabel} from '../lib/match-activity.mjs';
+interface Point {minute:number;activity:number|null;actions?:number;events?:Array<{kind:string;outcome:string;playerName?:string}>}
+interface Props {home:string;away:string;homeFlag:string;awayFlag:string;first:Point[];second:Point[];duration:number;goals?:Array<{minute:number;team:string}>}
+const {home,away,homeFlag,awayFlag,first,second,duration,goals=[]}=Astro.props;
+const COLORS={first:'#58D8F6',second:'#FFB783'};
+const left=57,right=1067,top=32,bottom=274;
+const X=(minute:number)=>left+minute/duration*(right-left);
+const Y=(v:number)=>bottom-Math.max(0,Math.min(100,v))/100*(bottom-top);
+const getPath=(values:Point[])=>monotonePath(values.filter(p=>p.activity!=null).map(p=>({x:X(p.minute),y:Y(p.activity??0)})));
+const firstPath=getPath(first),secondPath=getPath(second);
+const sample=JSON.stringify([first,second].map(series=>series.map(p=>[
+ p.activity??null,p.actions??0,
+ (p.events??[]).slice(0,3).map(e=>(e.playerName?e.playerName+' · ':'')+actionLabel(e))
+])));
+---
+<section class="wc-duel" aria-labelledby="wc-duel-title" data-wc-duel data-duration={duration} data-series={sample}>
+ <div class="wc-duel-header">
+  <div><p class="wc-eyebrow">VUE MATCH / ACTIVITÉ DES DEUX ÉQUIPES</p><h2 id="wc-duel-title">Le duel des rythmes.</h2><p>Deux sélections, une seule échelle 0–100. L'activité affichée est la moyenne des joueurs présents de chaque équipe, à chaque minute — pas une note du résultat.</p></div>
+  <div class="wc-duel-legend" aria-label="Couleurs des équipes">
+   <div><i style={'background:'+COLORS.first}></i><strong>{homeFlag} {home}</strong></div>
+   <div><i style={'background:'+COLORS.second}></i><strong>{awayFlag} {away}</strong></div>
+  </div>
+ </div>
+ <div class="wc-duel-chart">
+  <svg viewBox="0 0 1120 347" class="wc-duel-svg" role="img" tabindex="0" aria-label={'Superposition interactive des activités '+home+' en bleu et '+away+' en orange. Déplacer la souris, toucher ou utiliser les flèches.'}>
+   <rect width="1120" height="347" rx="12" fill="#081c30"/>
+   {[0,25,50,75,100].map(value=><g><line class="wc-duel-grid" x1={left} x2={right} y1={Y(value)} y2={Y(value)}/><text x="46" y={Y(value)+5} text-anchor="end" class="wc-duel-axis">{value}</text></g>)}
+   {Array.from({length:Math.floor(duration/15)+1},(_,i)=>i*15).concat([duration]).filter((v,i,a)=>a.indexOf(v)===i).map(minute=><g><line class="wc-duel-grid vertical" x1={X(minute)} x2={X(minute)} y1={top} y2={bottom}/><text x={X(minute)} y="298" text-anchor="middle" class="wc-duel-axis">{minute}′</text></g>)}
+   <text x={left} y="21" class="wc-duel-label">INDICE D'ACTIVITÉ / 100</text>
+   <path d={firstPath} fill="none" stroke={COLORS.first} stroke-width="4.3" stroke-linecap="round" stroke-linejoin="round" class="wc-duel-line"/>
+   <path d={secondPath} fill="none" stroke={COLORS.second} stroke-width="4.3" stroke-linecap="round" stroke-linejoin="round" class="wc-duel-line"/>
+   {goals.filter(g=>g.minute<=duration).map(g=><g><circle cx={X(g.minute)} cy={Y((g.team===home?first:second)[g.minute]?.activity??0)} r="5.5" fill={g.team===home?COLORS.first:COLORS.second} stroke="#fff" stroke-width="2"><title>{g.minute}′ : but de {g.team===home?home:away}</title></circle></g>)}
+   <line data-duel-cursor x1={left} x2={left} y1={top} y2={bottom} stroke="#eefaff" stroke-width="1.6" stroke-dasharray="5 6" visibility="hidden"/>
+   <circle data-duel-dot="0" cx={left} cy={bottom} r="6" fill="#081c30" stroke={COLORS.first} stroke-width="3" visibility="hidden"/>
+   <circle data-duel-dot="1" cx={left} cy={bottom} r="6" fill="#081c30" stroke={COLORS.second} stroke-width="3" visibility="hidden"/>
+   <rect data-duel-hit x={left} y={top} width={right-left} height={bottom-top} fill="transparent"/>
+   <text x={left} y="332" class="wc-duel-help">↔ SURVOLER / TOUCHER LE GRAPHIQUE · FLÈCHES DU CLAVIER</text>
+  </svg>
+ </div>
+ <div class="wc-duel-inspection" aria-live="off">
+  <div class="wc-duel-inspection-time"><span>MINUTE</span><strong data-duel-minute>—</strong><small>Déplace le curseur pour comparer</small></div>
+  <div class="wc-duel-inspection-team" style={'--duel-accent:'+COLORS.first}>
+   <span>{homeFlag} {home}</span><strong data-duel-score="0">—</strong><small data-duel-actions="0">Activité moyenne · actions</small>
+   <p data-duel-events="0">Les actions de l'équipe apparaîtront ici.</p>
+  </div>
+  <div class="wc-duel-inspection-team" style={'--duel-accent:'+COLORS.second}>
+   <span>{awayFlag} {away}</span><strong data-duel-score="1">—</strong><small data-duel-actions="1">Activité moyenne · actions</small>
+   <p data-duel-events="1">Les actions de l'équipe apparaîtront ici.</p>
+  </div>
+ </div>
+</section>
+<script>
+(() => {
+ const initialize=()=>{
+  document.querySelectorAll<HTMLElement>('[data-wc-duel]').forEach(root=>{
+   if(root.dataset.ready)return;
+   root.dataset.ready='yes';
+   const svg=root.querySelector<SVGSVGElement>('.wc-duel-svg');
+   const cursor=root.querySelector<SVGLineElement>('[data-duel-cursor]');
+   const dots=[...root.querySelectorAll<SVGCircleElement>('[data-duel-dot]')];
+   const title=root.querySelector<HTMLElement>('[data-duel-minute]');
+   const values=[...root.querySelectorAll<HTMLElement>('[data-duel-score]')];
+   const counts=[...root.querySelectorAll<HTMLElement>('[data-duel-actions]')];
+   const labels=[...root.querySelectorAll<HTMLElement>('[data-duel-events]')];
+   if(!svg||!cursor||!title||dots.length!==2||values.length!==2||counts.length!==2||labels.length!==2)return;
+   const data=JSON.parse(root.dataset.series||'[]') as Array<Array<[number|null,number,string[]]>>;
+   const duration=Number(root.dataset.duration||90);
+   let minute=0;
+   const inspect=(raw:number)=>{
+    minute=Math.max(0,Math.min(duration,Math.round(raw)));
+    const x=57+minute/duration*1010;
+    cursor.setAttribute('x1',String(x));cursor.setAttribute('x2',String(x));cursor.setAttribute('visibility','visible');
+    title.textContent=minute+'′';
+    root.classList.add('is-inspecting');
+    for(let i=0;i<2;i++){
+     const [score,actions,names]=data[i]?.[minute]||[null,0,[]];
+     values[i].textContent=score==null?'—':Math.round(score)+'/100';
+     counts[i].textContent=actions+' action'+(actions===1?'':'s')+' à cette minute';
+     labels[i].textContent=names.length?names.join(' · ')+(actions>names.length?' · +'+(actions-names.length)+' autres':''):'Aucune action enregistrée à cette minute.';
+     const dot=dots[i];
+     if(score==null)dot.setAttribute('visibility','hidden');
+     else{
+      dot.setAttribute('cx',String(x));dot.setAttribute('cy',String(274-score/100*242));
+      dot.setAttribute('visibility','visible');
+     }
+    }
+   };
+   const fromPointer=(event:PointerEvent)=>{
+    const rect=svg.getBoundingClientRect();
+    const px=(event.clientX-rect.left)/rect.width*1120;
+    inspect((px-57)/1010*duration);
+   };
+   svg.addEventListener('pointermove',fromPointer);
+   svg.addEventListener('pointerdown',fromPointer);
+   svg.addEventListener('keydown',event=>{
+    if(['ArrowLeft','ArrowRight','Home','End'].includes(event.key)){
+     event.preventDefault();
+     inspect(event.key==='Home'?0:event.key==='End'?duration:minute+(event.key==='ArrowRight'?1:-1));
+    }
+   });
+   inspect(Math.min(45,duration));
+  });
+ };
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initialize,{once:true});else initialize();
+})();
+</script>
