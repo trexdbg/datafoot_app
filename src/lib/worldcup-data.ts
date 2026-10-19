@@ -18,7 +18,7 @@ export interface Fixture {id:number;date:string;stage:string;home:string;away:st
 const files=import.meta.glob<{default:Match}>('../data/worldcup/2022/*.json',{eager:true});
 export const games:EnrichedMatch[]=Object.values(files).map(f=>{
  const game=f.default;
- return {...game,...computeMatchProfiles(game)} as EnrichedMatch;
+ return {...game,...computeMatchProfiles(game)} as unknown as EnrichedMatch;
 }).sort((a,b)=>a.date.localeCompare(b.date)||a.id-b.id);
 export const fixtures:Fixture[]=fixturesRaw.matches;
 export const playerIndex=playersRaw as PlayerIndex[];
