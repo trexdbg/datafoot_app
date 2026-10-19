@@ -80,10 +80,10 @@ const initialEventCount=initial.actions.filter(a=>a.minute===initialMinute).leng
     <circle id="wc-inspect-dot" cx={x(initialMinute)} cy={y(initial.timeline[initialMinute]?.activity??0)} r="7" fill="#fff" stroke="#6adfff" stroke-width="2.8" pointer-events="none"/>
     <rect id="wc-profile-hit" x={left} y={top} width={right-left} height={bottom-top} fill="transparent" tabindex="0" aria-label="Explorer minute par minute avec les flèches ou la souris"/>
    </svg>
-   <aside id="wc-profile-tooltip" class="wc-profile-tooltip" hidden aria-hidden="true">
-    <strong id="wc-tooltip-title">—</strong><span id="wc-tooltip-numbers">—</span><div id="wc-tooltip-actions"></div>
-   </aside>
   </div>
+  <aside id="wc-profile-tooltip" class="wc-profile-tooltip" hidden aria-live="off">
+   <strong id="wc-tooltip-title">—</strong><span id="wc-tooltip-numbers">—</span><div id="wc-tooltip-actions"></div>
+  </aside>
   <div class="wc-profile-zones" aria-label="Seuils de l'indice Pulse"><span><i class="low"></i> Sous 25 · discret</span><span><i class="steady"></i> 25–75 · dans le jeu</span><span><i class="high"></i> Au-dessus de 75 · temps fort</span><small>50/100 à l'entrée sur le terrain · les malus restent légers</small></div>
   <div class="wc-profile-legend"><span><i class="quiet"></i>Autres événements</span><span><i class="positive"></i>Actions significatives</span><span><i class="goal"></i>Buts</span><span><i class="assist"></i>Passes décisives</span><small>Survolez ou sélectionnez les points sous l’axe X.</small></div>
   <div class="wc-highlights"><strong>MOMENTS CLÉS</strong><div id="wc-moments"></div></div>
@@ -148,7 +148,7 @@ const initialEventCount=initial.actions.filter(a=>a.minute===initialMinute).leng
    if(position>=10)continue;
    const category=kind(a);
    const circle=svgEl('circle',{cx:fromX(a.minute),cy:430-position*5.8,r:category==='goal'?4.8:2.7,fill:category==='goal'?'#ff719c':category==='assist'?'#FFE0A3':category==='negative'?'#a695ff':category==='positive'?'#83dfff':'#7596b0','data-minute':a.minute,tabindex:0,role:'button','aria-label':a.minute+'′ '+label(a)},a.minute+'′ '+String(a.second).padStart(2,'0')+'″ · '+label(a));
-   const jump=()=>{setMinute(a.minute);document.getElementById('wc-minute-reader')?.scrollIntoView({behavior:'smooth',block:'center'});};
+   const jump=()=>setMinute(a.minute);
    circle.addEventListener('click',jump);circle.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();jump();}});
    marks.append(circle);
   }
@@ -177,8 +177,7 @@ const initialEventCount=initial.actions.filter(a=>a.minute===initialMinute).leng
   if(!events.length){const empty=document.createElement('span');empty.textContent=p.activity==null?'Hors terrain':'Pas d’action : l’activité s’atténue.';tipActions.append(empty);}
   tooltip.hidden=false;
   tooltip.style.borderColor=color;
-  tooltip.style.left=Math.max(17,Math.min(83,cx/1140*100))+'%';
-  tooltip.style.top=Math.max(8,Math.min(svg.clientHeight-132,(value==null?160:fromY(value))/456*svg.clientHeight-130))+'px';
+
   if(!events.length){const node=document.createElement('span');node.className='wc-no-action';node.textContent=p.activity==null?'Joueur hors du terrain.':'Aucune action enregistrée : les impulsions précédentes diminuent.';chips.append(node);return;}
   for(const e of events){const node=document.createElement('span');node.className='wc-event-chip '+kind(e);node.textContent=String(e.second).padStart(2,'0')+'″ · '+label(e)+(e.penalty>0?' · léger malus −'+e.penalty.toFixed(2):'');chips.append(node);}
  }
@@ -230,8 +229,8 @@ const initialEventCount=initial.actions.filter(a=>a.minute===initialMinute).leng
   chart();setMinute(minute);
  }));
  slider.addEventListener('input',()=>setMinute(slider.value));
- const hit=document.getElementById('wc-profile-hit');const pointer=e=>{const bounds=svg.getBoundingClientRect();const relativeX=(e.clientX-bounds.left)/bounds.width*1140;setMinute((relativeX-58)/1013*duration);};
- hit.addEventListener('pointermove',pointer);hit.addEventListener('click',pointer);hit.addEventListener('keydown',e=>{if(e.key==='ArrowLeft'||e.key==='ArrowRight'){e.preventDefault();setMinute(minute+(e.key==='ArrowRight'?1:-1));}});
+ const hit=document.getElementById('wc-profile-hit');const pointer=e=>{const bounds=svg.getBoundingClientRect();if(!bounds.width)return;const relativeX=(e.clientX-bounds.left)/bounds.width*1140;setMinute((relativeX-58)/1013*duration);};
+ hit.addEventListener('pointermove',pointer);hit.addEventListener('pointerdown',pointer);hit.addEventListener('click',pointer);hit.addEventListener('keydown',e=>{if(['ArrowLeft','ArrowRight','Home','End'].includes(e.key)){e.preventDefault();setMinute(e.key==='Home'?0:e.key==='End'?duration:minute+(e.key==='ArrowRight'?1:-1));}});
  document.querySelectorAll('[data-step]').forEach(button=>button.addEventListener('click',()=>setMinute(minute+Number(button.dataset.step))));
  document.querySelectorAll('[data-filter]').forEach(button=>button.addEventListener('click',()=>{filter=button.dataset.filter;for(const b of document.querySelectorAll('[data-filter]')){const a=b===button;b.classList.toggle('active',a);b.setAttribute('aria-pressed',String(a));}renderLog();}));
  choose(new URLSearchParams(location.search).get('joueur')||defaultId,false);
