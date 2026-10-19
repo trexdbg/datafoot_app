@@ -95,7 +95,7 @@
 .wc-profile-zones{display:flex;gap:10px 20px;align-items:center;flex-wrap:wrap;background:#0b2a42;border-top:1px solid #315e78;padding:13px 27px}
 .wc-profile-zones span{display:inline-flex;align-items:center;gap:7px;font-size:11px;color:#d2eaf8}
 .wc-profile-zones i{display:inline-block;width:17px;height:4px;border-radius:3px}
-.wc-profile-zones i.low{background:#a695ff}.wc-profile-zones i.steady{background:#73ddff}.wc-profile-zones i.high{background:#ffb368}
+.wc-profile-zones i.low{background:#8A9DB8}.wc-profile-zones i.steady{background:#52D3EF}.wc-profile-zones i.high{background:#B8F27C}
 .wc-profile-zones small{font-size:10px;color:#9fc4d9;margin-left:auto}
 .wc-profile-tooltip{display:flex;flex-direction:column;gap:7px;position:absolute;z-index:5;left:50%;top:10px;transform:translateX(-50%);padding:13px 15px;width:min(300px,45%);max-height:185px;overflow:hidden;border:1.5px solid #73ddff;background:#071b2ff5;box-shadow:0 15px 35px #0008;border-radius:11px;color:#e8f7ff;pointer-events:none}
 .wc-profile-tooltip[hidden]{display:none!important}
@@ -106,3 +106,8 @@
 .wc-tip-action.goal{color:#ffc4d8;border-color:#9d5873;background:#542c49}
 .wc-tip-action.positive{color:#a4f2e0;border-color:#377c72}
 @media(max-width:600px){.wc-profile-tooltip{width:min(270px,67%);padding:10px}.wc-profile-zones{padding:12px 14px;gap:8px 12px}.wc-profile-zones small{margin-left:0}}
+
+.wc-profile-legend i.assist{background:#FFE0A3;transform:rotate(45deg);border-radius:2px;width:9px;height:9px;margin:1px}
+.wc-highlights button.assist{background:#493f2d;border-color:#c6a56b;color:#ffe1a5}
+.wc-tip-action.assist,.wc-event-chip.assist{background:#423a2b;color:#ffe1a5;border-color:#b9975e}
+.wc-profile-tooltip{border-radius:9px;box-shadow:0 10px 30px #0008}
