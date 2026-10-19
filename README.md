@@ -150,3 +150,8 @@ Les fichiers `src/data/players/messi-pass-wars*.json` et `public/data/players/me
 
 ### Pass Wars — paintball sans liens (interface)
 Les traits de connexion fixes ont été supprimés : seuls les projectiles, les petites billes formant leur sillage, les éclaboussures persistantes et les nœuds sont dessinés. Chaque partenaire possède une couleur déterministe, attribuée une seule fois depuis le classement global des joueurs StatsBomb puis conservée pour les filtres et les tris. La même teinte est appliquée aux projectiles des deux sens, à la peinture, au contour du nœud et au classement. Les directions restent lisibles par le sens du déplacement et les compteurs ↗ (Messi donne) / ↙ (Messi reçoit). Le seuil de **80 passes échangées** reste inchangé.
+
+
+### Aucune ligne dans les visualisations Messi
+
+Les vues `/joueurs/messi/pass-wars/` et `/matchs/finale-2022/messi/` ne dessinent **aucun trait** : ni segments fixes entre joueurs, ni cercles de guidage, ni lignes de traînée, ni anneaux d'impact. Ne subsistent que les joueurs, des billes isolées en mouvement et des gouttes de peinture à l'arrivée. Les identités colorées des partenaires sont conservées. Le contrôle `tests/pass-wars.test.mjs` protège les deux vues contre le retour de traits.
