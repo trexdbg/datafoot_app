@@ -14,6 +14,8 @@ on:
       - 'src/pages/equipes/**'
       - 'src/components/ActivityMiniChart.astro'
       - 'src/styles/match-explorer.css'
+      - 'src/styles/match-profile-detail.css'
+      - 'src/lib/match-activity.d.mts'
       - 'public/data/matches/**'
       - 'src/styles/match-weather.css'
       - 'src/styles/messi-constellation.css'
