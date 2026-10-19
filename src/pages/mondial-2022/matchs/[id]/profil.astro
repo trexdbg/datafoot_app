@@ -21,6 +21,9 @@ const x=(minute:number)=>left+minute/game.duration*(right-left);
 const y=(score:number)=>bottom-Math.max(0,Math.min(100,score))/100*(bottom-top);
 const firstPoints=initial.timeline.filter(p=>p.activity!==null);
 const firstPath=monotonePath(firstPoints.map(p=>({x:x(p.minute),y:y(p.activity??0)})));
+// Éviter le chevauchement des libellés 120′ et 122′ près du bord droit.
+const xTicks=Array.from({length:Math.floor(game.duration/15)+1},(_,i)=>i*15).filter(n=>n===0||game.duration-n>=9);
+if(!xTicks.includes(game.duration))xTicks.push(game.duration);
 const clientPlayers=profiles.map(p=>({
  id:p.player.id,name:p.player.name,presence:pulsePresence(p.timeline),team:p.player.team,teamLabel:labelCountry(p.player.team),position:p.player.position??'',roleLabel:p.player.position?pulseRoleLabel(p.player.position):'Poste non renseigné · barème milieu',flagSrc:flagSrc(p.player.team),entry:p.player.entry,exit:p.player.exit,
  timeline:p.timeline.map(t=>({activity:t.activity,impact:t.impact,actions:t.actions,penaltyGain:t.penaltyGain})),
@@ -88,7 +91,7 @@ const initialEventCount=initial.actions.filter(a=>a.minute===initialMinute).leng
     <rect x="58" y="30" width="1013" height="71.75" fill={PULSE_BANDS.high.color} opacity=".065"/>
     <rect x="58" y="245.25" width="1013" height="71.75" fill={PULSE_BANDS.low.color} opacity=".07"/>
     {[0,25,50,75,100].map(t=><g><line x1={left} x2={right} y1={y(t)} y2={y(t)} class="wc-profile-grid"/><text class="wc-profile-axis" text-anchor="end" x="47" y={y(t)+4}>{t}</text></g>)}
-    {Array.from({length:Math.ceil(game.duration/15)+1},(_,i)=>i*15).filter(n=>n<=game.duration).concat([game.duration]).filter((n,i,a)=>a.indexOf(n)===i).map(minute=><g><line x1={x(minute)} x2={x(minute)} y1={top} y2={bottom} class="wc-profile-grid vertical"/><text x={x(minute)} y="345" text-anchor="middle" class="wc-profile-axis">{minute}′</text></g>)}
+    {xTicks.map(minute=><g><line x1={x(minute)} x2={x(minute)} y1={top} y2={bottom} class="wc-profile-grid vertical"/><text x={x(minute)} y="345" text-anchor="middle" class="wc-profile-axis">{minute}′</text></g>)}
     <text class="wc-profile-chartlabel" x={left} y="20">INDICE PULSE /100</text>
     {game.duration>90&&<g><line x1={x(90)} x2={x(90)} y1={top} y2={bottom} stroke="#b6d8e7" stroke-dasharray="6 7" opacity=".6"/><text class="wc-profile-period" x={x(90)+8} y="48">APRÈS 90′</text></g>}
     <g id="wc-rhythm-reference"><line x1={left} x2={right} y1={y(50)} y2={y(50)} stroke="#87F2CC" stroke-opacity=".7" stroke-width="1.6" stroke-dasharray="7 6"/><text x={right-6} y={y(50)-9} text-anchor="end" class="wc-reference-label">CAP DES 50</text></g>
