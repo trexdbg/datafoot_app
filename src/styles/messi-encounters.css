@@ -73,3 +73,11 @@
 .me-method a{color:#8ceaff}
 @media(max-width:1050px){.me-columns{grid-template-columns:1fr}.me-side{border-left:0;border-top:1px solid #3e617a}.me-rank{grid-template-columns:repeat(2,minmax(0,1fr));max-height:none}.me-methods{grid-template-columns:1fr}}
 @media(max-width:700px){.me-hero{padding-top:1.6rem}.me-tabs button{font-size:.66rem;padding:.8rem .4rem}.me-tabs button small{font-size:.52rem;margin-left:0}.me-tabs button span{display:none}.me-filters{flex-wrap:wrap}.me-filters label{flex:1}.me-filters #me-sample{width:100%;margin-left:0}.me-main{overflow-x:auto}#me-canvas{min-width:710px}.me-calendar{top:1.7rem}.me-rank{grid-template-columns:1fr}.me-controls{flex-wrap:wrap}.me-desc{font-size:.97rem}}
+
+/* Les 62 équipes adverses restent accessibles sans superposer leurs nœuds. */
+.me-pages{display:flex;align-items:center;gap:.55rem;margin-left:auto;color:#c9eafa;font-weight:850;font-size:.72rem;font-variant-numeric:tabular-nums;white-space:nowrap}
+.me-pages[hidden]{display:none}
+.me-pages button{cursor:pointer;color:#a6f5ff;background:#0e3044;border:1px solid #426579;border-radius:6px;padding:.45rem .72rem;font-size:.96rem}
+.me-pages button:disabled{opacity:.3;cursor:not-allowed}
+.me-global-totals{margin-top:1rem;padding:.65rem .7rem;border:1px solid #3f7a88;border-radius:7px;background:#123649;color:#b2faff;font-size:.74rem;font-weight:800;line-height:1.5}
+@media(max-width:700px){.me-pages{margin-left:0}.me-pages button{padding:.4rem .55rem}}
