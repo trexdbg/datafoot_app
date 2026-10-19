@@ -84,3 +84,19 @@ test('palette StatsBomb : top 16 avec teintes réellement distinctes, constantes
   const minimum=Math.min(...hues.flatMap((h,i)=>hues.slice(i+1).map(other=>separation(h,other))));
   assert.ok(minimum>10,'Les 16 principales couleurs ne doivent pas être presque identiques');
 });
+
+
+test('aucune des deux visualisations Messi ne trace de traits (ni liens, ni grilles, ni traînées)',async()=>{
+  const {readFileSync}=await import('node:fs');
+  const newer=readFileSync(new URL('../src/lib/pass-wars-engine.mjs',import.meta.url),'utf8');
+  const old=readFileSync(new URL('../src/pages/matchs/finale-2022/messi.astro',import.meta.url),'utf8');
+  for(const [label,source] of [['Pass Wars',newer],['Finale 2022',old]]){
+    assert.ok(!/drawEdges\s*\(/.test(source),label+' : liens persistants');
+    assert.ok(!/ctx\.stroke\s*\(|ctx\.strokeStyle|ctx\.setLineDash|ctx\.ellipse\s*\(/.test(source),
+      label+' : traits graphiques persistants');
+  }
+  assert.ok(!newer.includes('for(let dot=1;dot<=5;dot++)'),'Pas de pointillés formant une trajectoire');
+  assert.ok(!old.includes('function line('),'Pas de traceur de segments dans la vue de la finale');
+  assert.ok(newer.includes('stampPaint(p.id,p.direction,p.index)'));
+  assert.ok(old.includes('splatter(p.partner_id,p.direction,p.index)'));
+});

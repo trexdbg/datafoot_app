@@ -197,9 +197,6 @@ export function bootPassWars(){
     const grad=ctx.createRadialGradient(CX,CY,20,CX,CY,630);
     grad.addColorStop(0,'#173850');grad.addColorStop(.56,'#091b2e');grad.addColorStop(1,'#050c18');
     ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);
-    ctx.save();ctx.strokeStyle='#58789325';ctx.setLineDash([3,13]);
-    for(const r of [120,220,345,510]){ctx.beginPath();ctx.ellipse(CX,CY,r,.72*r,0,0,Math.PI*2);ctx.stroke();}
-    ctx.restore();
     for(const s of stars){ctx.globalAlpha=s.a;ctx.fillStyle='#c9eaff';ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,7);ctx.fill();}
     ctx.globalAlpha=1;ctx.font='11px monospace';ctx.fillStyle='#87a8c0';
     ctx.fillText('PASS WARS / REAL EVENTS',25,28);ctx.textAlign='right';
@@ -261,22 +258,12 @@ export function bootPassWars(){
         if(ripples.length>120)ripples.shift();
       }
       if(age<0||age>1||(focus!==null&&focus!==p.id))continue;
-      const d=1-(1-age)*(1-age),trail=Math.max(0,d-.16);
+      // Une seule bille isolée en vol. Aucun trait, aucune traînée en pointillés.
+      const d=1-(1-age)*(1-age);
       const x=from.x+(to.x-from.x)*d,y=from.y+(to.y-from.y)*d;
-      const x0=from.x+(to.x-from.x)*trail,y0=from.y+(to.y-from.y)*trail;
-      // Une nuée de micro-billes remplace les traînées en traits droits.
-      ctx.save();
-      ctx.fillStyle=color;
-      ctx.shadowColor=color;ctx.shadowBlur=12;
-      for(let dot=1;dot<=5;dot++){
-        const u=dot/6,px=x+(x0-x)*u,py=y+(y0-y)*u;
-        ctx.globalAlpha=(1-u)*.65;
-        ctx.beginPath();ctx.arc(px,py,3.5*(1-u)+.8,0,Math.PI*2);ctx.fill();
-      }
-      ctx.restore();
-      ctx.save();ctx.shadowBlur=18;ctx.shadowColor=color;ctx.fillStyle=color;
-      ctx.beginPath();ctx.arc(x,y,7.4,0,7);ctx.fill();
-      ctx.fillStyle='#ffffff';ctx.beginPath();ctx.arc(x-1.8,y-1.6,2.7,0,7);ctx.fill();ctx.restore();
+      ctx.save();ctx.shadowBlur=21;ctx.shadowColor=color;ctx.fillStyle=color;
+      ctx.beginPath();ctx.arc(x,y,8.6,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle='#ffffff';ctx.beginPath();ctx.arc(x-2,y-2,2.8,0,Math.PI*2);ctx.fill();ctx.restore();
     }
     balls=survivors;ripples=ripples.filter(r=>t-r.start<600);
     for(const r of ripples){
@@ -285,8 +272,7 @@ export function bootPassWars(){
         if(!focused || Math.hypot(r.x-focused.x,r.y-focused.y)>75)continue;
       }
       const age=(t-r.start)/600;
-      ctx.save();ctx.strokeStyle=r.color;ctx.globalAlpha=(1-age)*.78;
-      ctx.lineWidth=3.2;ctx.beginPath();ctx.arc(r.x,r.y,9+43*age,0,7);ctx.stroke();
+      ctx.save();ctx.globalAlpha=(1-age)*.78;
       const rng=randomSeed(r.seed>>>0);
       ctx.fillStyle=r.color;
       for(let j=0;j<12;j++){
@@ -306,15 +292,21 @@ export function bootPassWars(){
       const pos=positions.get(p.id),amount=score(p.id).total,active=focus===null||focus===p.id;
       const r=18+Math.min(8,Math.sqrt(amount)*.7);
       ctx.save();ctx.globalAlpha=active?1:.18;
-      ctx.fillStyle='#12304b';ctx.strokeStyle=focus===p.id?'#ffffff':colorOf(p.id);ctx.lineWidth=focus===p.id?3:2.5;
-      ctx.shadowColor=colorOf(p.id);ctx.shadowBlur=amount?20:7;ctx.beginPath();ctx.arc(pos.x,pos.y,r,0,7);ctx.fill();ctx.stroke();
+      ctx.shadowColor=colorOf(p.id);ctx.shadowBlur=amount?25:12;
+      ctx.fillStyle=colorOf(p.id);ctx.beginPath();ctx.arc(pos.x,pos.y,r+3,0,Math.PI*2);ctx.fill();
+      ctx.shadowBlur=0;
+      ctx.fillStyle='#12304b';ctx.beginPath();ctx.arc(pos.x,pos.y,r-1,0,Math.PI*2);ctx.fill();
+      if(focus===p.id){
+        ctx.fillStyle='#ffffff';ctx.beginPath();ctx.arc(pos.x,pos.y,4,0,Math.PI*2);ctx.fill();
+      }
       ctx.shadowBlur=0;ctx.textAlign='center';ctx.fillStyle='#fff';ctx.font='800 14px system-ui';ctx.fillText(amount,pos.x,pos.y+5);
       ctx.font='600 12px system-ui';ctx.fillStyle='#d7ecfa';
       const nm=p.name.length>17?p.name.split(' ').at(-1):p.name;
       ctx.fillText(nm.length>18?nm.slice(0,17)+'…':nm,pos.x,pos.y+(pos.y<CY?-r-10:r+19));ctx.restore();
     }
     ctx.save();ctx.shadowBlur=32;ctx.shadowColor=CYAN;
-    ctx.fillStyle='#0a304e';ctx.strokeStyle='#96eeff';ctx.lineWidth=3.5;ctx.beginPath();ctx.arc(CX,CY,62,0,7);ctx.fill();ctx.stroke();ctx.restore();
+    ctx.fillStyle='#96eeff';ctx.beginPath();ctx.arc(CX,CY,63,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#0a304e';ctx.beginPath();ctx.arc(CX,CY,59,0,Math.PI*2);ctx.fill();ctx.restore();
     ctx.textAlign='center';ctx.fillStyle='#fff';ctx.font='900 22px system-ui';ctx.fillText('MESSI',CX,CY+5);
     ctx.fillStyle=CYAN;ctx.font='800 12px monospace';ctx.fillText('N° 10',CX,CY+26);ctx.textAlign='left';
   }
@@ -328,7 +320,7 @@ export function bootPassWars(){
       ctx.font='bold 21px system-ui';
       ctx.fillText('AUCUN PARTENAIRE À 80 PASSES',CX,CY+110);
       ctx.font='14px system-ui';
-      ctx.fillText('Élargissez la période pour afficher des connexions.',CX,CY+140);
+      ctx.fillText('Élargissez la période pour afficher des joueurs.',CX,CY+140);
       ctx.textAlign='left';
     }
   }
