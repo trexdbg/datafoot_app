@@ -85,3 +85,11 @@
 @media(max-width:1100px){.pw-board{grid-template-columns:1fr}.pw-aside{border-left:0;border-top:1px solid #304960}.pw-leader{grid-template-columns:repeat(2,minmax(0,1fr));max-height:none}.pw-all{grid-column:1/-1}.pw-controls{grid-template-columns:1fr 90px}.pw-transport{grid-column:1/-1}.pw-progress{grid-column:1}.pw-speed{grid-column:2}}
 @media(max-width:720px){.pw-hero{padding-top:2rem}.pw-hero-row{margin-top:1.6rem}.pw-hero-aside{display:none}.pw-toolbar{display:grid;grid-template-columns:1fr 1fr;padding:.8rem;gap:.6rem}.pw-canvas-scroll{overflow-x:auto}.pw-canvas-scroll canvas{min-width:880px}.pw-arena-head{font-size:.56rem}.pw-canvas-legend{gap:.7rem;font-size:.56rem}.pw-leader{grid-template-columns:1fr 1fr}.pw-aside{padding:1rem}.pw-method{grid-template-columns:1fr;gap:1.5rem;padding-top:3rem}.pw-controls{padding:.9rem}.pw-transport{flex-wrap:wrap}#pw-battle{font-size:.65rem}.pw-scope-warning{font-size:.75rem}}
 @media(prefers-reduced-motion:reduce){.pw-dot{box-shadow:none}}
+
+/* Paintball : une arène plus nerveuse, avec une lecture claire des impacts. */
+.pw-arena-head{background:linear-gradient(90deg,#142d3b,#241d2b 55%,#142c3b)}
+.pw-arena-head .pw-spark{color:#ffb16f;text-shadow:0 0 13px #ff8e55}
+.pw-canvas-legend span:last-child{color:#d1eafb;font-weight:850}
+.pw-canvas-legend{border-top-color:#3b5367}
+#pw-play:disabled,#pw-battle:disabled{opacity:.36;cursor:not-allowed;box-shadow:none}
+.pw-leader-title span:first-child{color:#b3e6ff}
