@@ -106,6 +106,29 @@ export function eventCalendarPosition(isoDate){
   const day=Number(date[1]);
   return month+Math.max(0,Math.min(1,(day-1)/days));
 }
+/**
+ * La lecture d'une carrière entière contient des dizaines de milliers de passes.
+ * Ne jamais lancer toutes les billes le même frame : on conserve chaque passe
+ * dans les compteurs, mais on choisit une représentation visuelle du lot.
+ * Les indices retournés proviennent STRICTEMENT de l'intervalle d'événements.
+ */
+export function sampleVisualPasses(events,start,end,maximum=4){
+  const count=Math.max(0,end-start),limit=Math.min(count,Math.max(0,Math.floor(maximum)));
+  if(!limit)return [];
+  return Array.from({length:limit},(_,i)=>
+    events[start+Math.min(count-1,Math.floor((i+.5)*count/limit))]);
+}
+
+/** Limite de file : conserver des passes datées réparties dans l'historique. */
+export function thinVisualQueue(queue,maximum=48){
+  const limit=Math.max(0,Math.floor(maximum));
+  if(queue.length<=limit)return queue;
+  if(!limit)return [];
+  if(limit===1)return [queue.at(-1)];
+  return Array.from({length:limit},(_,i)=>
+    queue[Math.round(i*(queue.length-1)/(limit-1))]);
+}
+
 export function eventsThroughMonth(events,ordinal){
   if(!Number.isInteger(ordinal))return 0;
   // Borne supérieure pour inclure TOUS les événements du mois affiché.
@@ -139,7 +162,9 @@ export function bootPassWars(){
     else bytes[0]=(Date.now()^Math.floor(Math.random()*0xffffffff))>>>0;
     return bytes[0];
   })();
-  let balls=[],ripples=[];
+  let balls=[],ripples=[],visualQueue=[],nextLaunchAt=0;
+  const MAX_VISUAL_QUEUE=48;
+  const VISUAL_GAP_MS=105;
   // Photos Commons préchargées une seule fois par joueur ; si erreur réseau,
   // le Canvas et le classement conservent un monogramme coloré.
   const portraits=new Map();
@@ -269,11 +294,11 @@ export function bootPassWars(){
     set('pw-message',players.length===0
       ? 'Aucun partenaire avec plus de 95 passes échangées sur cette sélection. Change de saison ou élargis les filtres.'
       : 'StatsBomb Open Data : '+meta.scope.matches_count+' matchs couverts. '+meta.scope.coverage_note+
-        ' Seuls les partenaires totalisant plus de 95 passes envoyées + reçues dans cette sélection apparaissent.');
+        ' Les compteurs intègrent toutes les passes sourcées : les billes sont un échantillon visuel des vraies passes, étalé dans le temps pour éviter les arrivées par paquets.');
   }
   function reset(){
     playing=false;cursor=0;calendarPosition=timelineFirst??0;
-    counts=new Map();balls=[];ripples=[];selectedMonth=null;
+    counts=new Map();balls=[];ripples=[];visualQueue=[];nextLaunchAt=0;selectedMonth=null;
     paint.clearRect(0,0,W,H);
     updatePlay();renderBoard();renderLeaderboard();
   }
@@ -285,10 +310,26 @@ export function bootPassWars(){
   }
   function count(e,animate,t){
     const q=counts.get(e.partner_id)||empty();q[e.direction]++;q.total++;counts.set(e.partner_id,q);
-    if(animate){
-      balls.push({id:e.partner_id,direction:e.direction,index:e.index,start:t,duration:650+(e.index%5)*75});
-      if(balls.length>240)balls=balls.slice(-240);
-    }
+  }
+  function enqueueVisualInterval(start,end){
+    if(end<=start)return;
+    // À vitesse normale, 4 passages représentatifs au maximum par frame.
+    // Les 100+ autres événements du lot sont bien comptés au scoreboard.
+    visualQueue.push(...sampleVisualPasses(events,start,end,battle?8:4));
+    if(visualQueue.length>MAX_VISUAL_QUEUE)
+      visualQueue=thinVisualQueue(visualQueue,MAX_VISUAL_QUEUE);
+  }
+  function launchVisualPass(t){
+    if(!visualQueue.length)return;
+    if(nextLaunchAt===0)nextLaunchAt=t;
+    const gap=battle?56:VISUAL_GAP_MS;
+    // Jamais de rattrapage en rafale après un onglet inactif.
+    if(t<nextLaunchAt)return;
+    const e=visualQueue.shift();
+    balls.push({id:e.partner_id,direction:e.direction,index:e.index,
+      start:t,duration:770+(e.index%5)*75});
+    nextLaunchAt=t+gap;
+    if(balls.length>80)balls=balls.slice(-80);
   }
   function seek(n,month=null){
     const end=Math.max(0,Math.min(events.length,Number(n)||0));
@@ -296,6 +337,7 @@ export function bootPassWars(){
     // Le mois sélectionné est entièrement inclus ; lecture suivante = mois suivant.
     calendarPosition=month===null?(timelineFirst??0):Math.min((timelineLast??month)+1,month+.999);
     playing=false;cursor=0;counts=new Map();balls=[];ripples=[];
+    visualQueue=[];nextLaunchAt=0;
     paint.clearRect(0,0,W,H);
     while(cursor<end)count(events[cursor++],false,0);
     // État visuel après scrubbing : un condensé des impacts précédents,
@@ -529,15 +571,20 @@ export function bootPassWars(){
     const dt=prev?Math.min(.13,Math.max(0,(t-prev)/1000)):0;prev=t;
     if(playing&&events.length&&timelineLast!==null){
       selectedMonth=null;
-      // Un mois = toujours la même distance temporelle, même sans passe.
-      // Les événements conservent leur vraie date à l'intérieur du mois.
-      const end=timelineLast+1;
+      // Frise réellement calendaire : mêmes distances pour chaque mois.
+      // Chaque événement réel compte, mais les projectiles sont distribués
+      // à cadence visuellement lisible plutôt que tirés tous à la fois.
+      const end=timelineLast+1,from=cursor;
       calendarPosition=Math.min(end,calendarPosition+dt*(battle?24:speed));
       while(cursor<events.length &&
             eventCalendarPosition(events[cursor].date)<calendarPosition)
-        count(events[cursor++],true,t);
+        count(events[cursor++],false,t);
       if(calendarPosition>=end){
-        while(cursor<events.length)count(events[cursor++],true,t);
+        while(cursor<events.length)count(events[cursor++],false,t);
+      }
+      enqueueVisualInterval(from,cursor);
+      launchVisualPass(t);
+      if(calendarPosition>=end && visualQueue.length===0){
         playing=false;updatePlay();
       }
       if(t-lastText>90){lastText=t;renderBoard();}
@@ -552,12 +599,12 @@ export function bootPassWars(){
   ['pw-team','pw-season','pw-competition'].forEach(id=>$(id).addEventListener('change',build));
   $('pw-sort').addEventListener('change',e=>{sort=e.target.value;renderLeaderboard();});
   $('pw-play').addEventListener('click',()=>{
-    if(timelineLast!==null&&calendarPosition>=timelineLast+1)reset();
-    playing=!playing;updatePlay();
+    if(timelineLast!==null&&calendarPosition>=timelineLast+1 && visualQueue.length===0)reset();
+    playing=!playing;nextLaunchAt=0;updatePlay();
   });
   $('pw-reset').addEventListener('click',reset);
   $('pw-battle').addEventListener('click',()=>{
-    battle=!battle;if(battle&&timelineLast!==null&&calendarPosition>=timelineLast+1)reset();
+    battle=!battle;if(battle&&timelineLast!==null&&calendarPosition>=timelineLast+1&&visualQueue.length===0)reset();
     if(battle)playing=true;updatePlay();
   });
   $('pw-speed').addEventListener('change',e=>speed=Number(e.target.value));
