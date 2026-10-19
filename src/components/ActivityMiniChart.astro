@@ -15,12 +15,14 @@ const paths=series.map(s=>{
  if(current.length)segments.push(current);
  return {label:s.label,color:s.color,paths:segments.map(segment=>monotonePath(segment.map(p=>({x:x(p.minute),y:y(p.activity??0)}))))};
 });
-const first=series[0]?.timeline||[];
+const first=smoothVisual(series[0]?.timeline||[]);
+const step=maxScale>300?100:50;
+const yTicks=[...new Set([...Array.from({length:Math.floor(maxScale/step)+1},(_,i)=>i*step),maxScale])];
 ---
 <svg class="ax-mini-chart" viewBox="0 0 500 174" role="img" aria-label={caption}>
  <defs><linearGradient id="ax-glow" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0b416b" stop-opacity=".26"/><stop offset="1" stop-color="#0b223c" stop-opacity=".04"/></linearGradient></defs>
  <rect width="500" height="174" fill="url(#ax-glow)" rx="8"/>
- {[0,50,100,150,200].filter(v=>v<=maxScale).map(t=><g><line class="ax-mini-grid" x1={left} x2={right} y1={y(t)} y2={y(t)}/><text class="ax-mini-tick" x="24" y={y(t)+3} text-anchor="end">{t}</text></g>)}
+ {yTicks.map(t=><g><line class="ax-mini-grid" x1={left} x2={right} y1={y(t)} y2={y(t)}/><text class="ax-mini-tick" x="24" y={y(t)+3} text-anchor="end">{t}</text></g>)}
  {[0,45,90,duration].filter((t,i,a)=>a.indexOf(t)===i).map(t=><g><line class="ax-mini-grid" x1={x(t)} x2={x(t)} y1={top} y2={bottom}/><text class="ax-mini-tick" x={x(t)} y="169" text-anchor="middle">{t}′</text></g>)}
  {paths.map(s=>s.paths.map(path=><path d={path} fill="none" stroke={s.color} stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round" class="ax-mini-line" />))}
  {goals.map(m=>first[m]?.activity!=null?<circle cx={x(m)} cy={y(first[m].activity!)} r="4" fill="#ff739a" stroke="#fff0f3" stroke-width="1.5"/>:null)}
