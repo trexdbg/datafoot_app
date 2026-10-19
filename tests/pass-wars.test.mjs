@@ -34,6 +34,20 @@ test('plafond des 30 plus grands receveurs de Messi si 40 dépassent le seuil',(
   assert.ok(players.every(p=>p.given>500));
 });
 
+test('le seuil des 501 passes est mondial et stable entre les filtres de saison',()=>{
+  const source=[
+    ...Array.from({length:505},()=>make(12,'given')),
+    ...Array.from({length:450},()=>make(13,'given')),
+    ...Array.from({length:3000},()=>make(13,'received')),
+  ];
+  const global=new Set(eligiblePartners(source).map(p=>p.id));
+  const oneSeason=[...Array.from({length:22},()=>make(12,'given')),
+    ...Array.from({length:100},()=>make(13,'given'))];
+  const seasonEligible=eligiblePartners(oneSeason,0,Infinity).filter(p=>global.has(p.id));
+  assert.deepEqual(seasonEligible.map(p=>p.id),[12]);
+  assert.equal(eligiblePartners(oneSeason).length,0,'Le seuil ne doit pas être réappliqué à chaque saison');
+});
+
 test('les données réelles publiées correspondent au seuil de la visualisation',async()=>{
   const {readFileSync}=await import('node:fs');
   const summary=JSON.parse(readFileSync(new URL('../src/data/players/messi-pass-wars.json',import.meta.url),'utf8'));
@@ -280,6 +294,9 @@ test('les courbes pseudo-aléatoires ont des chemins variés et les bonnes extr�
 test('une mini-bille par passe et aucune coupe de file : garde les événements StatsBomb',async()=>{
   const {readFileSync}=await import('node:fs');
   const engine=readFileSync(new URL('../src/lib/pass-wars-engine.mjs',import.meta.url),'utf8');
+  assert.ok(engine.includes('careerReceiverIds=new Set(meta.partners.filter(p=>p.given>=MIN_PARTNER_PASSES)'));
+  assert.ok(engine.includes('players=eligiblePartners(filtered,0,Infinity)'));
+  assert.ok(engine.includes('.filter(p=>careerReceiverIds.has(p.id)).slice(0,30)'));
   assert.ok(engine.includes('const event=events[releaseCursor++]'));
   assert.ok(engine.includes('balls.push({id:event.partner_id'));
   assert.ok(engine.includes('releaseCursor>=cursor'));
