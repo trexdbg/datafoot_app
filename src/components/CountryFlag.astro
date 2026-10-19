@@ -1,0 +1,9 @@
+---
+import {flag,flagSrc} from '../lib/worldcup-data';
+interface Props {country:string;id?:string}
+const {country,id}=Astro.props;
+const source=flagSrc(country);
+---
+{source
+ ? <img id={id} class="wc-flag" src={source} alt="" aria-hidden="true" width="28" height="19" loading="lazy" decoding="async" />
+ : <span id={id} class="wc-flag-emoji" aria-hidden="true">{flag(country)}</span>}

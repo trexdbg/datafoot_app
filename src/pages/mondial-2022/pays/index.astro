@@ -1,4 +1,5 @@
 ---
+import CountryFlag from '../../../components/CountryFlag.astro';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import WorldCupNav from '../../../components/WorldCupNav.astro';
 import {countries,countryMatches,countryPlayers,labelCountry,flag,countryUrl} from '../../../lib/worldcup-data';
@@ -13,7 +14,7 @@ const base=import.meta.env.BASE_URL.replace(/\/$/,'');
  <div class="wc-section-head"><div><p class="wc-eyebrow">SÉLECTIONNER UN PAYS</p><h2>Toutes les sélections.</h2></div></div>
  <div class="wc-toolbar"><label for="wc-country-find">RECHERCHER</label><input id="wc-country-find" type="search" placeholder="Pays : Argentine, Japon, Maroc…" autocomplete="off"/><span class="wc-filter-count" id="wc-country-count">{countries.length} pays</span></div>
  <div class="wc-country-grid">
-  {countries.map(country=><a class="wc-country-tile" href={countryUrl(base,country)} data-country-name={labelCountry(country).toLowerCase()}><span class="wc-country-flag">{flag(country)}</span><span><strong>{labelCountry(country)}</strong><small>{countryMatches(country).length} matchs · {countryPlayers(country).length} joueurs recensés</small></span></a>)}
+  {countries.map(country=><a class="wc-country-tile" href={countryUrl(base,country)} data-country-name={labelCountry(country).toLowerCase()}><span class="wc-country-flag"><CountryFlag country={country} /></span><span><strong>{labelCountry(country)}</strong><small>{countryMatches(country).length} matchs · {countryPlayers(country).length} joueurs recensés</small></span></a>)}
  </div>
  <p class="wc-empty" id="wc-country-empty" hidden>Aucun pays correspondant à la recherche.</p>
  <p class="wc-footnote">Les sélections sont listées sans classement éditorial ni favoritisme. Les événements et compositions proviennent de <a href="https://github.com/hudl/open-data" target="_blank" rel="noopener noreferrer">StatsBomb Open Data ↗</a>.</p>

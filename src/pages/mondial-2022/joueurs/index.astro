@@ -1,4 +1,5 @@
 ---
+import CountryFlag from '../../../components/CountryFlag.astro';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import WorldCupNav from '../../../components/WorldCupNav.astro';
 import {countries,playerIndex,labelCountry,flag,playerUrl} from '../../../lib/worldcup-data';
@@ -14,11 +15,11 @@ const sorted=[...playerIndex].sort((a,b)=>a.name.localeCompare(b.name,'fr'));
  <div class="wc-section-head"><div><p class="wc-eyebrow">ANNUAIRE DES PROFILS</p><h2>Trouver un joueur.</h2><p>Ordre alphabétique, aucune tête d’affiche imposée. Chaque fiche contient ses matchs et son activité minute par minute.</p></div></div>
  <div class="wc-toolbar">
   <label for="wc-player-find">NOM</label><input id="wc-player-find" type="search" placeholder="Rechercher un nom…" autocomplete="off"/>
-  <label for="wc-player-team">PAYS</label><select id="wc-player-team"><option value="">Tous les pays</option>{countries.map(country=><option value={country}>{flag(country)} {labelCountry(country)}</option>)}</select>
+  <label for="wc-player-team">PAYS</label><select id="wc-player-team"><option value="">Tous les pays</option>{countries.map(country=><option value={country}>{labelCountry(country)}</option>)}</select>
   <span class="wc-filter-count" id="wc-player-count">{sorted.length} joueurs</span>
  </div>
  <div class="wc-people-grid">
- {sorted.map(player=><a class="wc-person" href={playerUrl(base,player.id)} data-player-name={player.name} data-player-country={player.country}><span class="wc-country-flag">{flag(player.country)}</span><div><strong>{player.name}</strong><small>{labelCountry(player.country)} · {player.matches.length} match{player.matches.length>1?'s':''}</small></div><span>↗</span></a>)}
+ {sorted.map(player=><a class="wc-person" href={playerUrl(base,player.id)} data-player-name={player.name} data-player-country={player.country}><span class="wc-country-flag"><CountryFlag country={player.country} /></span><div><strong>{player.name}</strong><small>{labelCountry(player.country)} · {player.matches.length} match{player.matches.length>1?'s':''}</small></div><span>↗</span></a>)}
  </div>
  <p class="wc-empty" id="wc-player-empty" hidden>Aucun joueur trouvé avec ces critères.</p>
  <p class="wc-footnote">Les fiches incluent les joueurs présents dans les données StatsBomb de la compétition, titulaires ou remplaçants. L'absence d’événement n'est pas assimilée à une mauvaise performance. <a href={base+'/data/worldcup-2022/players.json'}>Données des joueurs en JSON ↗</a></p>

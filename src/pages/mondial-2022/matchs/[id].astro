@@ -1,4 +1,5 @@
 ---
+import CountryFlag from '../../../components/CountryFlag.astro';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import WorldCupNav from '../../../components/WorldCupNav.astro';
 import WorldCupWave from '../../../components/WorldCupWave.astro';
@@ -21,22 +22,22 @@ const secondTeam=teamTimeline(game,game.away);
  <nav class="wc-crumb"><a href={base+'/mondial-2022/'}>64 MATCHS</a><span>/</span>{stageLabel(game.stage)}<span>/</span>{titleMatch(game)}</nav>
  <div class="wc-section-head"><div><p class="wc-eyebrow">{dateLabel(game.date)} · {stageLabel(game.stage)}{game.group?' · GROUPE '+game.group:''}</p><h2>La rencontre, action par action.</h2><p>Compare le rythme des deux sélections sur un seul graphique. Plus bas, chaque joueur conserve sa courbe individuelle et interactive, sans ligne d'équipe superposée.</p></div><span class="wc-filter-count">{game.duration} minutes couvertes</span></div>
  <div class="wc-match-board" aria-label={titleMatch(game)}>
-  <a href={countryUrl(base,game.home)}><span class="wc-country-flag">{flag(game.home)}</span>{labelCountry(game.home)}</a>
+  <a href={countryUrl(base,game.home)}><span class="wc-country-flag"><CountryFlag country={game.home} /></span>{labelCountry(game.home)}</a>
   <strong>{game.homeScore}–{game.awayScore}</strong>
-  <a href={countryUrl(base,game.away)}>{labelCountry(game.away)}<span class="wc-country-flag">{flag(game.away)}</span></a>
+  <a href={countryUrl(base,game.away)}>{labelCountry(game.away)}<span class="wc-country-flag"><CountryFlag country={game.away} /></span></a>
  </div>
  <WorldCupNav active="matches"/>
  <div class="wc-stat-bar"><span>Événements <strong>{actions.toLocaleString('fr-FR')}</strong></span><span>Joueurs recensés <strong>{allPlayers.length}</strong></span><span>Buts <strong>{game.goals.length}</strong></span><span>Durée <strong>{game.duration}′</strong></span></div>
- <WorldCupMatchComparison home={labelCountry(game.home)} away={labelCountry(game.away)} homeFlag={flag(game.home)} awayFlag={flag(game.away)} first={firstTeam} second={secondTeam} duration={game.duration} goals={game.goals.map(goal=>({minute:goal.minute,team:goal.team===game.home?labelCountry(game.home):labelCountry(game.away)}))}/>
+ <WorldCupMatchComparison home={labelCountry(game.home)} away={labelCountry(game.away)} homeCountry={game.home} awayCountry={game.away} first={firstTeam} second={secondTeam} duration={game.duration} goals={game.goals.map(goal=>({minute:goal.minute,team:goal.team===game.home?labelCountry(game.home):labelCountry(game.away)}))}/>
  <div class="wc-country-shortcuts" aria-label="Accès aux pays">
    <span>Explorer les sélections séparément :</span>
-   {teams.map(team=><a href={countryUrl(base,team)}>{flag(team)} {labelCountry(team)} · parcours du pays →</a>)}
+   {teams.map(team=><a href={countryUrl(base,team)}><CountryFlag country={team} /> {labelCountry(team)} · parcours du pays →</a>)}
  </div>
  <section aria-labelledby="wc-squad">
   <div class="wc-section-head"><div><p class="wc-eyebrow">JOUEURS SUR LE TERRAIN</p><h2 id="wc-squad">Tous les profils.</h2><p>Clique sur une fiche pour explorer précisément les actions et les pics. Les remplaçants apparaissent à leur entrée en jeu.</p></div><small>{allPlayers.length} joueurs recensés</small></div>
   <div class="wc-toolbar">
    <label for="wc-find-player">RECHERCHER</label><input id="wc-find-player" type="search" placeholder="Joueur ou équipe…" autocomplete="off"/>
-   <label for="wc-filter-team">SÉLECTION</label><select id="wc-filter-team"><option value="">Les deux pays</option>{teams.map(team=><option value={team}>{flag(team)} {labelCountry(team)}</option>)}</select>
+   <label for="wc-filter-team">SÉLECTION</label><select id="wc-filter-team"><option value="">Les deux pays</option>{teams.map(team=><option value={team}>{labelCountry(team)}</option>)}</select>
    <span class="wc-filter-count" id="wc-player-total">{allPlayers.length} joueurs</span>
   </div>
   <div class="wc-card-grid">
@@ -46,7 +47,7 @@ const secondTeam=teamTimeline(game,game.away);
    const assists=view.actions.filter(a=>a.goalAssist).map(a=>a.minute);
    const passes=view.actions.filter(a=>a.kind==='Pass'&&a.outcome==='Complete').length;
    return <article class="wc-card wc-player-card" data-player-name={player.name.toLowerCase()} data-player-team={player.team} data-search={(player.name+' '+labelCountry(player.team)).toLowerCase()}>
-    <div class="wc-card-kicker"><span>{flag(player.team)} {labelCountry(player.team)}</span><span>{player.entry===0?'TITULAIRE':'ENTRÉE '+player.entry+'′'}</span></div>
+    <div class="wc-card-kicker"><span><CountryFlag country={player.team} /> {labelCountry(player.team)}</span><span>{player.entry===0?'TITULAIRE':'ENTRÉE '+player.entry+'′'}</span></div>
     <h3 class="wc-card-title"><a href={detailUrl(base,game.id,player.id)} style="color:inherit;text-decoration:none">{player.name} ↗</a></h3>
     <div class="wc-card-meta">{view.actions.length} événements · {passes} passes réussies</div>
     <div class="wc-tiny-stats"><span>Pic <strong>{top?.activity?.toFixed(0)??0}</strong> à {top?.minute??0}′</span><span>Moy. <strong>{mean(view.timeline).toFixed(0)}</strong></span></div>

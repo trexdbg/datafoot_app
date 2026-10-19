@@ -1,4 +1,5 @@
 ---
+import CountryFlag from '../../../components/CountryFlag.astro';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import WorldCupNav from '../../../components/WorldCupNav.astro';
 import WorldCupWave from '../../../components/WorldCupWave.astro';
@@ -20,9 +21,9 @@ const peakOverall=statistics.reduce<{minute:number;activity:number;gameId:number
 <BaseLayout title={player.name+' · profils Coupe du monde 2022 | DataFoot Atlas'} description={'Tous les matchs de '+player.name+' au Mondial 2022 avec ses courbes Pulse, ses pics et ses actions enregistrées.'} canonicalPath={base+'/mondial-2022/joueurs/'+playerId+'/'}>
 <div class="wc-root"><div class="shell wc-wrap">
  <nav class="wc-crumb"><a href={base+'/mondial-2022/'}>MONDIAL 2022</a><span>/</span><a href={base+'/mondial-2022/joueurs/'}>JOUEURS</a><span>/</span>{player.name}</nav>
- <header class="wc-detail-head"><div><p class="wc-eyebrow">{flag(player.country)} {labelCountry(player.country).toUpperCase()} / PROFIL INDIVIDUEL</p><h1>{player.name.split(' ').slice(0,-1).join(' ')}<br/><em>{player.name.split(' ').at(-1)}</em></h1><p>Son activité réelle sur chaque rencontre de la compétition. Une courbe par match, sans superposer l’équipe : repère les pics et ouvre le détail des actions.</p></div><div class="wc-detail-number"><strong>{matches.length}</strong><span>MATCHS OBSERVÉS</span></div></header>
+ <header class="wc-detail-head"><div><p class="wc-eyebrow"><CountryFlag country={player.country} /> {labelCountry(player.country).toUpperCase()} / PROFIL INDIVIDUEL</p><h1>{player.name.split(' ').slice(0,-1).join(' ')}<br/><em>{player.name.split(' ').at(-1)}</em></h1><p>Son activité réelle sur chaque rencontre de la compétition. Une courbe par match, sans superposer l’équipe : repère les pics et ouvre le détail des actions.</p></div><div class="wc-detail-number"><strong>{matches.length}</strong><span>MATCHS OBSERVÉS</span></div></header>
  <WorldCupNav active="players"/>
- <div class="wc-stat-bar"><span>Équipe <strong>{flag(player.country)} {labelCountry(player.country)}</strong></span><span>Buts <strong>{goals}</strong></span><span>Pic d'activité <strong>{peakOverall?.activity?.toFixed(0)??'—'}/100</strong></span><span>Rencontres <strong>{matches.length}</strong></span></div>
+ <div class="wc-stat-bar"><span>Équipe <strong><CountryFlag country={player.country} /> {labelCountry(player.country)}</strong></span><span>Buts <strong>{goals}</strong></span><span>Pic d'activité <strong>{peakOverall?.activity?.toFixed(0)??'—'}/100</strong></span><span>Rencontres <strong>{matches.length}</strong></span></div>
  <div class="wc-section-head"><div><p class="wc-eyebrow">PARCOURS DU JOUEUR</p><h2>Match après match.</h2><p>Même échelle de 0 à 100 pour comparer les périodes actives. Les courbes s’interrompent lorsque le joueur sort du terrain.</p></div><a class="wc-primary-link" href={countryUrl(base,player.country)}>Voir {labelCountry(player.country)} ↗</a></div>
  <div class="wc-card-grid">
  {statistics.map(({game,view})=>{
@@ -33,7 +34,7 @@ const peakOverall=statistics.reduce<{minute:number;activity:number;gameId:number
   const opponent=against(game,player.country);
   return <article class="wc-card">
    <div class="wc-card-kicker"><span>{dateLabel(game.date)}</span><span>{stageLabel(game.stage)}</span></div>
-   <h3 class="wc-card-title"><a href={matchUrl(base,game.id)} style="color:inherit;text-decoration:none">{flag(player.country)} {labelCountry(player.country)} <span class="wc-score">{game.homeScore}–{game.awayScore}</span> {flag(opponent)} {labelCountry(opponent)}</a></h3>
+   <h3 class="wc-card-title"><a href={matchUrl(base,game.id)} style="color:inherit;text-decoration:none"><CountryFlag country={player.country} /> {labelCountry(player.country)} <span class="wc-score">{game.homeScore}–{game.awayScore}</span> <CountryFlag country={opponent} /> {labelCountry(opponent)}</a></h3>
    <div class="wc-card-meta">Sur le terrain : {view.player.entry}′ → {view.player.exit??game.duration}′ · {view.actions.length} événements</div>
    <div class="wc-tiny-stats"><span>Pic <strong>{high?.activity?.toFixed(0)??0}</strong> à {high?.minute??0}′</span><span>Moyenne <strong>{avg.toFixed(0)}</strong></span><span>Passes réussies <strong>{made}</strong></span></div>
    <WorldCupWave timeline={view.timeline} duration={game.duration} goals={playerGoals} assists={assists} title={'Activité de '+player.name+' contre '+labelCountry(opponent)} compact/>

@@ -1,4 +1,5 @@
 ---
+import CountryFlag from '../../../components/CountryFlag.astro';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import WorldCupNav from '../../../components/WorldCupNav.astro';
 import WorldCupWave from '../../../components/WorldCupWave.astro';
@@ -16,7 +17,7 @@ const goals=matches.reduce((sum,g)=>sum+g.goals.filter(goal=>goal.team===country
 <BaseLayout title={labelCountry(country)+' · matchs et joueurs du Mondial 2022 | DataFoot'} description={'Parcours de '+labelCountry(country)+' en Coupe du monde 2022 : tous les matchs et tous les joueurs avec courbes DataFoot Pulse.'} canonicalPath={base+'/mondial-2022/pays/'+slug(country)+'/'}>
 <div class="wc-root"><div class="shell wc-wrap">
  <nav class="wc-crumb"><a href={base+'/mondial-2022/'}>MONDIAL 2022</a><span>/</span><a href={base+'/mondial-2022/pays/'}>PAYS</a><span>/</span>{labelCountry(country)}</nav>
- <header class="wc-detail-head"><div><p class="wc-eyebrow">SÉLECTION · COUPE DU MONDE 2022</p><h1><span aria-hidden="true">{flag(country)}</span> <em>{labelCountry(country)}</em></h1><p>Son chemin dans la compétition, match après match, puis chaque joueur recensé. Les courbes sont propres à cette sélection, sans ligne adverse superposée.</p></div><div class="wc-detail-number"><strong>{matches.length}</strong><span>MATCHS DISPUTÉS</span></div></header>
+ <header class="wc-detail-head"><div><p class="wc-eyebrow">SÉLECTION · COUPE DU MONDE 2022</p><h1><span aria-hidden="true"><CountryFlag country={country} /></span> <em>{labelCountry(country)}</em></h1><p>Son chemin dans la compétition, match après match, puis chaque joueur recensé. Les courbes sont propres à cette sélection, sans ligne adverse superposée.</p></div><div class="wc-detail-number"><strong>{matches.length}</strong><span>MATCHS DISPUTÉS</span></div></header>
  <WorldCupNav active="countries"/>
  <div class="wc-stat-bar"><span>Matchs <strong>{matches.length}</strong></span><span>Victoires avant séance de tirs au but <strong>{wins}</strong></span><span>Buts recensés <strong>{goals}</strong></span><span>Joueurs <strong>{players.length}</strong></span></div>
  <section><div class="wc-section-head"><div><p class="wc-eyebrow">PARCOURS DE {labelCountry(country).toUpperCase()}</p><h2>Les matchs, dans l’ordre.</h2><p>Chaque courbe indique l’activité moyenne des joueurs de {labelCountry(country)} présents à chaque minute. Ouvre la rencontre pour accéder aux profils individuels.</p></div></div>
@@ -27,7 +28,7 @@ const goals=matches.reduce((sum,g)=>sum+g.goals.filter(goal=>goal.team===country
   const opponent=against(game,country);
   return <a href={matchUrl(base,game.id)} class="wc-card">
    <div class="wc-card-kicker"><span>{dateLabel(game.date)}</span><span>{stageLabel(game.stage)}{game.group?' · '+game.group:''}</span></div>
-   <h3 class="wc-card-title">{flag(country)} {labelCountry(country)} <span class="wc-score">{game.homeScore}–{game.awayScore}</span> {flag(opponent)} {labelCountry(opponent)}</h3>
+   <h3 class="wc-card-title"><CountryFlag country={country} /> {labelCountry(country)} <span class="wc-score">{game.homeScore}–{game.awayScore}</span> <CountryFlag country={opponent} /> {labelCountry(opponent)}</h3>
    <div class="wc-tiny-stats"><span>Pic collectif <strong>{maximum?.activity?.toFixed(0)??0}/100</strong></span><span>à {maximum?.minute??0}′</span></div>
    <WorldCupWave timeline={timeline} duration={game.duration} goals={teamGoals(game,country)} title={'Activité de '+labelCountry(country)+' contre '+labelCountry(opponent)} compact/>
    <span class="wc-card-arrow">Match et profils individuels <span>↗</span></span>
@@ -36,7 +37,7 @@ const goals=matches.reduce((sum,g)=>sum+g.goals.filter(goal=>goal.team===country
  </div></section>
  <section><div class="wc-section-head"><div><p class="wc-eyebrow">EFFECTIF RECENSÉ</p><h2>Les joueurs.</h2><p>Retrouve un joueur et ses matchs dans la compétition.</p></div><small>{players.length} joueurs</small></div>
  <div class="wc-people-grid">
- {players.map(player=><a class="wc-person" href={playerUrl(base,player.id)}><span class="wc-country-flag">{flag(country)}</span><div><strong>{player.name}</strong><small>{player.matches.length} rencontre{player.matches.length>1?'s':''} · {labelCountry(country)}</small></div><span>↗</span></a>)}
+ {players.map(player=><a class="wc-person" href={playerUrl(base,player.id)}><span class="wc-country-flag"><CountryFlag country={country} /></span><div><strong>{player.name}</strong><small>{player.matches.length} rencontre{player.matches.length>1?'s':''} · {labelCountry(country)}</small></div><span>↗</span></a>)}
  </div></section>
  <p class="wc-footnote">Couverture complète des rencontres de cette sélection au Mondial 2022. Le nombre de victoires considère seulement les scores avant tirs au but. Les profils Pulse reposent sur les événements libres <a href="https://github.com/hudl/open-data" target="_blank" rel="noopener noreferrer">StatsBomb Open Data / Hudl ↗</a>, et non des données GPS.</p>
 </div></div>

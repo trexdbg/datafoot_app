@@ -31,16 +31,16 @@ const articleForPlayer = (player: string) =>
   allArticles.find((article) => article.data.player.toLowerCase() === player.toLowerCase());
 ---
 <BaseLayout
-  title="DataFoot — Football Intelligence"
+  title="DataFoot — Le football en chiffres"
   description="Analyses football fondées sur les xG, les volumes de jeu et des statistiques de match comparées."
 >
   <section class="desk-hero shell">
     <div class="desk-mast">
       <div class="edition-line">
-        <span>DATAFOOT / FOOTBALL INTELLIGENCE</span>
+        <span>DATAFOOT / ANALYSES & STATISTIQUES</span>
         <span>{updated.toLocaleDateString('fr-FR', { day:'2-digit', month:'short', year:'numeric' }).toUpperCase()}</span>
       </div>
-      <h1>Football<br/><span>Intelligence.</span></h1>
+      <h1>Football<br/><span>en chiffres.</span></h1>
       <div class="desk-intro">
         <p>Les signaux qui ressortent vraiment : xG, tirs, création et profils joueurs comparés.</p>
         <div class="desk-actions">
