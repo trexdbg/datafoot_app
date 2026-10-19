@@ -1,9 +1,10 @@
-name: Check match weather module
+name: Check Mbappé match activity profile
 on:
   pull_request:
     paths:
       - 'src/pages/matchs/**'
       - 'src/data/matches/**'
+      - 'src/lib/match-activity.*'
       - 'public/data/matches/**'
       - 'src/styles/match-weather.css'
       - 'src/styles/global.css'
@@ -26,6 +27,7 @@ jobs:
           node --input-type=module <<'JS'
           import assert from 'node:assert/strict';
           import fs from 'node:fs';
+          import { computeActivity, actionImpact } from './src/lib/match-activity.mjs';
           const path = 'src/data/matches/2022-final-mbappe.json';
           const data = JSON.parse(fs.readFileSync(path, 'utf8'));
           const publicData = JSON.parse(fs.readFileSync('public/data/matches/2022-final-mbappe.json','utf8'));
@@ -38,6 +40,26 @@ jobs:
           assert.equal(Math.max(...data.timeline.map(p=>p.activity)), 100);
           assert.equal(data.methodology.shootout_excluded, true);
           assert.ok(data.timeline.every(p=>p.activity>=0 && p.activity<=100));
+          const actions = JSON.parse(fs.readFileSync('src/data/matches/2022-final-mbappe-actions.json','utf8'));
+          assert.equal(actions.match_id, 3869685);
+          assert.equal(actions.player_id, 3009);
+          assert.equal(actions.events.length, 148);
+          assert.equal(actions.events.filter(e=>e.kind==='Pass' && e.outcome==='Complete').length, 19);
+          assert.equal(actions.events.filter(e=>e.kind==='Dribble' && e.outcome==='Complete').length, 6);
+          assert.deepEqual(actions.events.filter(e=>e.kind==='Shot' && e.outcome==='Goal').map(e=>e.minute), [80,81,118]);
+          assert.ok(actions.events.every(e=>Number.isInteger(e.minute) && e.minute>=1 && e.minute<=125));
+          const {timeline: scores} = computeActivity(actions.events,125);
+          assert.equal(scores.length,126);
+          assert.equal(scores[0].activity,50);
+          for(let minute=1;minute<scores.length;minute++){
+            const gain = actions.events.filter(e=>e.minute===minute).reduce((sum,e)=>sum+actionImpact(e),0);
+            assert.equal(scores[minute].activity,Math.max(0,scores[minute-1].activity-1)+gain);
+          }
+          assert.equal(actionImpact({kind:'Pass',outcome:'Incomplete'}),0);
+          assert.equal(actionImpact({kind:'Pass',outcome:'Complete'}),5);
+          assert.equal(actionImpact({kind:'Dribble',outcome:'Complete'}),5);
+          assert.equal(actionImpact({kind:'Shot',outcome:'Goal'}),45);
+          assert.equal(computeActivity([],125).timeline[125].activity,0);
           JS
       - name: Astro typecheck and static build
         run: npm run build
