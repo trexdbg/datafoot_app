@@ -170,5 +170,7 @@ jobs:
         run: npm run data:worldcup
       - name: Verify World Cup extraction rules
         run: npm run test:worldcup
+      - name: Verify Messi Rival Wars game rules
+        run: node --test tests/messi-encounters.test.mjs
       - name: Astro typecheck and static build
         run: npm run build
