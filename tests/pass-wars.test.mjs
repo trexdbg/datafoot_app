@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { eligiblePartners, MIN_PARTNER_PASSES, playerColor } from '../src/lib/pass-wars-engine.mjs';
+import { eligiblePartners, MIN_PARTNER_PASSES, playerColor, createPlayerPalette } from '../src/lib/pass-wars-engine.mjs';
 
 const make = (id, direction, name='Joueur '+id)=>({partner_id:id,partner_name:name,direction});
 
@@ -62,7 +62,25 @@ test('le réseau paintball ne dessine plus de connexions fixes',async()=>{
   const engine=readFileSync(new URL('../src/lib/pass-wars-engine.mjs',import.meta.url),'utf8');
   assert.ok(!engine.includes('drawEdges('));
   assert.ok(!engine.includes('function line('));
-  assert.ok(engine.includes('const color=playerColor(p.id)'));
-  assert.ok(engine.includes('const color=playerColor(id)'));
+  assert.ok(engine.includes('const color=colorOf(p.id)'));
+  assert.ok(engine.includes('const color=colorOf(id)'));
   assert.ok(engine.includes('stampPaint(p.id,p.direction,p.index)'));
+});
+
+
+test('palette StatsBomb : top 16 avec teintes réellement distinctes, constantes entre filtres',async()=>{
+  const {readFileSync}=await import('node:fs');
+  const data=JSON.parse(readFileSync(new URL('../src/data/players/messi-pass-wars.json',import.meta.url),'utf8'));
+  const whole=createPlayerPalette(data.partners);
+  const shuffled=createPlayerPalette([...data.partners].reverse());
+  const visible=data.partners.filter(p=>p.total>=80);
+  const colors=visible.map(p=>whole.get(p.id));
+  assert.equal(colors.length,16);
+  assert.equal(new Set(colors).size,visible.length);
+  for(const p of data.partners) assert.equal(whole.get(p.id),shuffled.get(p.id));
+  const hues=colors.map(color=>Number(color.match(/^hsl\(([\d.]+)/)?.[1]));
+  assert.ok(hues.every(Number.isFinite));
+  const separation=(a,b)=>Math.min(Math.abs(a-b),360-Math.abs(a-b));
+  const minimum=Math.min(...hues.flatMap((h,i)=>hues.slice(i+1).map(other=>separation(h,other))));
+  assert.ok(minimum>10,'Les 16 principales couleurs ne doivent pas être presque identiques');
 });
