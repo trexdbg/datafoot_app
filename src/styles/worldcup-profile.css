@@ -133,3 +133,60 @@
   .wc-profile-tooltip{padding:11px 14px!important;grid-template-columns:1fr;gap:7px}
   .wc-profile-tooltip #wc-tooltip-actions{grid-column:1}
 }
+
+/* Profil joueur : priorité au score, aux données et au graphique. */
+.wc-profile-root{padding-top:21px;background:radial-gradient(ellipse at 70% -9%,#14283b 0,transparent 53%),#071521}
+.wc-profile-root .wc-crumb{padding-bottom:13px;border-bottom:1px solid #2b4659;color:#8faebf;font-size:10px}
+.wc-profile-topline{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:7px 16px;padding:16px 2px 9px;font-size:11px;letter-spacing:.015em;color:#a4bfd0}
+.wc-profile-topline strong{color:#c0ee87;font-weight:850;letter-spacing:.08em}
+.wc-profile-topline>span:last-child{color:#9cbdcf}
+.wc-profile-root .wc-match-board{margin:0 0 15px;padding:19px 26px;border-radius:11px;border:1px solid #33556a;background:linear-gradient(110deg,#122f43,#0c2539 65%,#0a1d2d);min-height:93px;box-shadow:none}
+.wc-profile-root .wc-match-board a{font-size:clamp(16px,1.8vw,22px);gap:10px;font-weight:800;letter-spacing:-.035em}
+.wc-profile-root .wc-match-board strong{font-size:clamp(31px,3.6vw,44px);font-variant-numeric:tabular-nums}
+.wc-profile-root .wc-inspector{border-color:#31556d;border-radius:12px;box-shadow:0 14px 44px #0004;margin:0}
+.wc-profile-root .wc-inspector-head{align-items:center;padding:19px 24px;gap:16px;background:linear-gradient(105deg,#12344b,#0c293f);border-bottom:1px solid #35556a}
+.wc-profile-root .wc-inspector-head h2{font-size:clamp(23px,2.6vw,32px);line-height:1.15;letter-spacing:-.045em;margin:3px 0 7px}
+.wc-profile-root .wc-inspector-head .wc-eyebrow{font-size:10px;letter-spacing:.1em;color:#c5ec8d}
+.wc-profile-root #wc-current-info{display:flex;align-items:center;gap:8px;min-height:20px;color:#acc7d7;font-size:12px}
+.wc-profile-root #wc-current-info .wc-flag{width:22px;height:16px}
+.wc-profile-root .wc-player-chooser{min-width:min(335px,100%)}
+.wc-profile-root .wc-player-chooser label{letter-spacing:.02em;font-size:11px;color:#a7c1cf}
+.wc-profile-root .wc-player-chooser select{padding:10px 12px;min-height:44px;border-radius:7px;background:#0a2236;border:1px solid #53758a;font-size:13px;font-weight:700}
+.wc-profile-root .wc-current-stats{background:#0a2135;border-color:#30516a}
+.wc-profile-root .wc-current-stats>div{padding:14px 21px;gap:5px;border-color:#2b4c61}
+.wc-profile-root .wc-current-stats>div>span{color:#9ebed1;letter-spacing:.075em;font-size:10px}
+.wc-profile-root .wc-current-stats strong{font-size:clamp(25px,2.8vw,35px);font-variant-numeric:tabular-nums}
+.wc-profile-root .wc-current-stats>div>small{font-size:11px;color:#8eafc0}
+.wc-profile-root .wc-mode-head{padding:15px 23px;gap:12px;background:#0b253a;border-bottom:1px solid #2a4a61}
+.wc-mode-copy .wc-eyebrow{font-size:10px;color:#aed4eb;letter-spacing:.09em}
+.wc-mode-copy .wc-eyebrow span{color:#f1faff;font-size:14px;letter-spacing:0;text-transform:none;margin-left:5px}
+.wc-mode-copy #wc-mode-desc{margin:5px 0 0;font-size:12px;color:#9bb9cb;line-height:1.45}
+.wc-profile-root .wc-mode-tabs{padding:4px;border-radius:8px;border-color:#355b72}
+.wc-profile-root .wc-mode-tabs button{min-height:36px;border-radius:5px;padding:8px 13px}
+.wc-profile-root .wc-profile-chart-scroll{background:#071b30}
+.wc-profile-root .wc-profile-zones,.wc-profile-root .wc-profile-legend{padding:10px 22px;gap:9px 18px}
+.wc-profile-root .wc-profile-tooltip{padding:11px 21px!important}
+.wc-profile-root .wc-highlights{padding:11px 22px}
+.wc-profile-root .wc-minute-reader{padding:18px 22px 19px}
+.wc-profile-root .wc-action-bottom{margin-top:16px;gap:14px}
+.wc-profile-root .wc-action-log,.wc-profile-root .wc-profile-note{border-color:#304e64;border-radius:10px}
+.wc-profile-root .wc-action-log .wc-section-head{padding:17px 18px 0}
+.wc-profile-root .wc-action-log .wc-section-head h2{font-size:24px;margin:5px 0}
+.wc-profile-root .wc-action-log .wc-section-head p{font-size:12px}
+@media(max-width:750px){
+ .wc-profile-topline{padding-top:12px}
+ .wc-profile-root .wc-match-board{padding:15px 13px;min-height:78px}
+ .wc-profile-root .wc-inspector-head{flex-direction:column;align-items:stretch;padding:17px}
+ .wc-profile-root .wc-player-chooser{width:100%;min-width:0}
+ .wc-profile-root .wc-mode-head{padding:13px 16px}
+ .wc-profile-root .wc-current-stats>div{padding:12px 15px}
+}
+@media(max-width:520px){
+ .wc-profile-root .wc-match-board a{gap:6px;font-size:14px}
+ .wc-profile-root .wc-match-board strong{font-size:29px}
+ .wc-profile-root .wc-inspector-head{padding:15px}
+ .wc-profile-root .wc-inspector-head h2{font-size:25px}
+ .wc-profile-root .wc-mode-head{padding:13px}
+ .wc-profile-root .wc-profile-zones,.wc-profile-root .wc-profile-legend{padding:10px 13px}
+ .wc-profile-root .wc-minute-reader{padding:15px}
+}
