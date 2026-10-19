@@ -17,6 +17,7 @@ export const opposingTeam = game => country(game.home==='France'?game.away:game.
 export const matchTitle = game => country(game.home)+' '+game.homeScore+'–'+game.awayScore+' '+country(game.away);
 export const matchHref = (base,game) => base+'/matchs/coupe-du-monde-2022/'+game.id+'/';
 export const playerHref = (base,id) => base+'/joueurs/'+(id===mbappeId?'mbappe':id)+'/';
+/** @param {string} base @param {{id:number}} game @param {string|number} [id] */
 export const matchProfileHref = (base,game,id='france') => base+'/matchs/coupe-du-monde-2022/'+game.id+'/profils/'+id+'/';
 export const formattedDate = date => new Intl.DateTimeFormat('fr-FR',{day:'numeric',month:'short',year:'numeric',timeZone:'UTC'}).format(new Date(date+'T12:00:00Z'));
 export const getProfile = (game,id) => game.profiles.find(p=>p.player.id===id);
