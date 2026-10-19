@@ -8,7 +8,11 @@ export const games = raw.matches.map(match=>({
 })).sort((a,b)=>a.date.localeCompare(b.date));
 export const mbappeId = 3009;
 export const playerList = [...new Map(games.flatMap(g=>g.players).map(p=>[p.id,p])).values()].sort((a,b)=>a.name.localeCompare(b.name,'fr'));
-export const commonScale = Math.max(150,Math.ceil(Math.max(...games.flatMap(g=>[...g.team.map(p=>p.activity),...g.profiles.flatMap(p=>p.timeline.map(t=>t.activity||0))]))/50)*50);
+const scaleFor = values => Math.max(150,Math.ceil(Math.max(...values)/50)*50);
+export const teamMbappeScale = scaleFor(games.flatMap(g=>[...g.team.map(p=>p.activity),...(g.profiles.find(p=>p.player.id===mbappeId)?.timeline.map(p=>p.activity||0)||[])]));
+export const playerComparisonScale = id => scaleFor(games.flatMap(g=>[...g.team.map(p=>p.activity),...(g.profiles.find(p=>p.player.id===id)?.timeline.map(p=>p.activity||0)||[])]));
+export const matchComparisonScale = game => scaleFor([...game.team.map(p=>p.activity),...game.profiles.flatMap(p=>p.timeline.map(t=>t.activity||0))]);
+export const commonScale = teamMbappeScale;
 export const opposingTeam = game => country(game.home==='France'?game.away:game.home);
 export const matchTitle = game => country(game.home)+' '+game.homeScore+'–'+game.awayScore+' '+country(game.away);
 export const matchHref = (base,game) => base+'/matchs/coupe-du-monde-2022/'+game.id+'/';
