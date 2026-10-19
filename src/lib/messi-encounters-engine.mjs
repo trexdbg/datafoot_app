@@ -6,12 +6,33 @@ const TABS={
   clubs:{title:'CLUBS · BUTS EN LIGA ET C1',label:'BUTS PAR CLUB',singular:'BUT',limit:1000},
 };
 export const MODE_IDS=Object.keys(TABS);
+// Surnoms et noms usuels par ID StatsBomb : les événements sources gardent
+// leur nom original afin de préserver la traçabilité.
+const OPPONENT_NAMES=new Map(Object.entries({
+  26070:'Toño',25144:'Diego Alves',23344:'Aitor Fernández',6378:'Jan Oblak',
+  6931:'Leandro Chichizola',11748:'Unai Simón',24264:'Dani Hernández',
+  15036:'Edwin van der Sar',6576:'Gorka Iraizoz',26221:'Gustavo Munúa',
+  26103:'Carlos Kameni',6610:'Pichu Cuéllar',26686:'Jordi Codina',
+  26707:'Juan Pablo Carrizo',5597:'Keylor Navas',3659:'Willy Caballero',
+  26484:'Toni Doblas',11179:'Iker Casillas',6590:'Neto',6730:'Rubén Martínez',
+  26170:'Javi Chica',6320:'Filipe Luís',26118:'Antonio López',6675:'Antonio Luna',
+  6573:'Bernardo Espinosa',6886:'Dídac Vilà',6923:'Joaquín Navarro',
+  26057:'Mariano Pernía',6789:'Mikel Balenziaga',20008:'Patrice Evra',
+  6592:'Rúben Vezo',6665:'Iñigo Martínez',26638:'Alberto Botía',
+  6924:'Alejandro Gálvez',24075:'Christian Fernández',7476:'Emiliano Moretti',
+  26791:'Emir Spahić',20269:'Joris Mathijsen',25983:'Josu Sarriegi',
+  26163:'Marc Torrejón'
+}).map(([id,n])=>[Number(id),n]));
+export function opponentDisplayName(id,original){
+  return OPPONENT_NAMES.get(Number(id))||String(original||'Adversaire');
+}
+
 
 export function rankOpponents(events,limit=20){
   const tally=new Map();
   for(const e of events){
     const id=e.target_id;
-    const p=tally.get(id)||{id,name:e.target_name,count:0,goals:0};
+    const p=tally.get(id)||{id,name:opponentDisplayName(id,e.target_name),count:0,goals:0};
     p.count++;p.goals+=Number(Boolean(e.goal||e.kind==='but'));tally.set(id,p);
   }
   return [...tally.values()].sort((a,b)=>b.count-a.count||a.name.localeCompare(b.name)||a.id-b.id)
