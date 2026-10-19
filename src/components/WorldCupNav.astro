@@ -1,0 +1,13 @@
+---
+interface Props {active:'matches'|'countries'|'players'}
+const {active}=Astro.props;
+const base=import.meta.env.BASE_URL.replace(/\/$/,'');
+const nav=[
+ {key:'matches',label:'Les 64 matchs',count:'64',url:base+'/mondial-2022/'},
+ {key:'countries',label:'Les 32 pays',count:'32',url:base+'/mondial-2022/pays/'},
+ {key:'players',label:'Tous les joueurs',count:'',url:base+'/mondial-2022/joueurs/'}
+];
+---
+<nav class="wc-nav" aria-label="Explorer le Mondial 2022">
+ {nav.map(item=><a href={item.url} class:list={[active===item.key&&'active']} aria-current={active===item.key?'page':undefined}>{item.label} {item.count&&<span class="wc-nav-index">{item.count}</span>}</a>)}
+</nav>
