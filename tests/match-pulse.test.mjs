@@ -175,3 +175,48 @@ test('poste transmis à la timeline et moyenne équipe calculée sur les indices
  assert.equal(profiles[0].timeline[5].gain,5);
  assert.ok(profiles[0].timeline.every(p=>p.activity===null||(p.activity>=0&&p.activity<=100)));
 });
+
+test('gardien inactif : 50 neutre à chaque minute, même après prolongations',()=>{
+ assert.equal(PULSE_RULES.goalkeeperIdleIndex,50);
+ const quiet=computePulse([],125,{position:'Goalkeeper'}).timeline;
+ assert.ok(quiet.every(p=>p.activity===50 && p.impact===0));
+ const substitute=computePulse([],90,{position:'goalkeeper',entry:55,exit:75}).timeline;
+ assert.equal(substitute[54].activity,null);
+ assert.equal(substitute[55].activity,50);
+ assert.equal(substitute[74].activity,50);
+ assert.equal(substitute[75].activity,null);
+ // Le modèle des joueurs de champ conserve sa décroissance propre.
+ assert.ok(computePulse([],90,{position:'Center Forward'}).timeline[80].activity<10);
+});
+
+test('gardien : arrêt, penalty arrêté, ballon capté et sortie sont récompensés sans punir les tirs subis',()=>{
+ const weight=outcome=>pulseWeight({kind:'Goal Keeper',outcome},'Goalkeeper');
+ assert.equal(weight('Shot Saved').activity,7);
+ assert.ok(weight('Penalty Saved').activity>weight('Shot Saved').activity);
+ assert.ok(weight('Collected').activity>weight('Keeper Sweeper').activity);
+ assert.ok(weight('Keeper Sweeper').activity>weight('Goal Conceded').activity);
+ assert.equal(weight('Goal Conceded').activity,0);
+ assert.equal(weight('Shot Faced').activity,0);
+ assert.equal(weight('Penalty Conceded').impact,0);
+ const save=computePulse([{minute:33,second:35,kind:'Goal Keeper',outcome:'Shot Saved'}],125,{position:'Goalkeeper'}).timeline;
+ assert.equal(save[32].activity,50);
+ assert.ok(save[33].activity>50);
+ assert.ok(save[34].activity<save[33].activity);
+ assert.ok(save[124].activity>=50 && save[124].activity<50.1);
+ const conceded=computePulse([{minute:46,second:5,kind:'Goal Keeper',outcome:'Goal Conceded'}],90,{position:'Goalkeeper'}).timeline;
+ assert.equal(conceded[46].activity,50);
+ assert.equal(conceded[46].impact,0);
+});
+
+test('la moyenne de l’équipe ne gonfle pas à cause du 50 neutre du gardien',()=>{
+ const match={duration:90,players:[
+  {id:1,name:'Gardien',position:'Goalkeeper',entry:0,exit:null},
+  {id:2,name:'Attaquant',position:'Center Forward',entry:0,exit:null}
+ ],actions:[{p:1,m:21,s:8,k:'Goal Keeper',o:'Shot Saved'}]};
+ const {profiles,team}=computeMatchProfiles(match);
+ assert.equal(profiles[0].timeline[80].activity,50);
+ assert.ok(profiles[1].timeline[80].activity<10);
+ assert.equal(team[80].activity,profiles[1].timeline[80].activity);
+ assert.equal(team[80].players,1);
+ assert.ok(profiles[0].timeline[21].activity>50);
+});
