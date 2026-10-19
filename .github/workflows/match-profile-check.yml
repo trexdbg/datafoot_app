@@ -3,6 +3,10 @@ on:
   pull_request:
     paths:
       - 'src/pages/matchs/**'
+      - 'src/pages/mondial-2022/**'
+      - 'src/components/WorldCupWave.astro'
+      - 'src/components/WorldCupMatchComparison.astro'
+      - 'tests/browser-inline-smoke.test.mjs'
       - 'src/lib/pass-wars-engine.*'
       - 'src/lib/messi-encounters-engine.*'
       - 'tests/messi-encounters.test.mjs'
