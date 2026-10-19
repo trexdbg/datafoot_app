@@ -287,8 +287,12 @@ test('pas de rafale de projectiles après une journée très dense ni après une
   assert.ok(engine.includes('const gap=battle?56:VISUAL_GAP_MS'));
   assert.ok(engine.includes('nextLaunchAt=t+gap'));
   assert.ok(engine.includes('if(t<nextLaunchAt)return'));
-  assert.ok(engine.includes('while(cursor<events.length)count(events[cursor++],false,t)'));
+  assert.ok(engine.includes('while(cursor<events.length)count(events[cursor++]);'));
+  assert.ok(engine.includes('events.slice(start,end).filter(e=>e.partner_id===focus)'));
+  assert.ok(engine.includes('visualQueue=visualQueue.filter(e=>e.partner_id===focus)'));
   assert.ok(!engine.includes('count(events[cursor++],true,t)'));
+  assert.ok(engine.includes('while(cursor<end)count(events[cursor++]);'),
+    'Naviguer par mois doit comptabiliser tous les événements sans billes intempestives');
 });
 
 test('frise chronologique : uniquement mois/année sans jour ni minute',()=>{
