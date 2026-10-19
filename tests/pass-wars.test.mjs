@@ -199,7 +199,7 @@ test('les deux routes affichent 96+ passes sans perdre les photos',async()=>{
     assert.ok(!html.includes('80 PASSES MINIMUM'));
   }
   const code=readFileSync(new URL('../src/lib/pass-wars-engine.mjs',import.meta.url),'utf8');
-  assert.ok(code.includes('positions=layoutPlayerNodes(players,W,H,CX,CY)'));
+  assert.match(code,/positions=layoutPlayerNodes\(players,W,H,CX,CY(?:,[^)]+)?\)/);
   assert.ok(code.includes('drawPortrait(p.id'));
   assert.ok(!code.includes('drawEdges('));
 });
