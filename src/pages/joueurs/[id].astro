@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import ActivityMiniChart from '../../components/ActivityMiniChart.astro';
-import {games,playerList,playedGames,commonScale,getProfile,mbappeId,matchHref,playerHref,formattedDate,matchTitle,opposingTeam,teamGoals,playerGoals} from '../../lib/explorer-data.mjs';
+import {games,playerList,playedGames,commonScale,getProfile,mbappeId,matchHref,playerHref,formattedDate,matchTitle,opposingTeam,playerGoals} from '../../lib/explorer-data.mjs';
 import '../../styles/match-explorer.css';
 export function getStaticPaths(){
  return playerList.map(player=>({params:{id:player.id===mbappeId?'mbappe':String(player.id)},props:{playerId:player.id}}));
@@ -28,8 +28,8 @@ const main=playerId===mbappeId;
   <div class="ax-card-grid" id="ax-cards">
   {selected.map(game=>{
    const profile=getProfile(game,playerId)!;
-   const made=profile.actions.filter(a=>a.kind==='Pass'&&a.outcome==='Complete').length;
-   const won=profile.actions.filter(a=>a.kind==='Dribble'&&a.outcome==='Complete').length;
+   const made=profile.actions.filter((a: {kind:string;outcome:string})=>a.kind==='Pass'&&a.outcome==='Complete').length;
+   const won=profile.actions.filter((a: {kind:string;outcome:string})=>a.kind==='Dribble'&&a.outcome==='Complete').length;
    return <article class="ax-match-card" id={'match-'+game.id} data-search={(opposingTeam(game)+' '+game.date+' '+matchTitle(game)).toLocaleLowerCase('fr')}>
     <div class="ax-card-kicker">{formattedDate(game.date)} · {profile.player.entry===0?'TITULAIRE':'ENTRÉE '+profile.player.entry+'′'}</div>
     <a href={matchHref(base,game)} class="ax-match-title">{matchTitle(game)} <span>↗</span></a>
