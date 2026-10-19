@@ -90,3 +90,6 @@
  .mw-numbers>div{padding:16px}
 }
 @media(prefers-reduced-motion:reduce){#mw-chart,#mw-hit{scroll-behavior:auto}}
+
+.mw-provider-brand{display:inline-flex;align-items:center;justify-content:center;background:#fff;padding:9px 13px;border-radius:5px;margin-top:8px;min-height:52px}
+.mw-provider-brand img{width:164px;height:auto;display:block;max-height:48px;object-fit:contain}
