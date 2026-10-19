@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../../../../layouts/BaseLayout.astro';
-import {monotonePath,PULSE_BANDS} from '../../../../lib/match-activity.mjs';
+import {monotonePath,pulsePenalty,PULSE_BANDS} from '../../../../lib/match-activity.mjs';
 import {games,matchUrl,countryUrl,playerUrl,labelCountry,flag,stageLabel,dateLabel,titleMatch,peak,mean} from '../../../../lib/worldcup-data';
 import '../../../../styles/worldcup.css';
 import '../../../../styles/worldcup-profile.css';
@@ -19,9 +19,9 @@ const firstPoints=initial.timeline.filter(p=>p.activity!==null);
 const firstPath=monotonePath(firstPoints.map(p=>({x:x(p.minute),y:y(p.activity??0)})));
 const clientPlayers=profiles.map(p=>({
  id:p.player.id,name:p.player.name,team:p.player.team,entry:p.player.entry,exit:p.player.exit,
- timeline:p.timeline.map(t=>({activity:t.activity,impact:t.impact,actions:t.actions})),
+ timeline:p.timeline.map(t=>({activity:t.activity,impact:t.impact,actions:t.actions,penaltyGain:t.penaltyGain})),
  events:p.actions.map(a=>({minute:a.minute,second:a.second,kind:a.kind,outcome:a.outcome,
-  l:(a as any).location??null,e:(a as any).endLocation??null,xg:(a as any).xg??null}))
+  l:(a as any).location??null,e:(a as any).endLocation??null,xg:(a as any).xg??null,penalty:pulsePenalty(a)}))
 }));
 const initialMinute=firstPeak?.minute??0;
 const initialEventCount=initial.actions.filter(a=>a.minute===initialMinute).length;
@@ -147,7 +147,7 @@ const initialEventCount=initial.actions.filter(a=>a.minute===initialMinute).leng
    const position=stacks.get(a.minute)||0;stacks.set(a.minute,position+1);
    if(position>=10)continue;
    const category=kind(a);
-   const circle=svgEl('circle',{cx:fromX(a.minute),cy:430-position*5.8,r:category==='goal'?4.8:2.7,fill:category==='goal'?'#ff719c':category==='positive'?'#83dfff':'#7596b0','data-minute':a.minute,tabindex:0,role:'button','aria-label':a.minute+'′ '+label(a)},a.minute+'′ '+String(a.second).padStart(2,'0')+'″ · '+label(a));
+   const circle=svgEl('circle',{cx:fromX(a.minute),cy:430-position*5.8,r:category==='goal'?4.8:2.7,fill:category==='goal'?'#ff719c':category==='negative'?'#a695ff':category==='positive'?'#83dfff':'#7596b0','data-minute':a.minute,tabindex:0,role:'button','aria-label':a.minute+'′ '+label(a)},a.minute+'′ '+String(a.second).padStart(2,'0')+'″ · '+label(a));
    const jump=()=>{setMinute(a.minute);document.getElementById('wc-minute-reader')?.scrollIntoView({behavior:'smooth',block:'center'});};
    circle.addEventListener('click',jump);circle.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();jump();}});
    marks.append(circle);
@@ -170,9 +170,9 @@ const initialEventCount=initial.actions.filter(a=>a.minute===initialMinute).leng
   const events=player.events.filter(a=>a.minute===minute);count.textContent=events.length+' action'+(events.length!==1?'s':'');
   chips.replaceChildren();
   tipTitle.textContent=minute+'′ · '+(value==null?'Hors terrain':value<25?'Activité faible':value>75?'Forte activité':'Activité modérée');
-  tipNumbers.textContent='Activité '+(p.activity==null?'—':Math.round(p.activity)+'/100')+' · Impact '+(p.impact==null?'—':Math.round(p.impact)+'/100')+' · '+events.length+' action'+(events.length===1?'':'s');
+  tipNumbers.textContent='Activité '+(p.activity==null?'—':Math.round(p.activity)+'/100')+' · Impact '+(p.impact==null?'—':Math.round(p.impact)+'/100')+' · '+events.length+' action'+(events.length===1?'':'s')+(p.penaltyGain>0?' · malus léger −'+p.penaltyGain.toFixed(2):'');
   tipActions.replaceChildren();
-  for(const action of events.slice(0,5)){const badge=document.createElement('span');badge.className='wc-tip-action '+kind(action);badge.textContent=String(action.second).padStart(2,'0')+'″ '+label(action);tipActions.append(badge);}
+  for(const action of events.slice(0,5)){const badge=document.createElement('span');badge.className='wc-tip-action '+kind(action);badge.textContent=String(action.second).padStart(2,'0')+'″ '+label(action)+(action.penalty>0?' · −'+action.penalty.toFixed(2):'');tipActions.append(badge);}
   if(events.length>5){const more=document.createElement('span');more.textContent='+'+(events.length-5)+' autres actions';tipActions.append(more);}
   if(!events.length){const empty=document.createElement('span');empty.textContent=p.activity==null?'Hors terrain':'Pas d’action : l’activité s’atténue.';tipActions.append(empty);}
   tooltip.hidden=false;
@@ -180,7 +180,7 @@ const initialEventCount=initial.actions.filter(a=>a.minute===initialMinute).leng
   tooltip.style.left=Math.max(17,Math.min(83,cx/1140*100))+'%';
   tooltip.style.top=Math.max(8,Math.min(svg.clientHeight-132,(value==null?160:fromY(value))/456*svg.clientHeight-130))+'px';
   if(!events.length){const node=document.createElement('span');node.className='wc-no-action';node.textContent=p.activity==null?'Joueur hors du terrain.':'Aucune action enregistrée : les impulsions précédentes diminuent.';chips.append(node);return;}
-  for(const e of events){const node=document.createElement('span');node.className='wc-event-chip '+kind(e);node.textContent=String(e.second).padStart(2,'0')+'″ · '+label(e);chips.append(node);}
+  for(const e of events){const node=document.createElement('span');node.className='wc-event-chip '+kind(e);node.textContent=String(e.second).padStart(2,'0')+'″ · '+label(e)+(e.penalty>0?' · léger malus −'+e.penalty.toFixed(2):'');chips.append(node);}
  }
  function peakFor(metric){let best=null;for(let m=0;m<points().length;m++){const value=points()[m][metric];if(value!=null&&(!best||value>best.value))best={m,value};}return best;}
  function renderMoments(){
