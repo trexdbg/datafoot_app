@@ -13,10 +13,11 @@ interface Props {
 }
 const {home,away,homeCountry,awayCountry,homeScore,awayScore,first,second,duration,goals=[],stats=[]}=Astro.props;
 const COLORS={first:'#58D8F6',second:'#FF638A'};
-const left=48, right=1090, top=43, bottom=254, width=right-left;
+// Deux indices positifs sur une échelle miroir : le centre est 0, les bords 100.
+const left=48, right=1090, top=37, mid=173, bottom=309, width=right-left;
 const X=(minute:number)=>left+Math.max(0,Math.min(duration,minute))/Math.max(1,duration)*width;
-const Y=(value:number)=>bottom-Math.max(0,Math.min(100,value))/100*(bottom-top);
-const paths=[first,second].map(series=>{
+const Y=(value:number,team:number)=>mid+(team===0?-1:1)*Math.max(0,Math.min(100,value))/100*(mid-top);
+const paths=[first,second].map((series,team)=>{
  const parts:Point[][]=[];
  let part:Point[]=[];
  for(const point of series){
@@ -24,17 +25,16 @@ const paths=[first,second].map(series=>{
   else part.push(point);
  }
  if(part.length)parts.push(part);
- return parts.map(points=>monotonePath(points.map(p=>({x:X(p.minute),y:Y(p.activity??0)}))));
+ return parts.map(points=>{
+  const line=monotonePath(points.map(p=>({x:X(p.minute),y:Y(p.activity??0,team)})));
+  const area=line+' L '+X(points.at(-1)!.minute)+' '+mid+' L '+X(points[0].minute)+' '+mid+' Z';
+  return {line,area};
+ });
 });
 const ticks=Array.from({length:Math.floor(duration/15)+1},(_,i)=>i*15)
  .filter(t=>t===0||duration-t>7);
 if(!ticks.includes(duration))ticks.push(duration);
 const markers=goals.filter(goal=>goal.minute>=0&&goal.minute<=duration).sort((a,b)=>a.minute-b.minute);
-const leadBands:Array<{minute:number;winner:number}>=[];
-for(let minute=0;minute<duration;minute++){
- const a=first[minute]?.activity, b=second[minute]?.activity;
- if(typeof a==='number'&&typeof b==='number'&&Math.abs(a-b)>.5)leadBands.push({minute,winner:a>b?0:1});
-}
 const sample=JSON.stringify([first,second].map(series=>Array.from({length:duration+1},(_,minute)=>{
  const point=series.find(p=>p.minute===minute);
  return [point?.activity??null,point?.actions??0,(point?.events??[]).slice(0,3).map(e=>(e.playerName?e.playerName+' · ':'')+actionLabel(e))];
@@ -59,46 +59,50 @@ const formatValue=(value:number,format?:string)=>format==='decimal'?value.toFixe
   </div>
  </header>
  <div class="flow-chart-head">
-  <div class="flow-keys">
-   <span class="flow-key flow-key-home"><i aria-hidden="true"></i>{home}</span>
-   <span class="flow-key flow-key-away"><i aria-hidden="true"></i>{away}</span>
-  </div>
-  <span class="flow-chart-hint">Deux équipes. Une même échelle.</span>
+  <strong>ACTIVITÉ EN MIROIR</strong>
+  <span class="flow-chart-hint">0 au centre · 100 aux extrémités</span>
  </div>
  <div class="flow-chart-scroll" aria-label="Chronologie interactive du match, défilement horizontal sur petit écran">
-  <svg class="flow-chart" viewBox="0 0 1120 316" role="img" tabindex="0" aria-label={'Activité minute par minute de '+home+' et '+away+' entre 0 et 100 sur une même échelle. La bande inférieure montre quelle équipe est la plus active. Survoler, toucher ou utiliser les flèches pour explorer.'}>
-   <rect width="1120" height="316" fill="#081b29"/>
-   {duration>45&&<rect x={X(45)} y={top} width={X(Math.min(90,duration))-X(45)} height={bottom-top} fill="#fff" opacity=".018"/>}
-   {duration>90&&<rect x={X(90)} y={top} width={right-X(90)} height={bottom-top} fill="#fff" opacity=".032"/>}
-   {[0,25,50,75,100].map(n=><g>
-    <line class:list={['flow-grid-line',n===50?'emphasis':'']} x1={left} x2={right} y1={Y(n)} y2={Y(n)}/>
-    {(n===0||n===50||n===100)&&<text class="flow-axis" x={left-12} y={Y(n)+4} text-anchor="end">{n}</text>}
+  <svg class="flow-chart" viewBox="0 0 1120 362" role="img" tabindex="0" aria-label={'Activité minute par minute : '+home+' dans la moitié haute, '+away+' dans la moitié basse, chaque équipe de 0 au centre à 100 vers le bord. Survoler, toucher ou utiliser les flèches pour explorer.'}>
+   <rect width="1120" height="362" fill="#081b29"/>
+   <rect x={left} y={top} width={width} height={mid-top} fill={COLORS.first} opacity=".018"/>
+   <rect x={left} y={mid} width={width} height={bottom-mid} fill={COLORS.second} opacity=".014"/>
+   {[50,100].map(n=><g>
+    <line class:list={['flow-grid-line',n===50?'emphasis':'']} x1={left} x2={right} y1={Y(n,0)} y2={Y(n,0)}/>
+    <line class:list={['flow-grid-line',n===50?'emphasis':'']} x1={left} x2={right} y1={Y(n,1)} y2={Y(n,1)}/>
+    <text class="flow-axis" x={left-12} y={Y(n,0)+4} text-anchor="end">{n}</text>
+    <text class="flow-axis" x={left-12} y={Y(n,1)+4} text-anchor="end">{n}</text>
    </g>)}
    {ticks.map(minute=><g>
     <line class="flow-time-line" x1={X(minute)} x2={X(minute)} y1={top} y2={bottom}/>
-    <text class="flow-axis" x={X(minute)} y="302" text-anchor="middle">{minute}′</text>
+    <text class="flow-axis" x={X(minute)} y="346" text-anchor="middle">{minute}′</text>
    </g>)}
    {duration>45&&<line class="flow-break-line" x1={X(45)} x2={X(45)} y1={top} y2={bottom}/>}
    {duration>90&&<line class="flow-break-line" x1={X(90)} x2={X(90)} y1={top} y2={bottom}/>}
-   {paths[0].map(line=><path d={line} class="flow-curve flow-curve-home"/>)}
-   {paths[1].map(line=><path d={line} class="flow-curve flow-curve-away"/>)}
-   {leadBands.map(({minute,winner})=><rect x={X(minute)} y="268" width={width/Math.max(1,duration)+.3} height="5" fill={winner===0?COLORS.first:COLORS.second} opacity=".74"/>)}
+   <line x1={left} x2={right} y1={mid} y2={mid} class="flow-zero-line"/>
+   <text class="flow-axis flow-axis-zero" x={left-12} y={mid+4} text-anchor="end">0</text>
+   <text x={left+12} y={top+18} class="flow-team-label home">{home.toUpperCase()}</text>
+   <text x={left+12} y={bottom-10} class="flow-team-label away">{away.toUpperCase()}</text>
+   {paths[0].map(path=><g><path d={path.area} fill={COLORS.first} opacity=".105"/><path d={path.line} class="flow-curve flow-curve-home"/></g>)}
+   {paths[1].map(path=><g><path d={path.area} fill={COLORS.second} opacity=".105"/><path d={path.line} class="flow-curve flow-curve-away"/></g>)}
+   <rect x={left} y={top} width={width} height={bottom-top} fill="transparent" data-duel-hit/>
    {markers.map(goal=>{
     const isHome=goal.team===home;
+    const team=isHome?0:1;
+    const point=(isHome?first:second).find(p=>p.minute===goal.minute);
     const color=isHome?COLORS.first:COLORS.second;
-    return <g class="flow-goal-mark" transform={'translate('+X(goal.minute)+' 0)'}>
-     <line x1="0" x2="0" y1={top} y2={bottom} stroke={color} stroke-width="1" stroke-dasharray="3 5" stroke-opacity=".48"/>
-     <circle cy="32" r="6" fill="#081b29" stroke={color} stroke-width="2.5"/>
+    return <g class="flow-goal-mark" transform={'translate('+X(goal.minute)+' '+Y(point?.activity??0,team)+')'} pointer-events="none">
+     <circle r="8" fill="#081b29" stroke={color} stroke-width="2"/>
+     <circle r="2.7" fill="#f0f8fc"/>
      <title>{goal.minute}′ · {goal.label??'But'} · {goal.team}</title>
     </g>;
    })}
-   <rect x={left} y={top} width={width} height={bottom-top} fill="transparent" data-duel-hit/>
    <line data-duel-cursor x1={left} x2={left} y1={top} y2={bottom} stroke="#d5e4ec" stroke-width="1" stroke-dasharray="3 5" visibility="hidden" pointer-events="none"/>
-   <circle data-duel-dot="0" cx={left} cy={bottom} r="6" fill="#081b29" stroke={COLORS.first} stroke-width="3" visibility="hidden" pointer-events="none"/>
-   <circle data-duel-dot="1" cx={left} cy={bottom} r="6" fill="#081b29" stroke={COLORS.second} stroke-width="3" visibility="hidden" pointer-events="none"/>
+   <circle data-duel-dot="0" cx={left} cy={mid} r="6" fill="#081b29" stroke={COLORS.first} stroke-width="3" visibility="hidden" pointer-events="none"/>
+   <circle data-duel-dot="1" cx={left} cy={mid} r="6" fill="#081b29" stroke={COLORS.second} stroke-width="3" visibility="hidden" pointer-events="none"/>
   </svg>
  </div>
- <div class="flow-chart-caption"><span><i class="flow-caption-swatch" aria-hidden="true"></i> Bande d'ascendant · équipe la plus active à chaque minute</span><span>{duration} minutes analysées</span></div>
+ <div class="flow-chart-caption"><span>Plus la courbe s'éloigne du centre, plus l'activité est forte.</span><span>{duration} minutes analysées</span></div>
  <div class="flow-inspection" aria-live="off">
   <div class="flow-inspection-minute"><small>MINUTE EXPLORÉE</small><strong data-duel-minute>—</strong></div>
   <div class="flow-inspection-side" style={'--flow-accent:'+COLORS.first}>
@@ -163,7 +167,7 @@ const formatValue=(value:number,format?:string)=>format==='decimal'?value.toFixe
      const dot=dots[i];
      if(score==null){dot.setAttribute('visibility','hidden');continue;}
      dot.setAttribute('cx',String(x));
-     dot.setAttribute('cy',String(254-Math.max(0,Math.min(100,score))/100*211));
+     dot.setAttribute('cy',String(173+(i===0?-1:1)*Math.max(0,Math.min(100,score))/100*136));
      dot.setAttribute('visibility','visible');
     }
    };
@@ -206,16 +210,18 @@ const formatValue=(value:number,format?:string)=>format==='decimal'?value.toFixe
 .flow-score{display:flex;gap:15px;align-items:baseline;justify-content:center;font-size:clamp(36px,4.8vw,59px);line-height:1;color:#f5fbff;font-weight:850;letter-spacing:-.065em;font-variant-numeric:tabular-nums}
 .flow-score em{font-style:normal;color:#667f90;font-weight:450;font-size:.52em}
 .flow-chart-head{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:11px 3px 14px;border-top:1px solid #294456}
-.flow-keys{display:flex;flex-wrap:wrap;gap:22px;align-items:center}
-.flow-key{display:inline-flex;align-items:center;gap:8px;color:#e3eff5;font-size:12px;font-weight:800}
-.flow-key i{width:19px;height:3px;background:var(--flow-home);display:block}
-.flow-key-away i{background:var(--flow-away)}
+.flow-chart-head>strong{color:#c9dce8;font-size:10px;font-weight:850;letter-spacing:.13em}
 .flow-chart-hint{font-size:11px;color:#8facbf}
 .flow-chart-scroll{overflow-x:auto;overscroll-behavior-x:contain;background:#081b29;border:1px solid #2b465a;border-radius:4px}
 .flow-chart{display:block;width:100%;min-width:660px;height:auto;touch-action:pan-y;cursor:crosshair;outline:none}
 .flow-chart:focus-visible{outline:2px solid #d9ecf7;outline-offset:-3px}
 .flow-grid-line{stroke:#819bad;stroke-width:1;stroke-opacity:.12}
-.flow-grid-line.emphasis{stroke-opacity:.27;stroke-dasharray:3 5}
+.flow-grid-line.emphasis{stroke-opacity:.21;stroke-dasharray:3 5}
+.flow-zero-line{stroke:#b8d0dd;stroke-opacity:.55;stroke-width:1.5}
+.flow-axis-zero{fill:#b8cfda}
+.flow-team-label{font-size:11px;font-weight:850;letter-spacing:1.35px}
+.flow-team-label.home{fill:var(--flow-home)}
+.flow-team-label.away{fill:var(--flow-away)}
 .flow-time-line{stroke:#7e9caf;stroke-opacity:.11;stroke-width:1}
 .flow-break-line{stroke:#aac3d1;stroke-opacity:.34;stroke-width:1.3;stroke-dasharray:4 5}
 .flow-axis{fill:#88a6b8;font-size:12px;font-weight:700;font-variant-numeric:tabular-nums}
@@ -223,7 +229,6 @@ const formatValue=(value:number,format?:string)=>format==='decimal'?value.toFixe
 .flow-curve-home{stroke:var(--flow-home)}
 .flow-curve-away{stroke:var(--flow-away)}
 .flow-chart-caption{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;color:#8babbc;font-size:10px;padding:8px 3px 15px}
-.flow-caption-swatch{display:inline-block;width:13px;height:4px;background:linear-gradient(90deg,var(--flow-home) 50%,var(--flow-away) 50%);vertical-align:middle;margin-right:5px}
 .flow-inspection{display:grid;grid-template-columns:130px minmax(0,1fr) minmax(0,1fr);border-block:1px solid #355267;background:#0d2535}
 .flow-inspection>div{min-width:0;padding:13px 18px}
 .flow-inspection>div+div{border-left:1px solid #355267}
