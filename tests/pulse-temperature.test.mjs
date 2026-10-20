@@ -28,7 +28,7 @@ test('colors interpolate between stops instead of jumping between old bands',()=
  assert.equal(thermalLabel(95),'En feu');
  assert.equal(thermalLabel(10),'Froid');
 });
-test('player detail and mini graphs use the same thermal scale without recoloring Impact or teams',()=>{
+test('the same Pulse spectrum colors players, countries and both sides of a match, without legends',()=>{
  const detail=readFileSync('src/pages/mondial-2022/matchs/[id]/profil.astro','utf8');
  const small=readFileSync('src/components/WorldCupWave.astro','utf8');
  const match=readFileSync('src/components/WorldCupMatchComparison.astro','utf8');
@@ -38,7 +38,15 @@ test('player detail and mini graphs use the same thermal scale without recolorin
  assert.ok(detail.includes("impactLine.setAttribute('display',mode==='impact'"));
  assert.ok(detail.includes('heatColor(score)'));
  assert.ok(small.includes("metric==='activity'?'url(#'+clipPrefix+'-thermal)'"));
- assert.ok(small.includes("metric==='activity'&&<div class="+'"wc-wave-thermal-key"'));
+ assert.ok(!small.includes('wc-wave-thermal-key'),'country and player cards no longer show a redundant color key');
+ assert.ok(!detail.includes('wc-profile-zones'),'profile detail no longer shows a color key');
+ assert.ok(!detail.includes('wc-profile-legend'),'profile detail no longer shows an event legend');
  assert.ok(match.includes('data-wc-duel'));
- assert.ok(!match.includes('pulse-temperature.mjs'),'national teams retain their existing distinct colors');
+ assert.ok(match.includes('THERMAL_STOPS'));
+ assert.ok(match.includes('stroke="url(#flow-thermal-home)"'));
+ assert.ok(match.includes('stroke="url(#flow-thermal-away)"'));
+ assert.ok(match.includes('y1={mid} x2="0" y2={top}'));
+ assert.ok(match.includes('y1={mid} x2="0" y2={bottom}'));
+ assert.ok(match.includes("dot.setAttribute('stroke',thermalColor(score))"));
+ assert.ok(!match.includes('.flow-curve-home{stroke:var(--flow-home)}'),'team-specific CSS must not override thermal gradients');
 });

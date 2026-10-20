@@ -1,7 +1,7 @@
 ---
 import {monotonePath,actionLabel,pulsePenalty} from '../lib/match-activity.mjs';
 import {pulsePresence} from '../lib/pulse-presence.mjs';
-import {THERMAL_STOPS,THERMAL_GRADIENT} from '../lib/pulse-temperature.mjs';
+import {THERMAL_STOPS} from '../lib/pulse-temperature.mjs';
 interface Point {minute:number;activity:number|null;impact?:number|null;actions?:number;penaltyGain?:number;events?:Array<{kind:string;outcome:string;playerName?:string}>}
 interface Props {timeline:Point[];duration:number;goals?:number[];assists?:number[];title?:string;accent?:string;metric?:'activity'|'impact';compact?:boolean}
 const {timeline,duration,goals=[],assists=[],title='Activité sur le match',accent='#66d8ff',metric='activity',compact=false}=Astro.props;
@@ -47,7 +47,6 @@ const clipPrefix='wc-heat-'+Math.random().toString(36).slice(2,11);
   <line data-wave-cursor x1="33" x2="33" y1={top} y2={bottom} stroke="#d9f5ff" stroke-dasharray="4 4" stroke-width="1.6" visibility="hidden" pointer-events="none"/>
   <circle data-wave-point cx="33" cy={bottom} r="6" fill="#f7ffff" stroke={accent} stroke-width="2.5" visibility="hidden" pointer-events="none"/>
  </svg>
- {metric==='activity'&&<div class="wc-wave-thermal-key"><div class="wc-wave-thermal-bar" style={'background:'+THERMAL_GRADIENT}></div><div class="wc-wave-thermal-labels"><span>0 · bleu froid</span><span>50 · vert équilibré</span><span>100 · en feu</span></div></div>}
  {metric==='activity'&&<div class="wc-wave-presence"><strong>{presence.share}%</strong> des minutes au-dessus de 50 <span>· série max. {presence.longest}′</span></div>}
  <div class="wc-wave-readout" aria-live="off">
    <span data-wave-minute>Survole ou touche la courbe</span>

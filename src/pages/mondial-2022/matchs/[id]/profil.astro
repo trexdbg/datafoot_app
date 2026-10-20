@@ -3,7 +3,7 @@ import CountryFlag from '../../../../components/CountryFlag.astro';
 import BaseLayout from '../../../../layouts/BaseLayout.astro';
 import {monotonePath,pulsePenalty,pulseWeight} from '../../../../lib/match-activity.mjs';
 import {pulsePresence} from '../../../../lib/pulse-presence.mjs';
-import {THERMAL_STOPS,THERMAL_GRADIENT,thermalColor} from '../../../../lib/pulse-temperature.mjs';
+import {THERMAL_STOPS,thermalColor} from '../../../../lib/pulse-temperature.mjs';
 import {pulseRole,pulseRoleLabel} from '../../../../lib/pulse-scoring.mjs';
 import {games,matchUrl,countryUrl,playerUrl,labelCountry,playerName,flag,flagSrc,stageLabel,dateLabel,titleMatch,peak,mean} from '../../../../lib/worldcup-data';
 import '../../../../styles/worldcup.css';
@@ -64,7 +64,7 @@ const initialEventCount=initial.actions.filter(a=>a.minute===initialMinute).leng
     <div><span>PLUS LONGUE SÉQUENCE</span><strong id="wc-longest-streak">{initialPresence.longest}′</strong><small id="wc-longest-period">{initialPresence.longestStart==null?'Aucune séquence':'de '+initialPresence.longestStart+'′ à '+initialPresence.longestEnd+'′'}</small></div>
     <div><span>TEMPS FORTS · >75</span><strong id="wc-strong-minutes">{initialPresence.strong}′</strong><small>minutes très actives</small></div>
    </div>
-   <div class="wc-presence-timeline"><span>LES MINUTES DU JOUEUR</span><div class="wc-presence-ribbon" id="wc-presence-ribbon" aria-label="Chronologie thermique de l'activité minute par minute">{initial.timeline.map(p=><span class:list={['wc-presence-step',p.activity==null?'off':'heat']} style={p.activity==null?undefined:'background-color:'+thermalColor(p.activity)} title={p.minute+'′ · '+(p.activity==null?'hors terrain':Math.round(p.activity)+'/100')}/>)}</div><small>Bleu → cyan → vert (50) → jaune → orange → rouge → violet</small></div>
+   <div class="wc-presence-timeline"><span>LES MINUTES DU JOUEUR</span><div class="wc-presence-ribbon" id="wc-presence-ribbon" aria-label="Chronologie thermique de l'activité minute par minute">{initial.timeline.map(p=><span class:list={['wc-presence-step',p.activity==null?'off':'heat']} style={p.activity==null?undefined:'background-color:'+thermalColor(p.activity)} title={p.minute+'′ · '+(p.activity==null?'hors terrain':Math.round(p.activity)+'/100')}/>)}</div></div>
   </div>
   <div class="wc-mode-head">
    <div class="wc-mode-copy"><p class="wc-eyebrow">PROFIL DU JOUEUR <span id="wc-mode-title">· Activité du match</span></p><p id="wc-mode-desc">{pulseRole(initial.player.position)==='goalkeeper'?'Gardien : 50/100 reste neutre sans sollicitation ; les arrêts, prises de balle et sorties créent des pics.':'L’activité valorise les gestes selon le poste et s’atténue pendant les temps calmes.'}</p></div>
@@ -115,11 +115,6 @@ const initialEventCount=initial.actions.filter(a=>a.minute===initialMinute).leng
    <strong id="wc-tooltip-title">—</strong><span id="wc-tooltip-numbers">—</span><div id="wc-tooltip-actions"></div>
   </aside>
   <div class="wc-pulse-scoring-link"><span>But = passe décisive · Interception ou duel gagné d’un défenseur = dribble d’un attaquant</span><a href={base+'/pulse-bareme/'}>Voir le barème complet par poste ↗</a></div>
-  <div class="wc-profile-zones" aria-label="Échelle thermique continue de l'activité, du bleu froid au violet très chaud">
-   <div class="wc-thermal-legend"><div class="wc-thermal-bar" style={'background:'+THERMAL_GRADIENT}></div><div class="wc-thermal-markers"><span>0 · Bleu</span><span>25 · Cyan</span><span>50 · Vert</span><span>75 · Orange</span><span>100 · En feu</span></div></div>
-   <small>Activité : couleurs thermiques · Impact : bleu fixe · 50/100 à l'entrée sur le terrain</small>
-  </div>
-  <div class="wc-profile-legend"><span><i class="quiet"></i>Autres événements</span><span><i class="positive"></i>Actions significatives</span><span><i class="goal"></i>Buts</span><span><i class="assist"></i>Passes décisives</span><small>Survolez ou sélectionnez les points sous l’axe X.</small></div>
   <div class="wc-highlights"><strong>MOMENTS CLÉS</strong><div id="wc-moments"></div></div>
   <div class="wc-minute-reader" id="wc-minute-reader">
    <div class="wc-minute-head"><div><span>MINUTE SÉLECTIONNÉE</span><output id="wc-readout">{initialMinute}′</output></div><div class="wc-readout-numbers"><span>Activité <strong id="wc-now-activity">{initial.timeline[initialMinute]?.activity?.toFixed(0)??0}</strong></span><span>Impact <strong id="wc-now-impact">{initial.timeline[initialMinute]?.impact?.toFixed(0)??0}</strong></span></div></div>
