@@ -7,6 +7,7 @@ import assert from 'node:assert/strict';
 import {readFileSync,readdirSync} from 'node:fs';
 import {join} from 'node:path';
 import vm from 'node:vm';
+import {THERMAL_STOPS,thermalColor} from '../src/lib/pulse-temperature.mjs';
 
 const astroFiles=folder=>readdirSync(folder,{withFileTypes:true}).flatMap(entry=>{
  const filename=join(folder,entry.name);
@@ -78,7 +79,7 @@ test('player dropdown, graph modes, minute slider and actions respond to clicks'
  const location={href:'https://example.test/datafoot_app/mondial-2022/matchs/1/profil/?joueur=101',search:'?joueur=101'};
  const history={replaceState(_state,_title,url){location.href=String(url);location.search=new URL(String(url)).search;}};
  assert.doesNotThrow(()=>new vm.Script(script).runInNewContext({
-  document,location,history,URL,URLSearchParams,players,duration:90,defaultId:101,basePath:'/datafoot_app',thermalStops:[{at:0,color:'#4E79EB'},{at:20,color:'#38A8EC'},{at:35,color:'#32BCCD'},{at:50,color:'#50CC86'},{at:63,color:'#D9DA59'},{at:75,color:'#FF9B4A'},{at:87,color:'#F95D69'},{at:95,color:'#BA65E9'},{at:100,color:'#8A50F2'}]
+  document,location,history,URL,URLSearchParams,players,duration:90,defaultId:101,basePath:'/datafoot_app',thermalStops:THERMAL_STOPS
  },{timeout:4000}));
  assert.equal(node('wc-current-name').textContent,'Premier Joueur');
  assert.ok(node('wc-above-share').innerHTML.includes('44'),'regularity is shown for initial player');
@@ -94,7 +95,7 @@ test('player dropdown, graph modes, minute slider and actions respond to clicks'
  assert.equal(node('wc-longest-streak').textContent,'15′','longest streak must update');
  assert.ok(node('wc-peak').innerHTML.includes('94'));
  assert.notEqual(thermalLine.attributes.d,priorPath);
- assert.equal(node('wc-presence-ribbon').children[75].style.backgroundColor,'#A245FD','intensity values determine ribbon colors');
+ assert.equal(node('wc-presence-ribbon').children[75].style.backgroundColor,thermalColor(94),'intensity values determine ribbon colors');
  assert.equal(new URL(location.href).searchParams.get('joueur'),'202');
  assert.ok(node('wc-minute-actions').children.some(chip=>String(chip.textContent).includes('PASSE DÉCISIVE')));
  modes[1].emit('click');
