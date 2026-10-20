@@ -228,8 +228,11 @@ La lecture conserve les deux directions. Chaque mini-bille possède une courbe d
 pseudo-aléatoire et reproductible, et termine au bon joueur (ou à Messi en retour).
 Aucun échantillonnage ni écrêtage de la file de passes : les événements sont parcourus
 une seule fois et les compteurs restent exacts. Le moteur borne les billes simultanément
-visibles à 1 200 et régule les lancements par frame ; en cas de retard, la frise
-attend que les projectiles restants soient partis avant de terminer.
+visibles à 2 600 et lance plusieurs dizaines de projectiles par image, à débit renforcé ;
+en cas de retard, la frise attend que tous les projectiles soient partis avant de terminer.
+Les trajectoires sont désormais des Bézier cubiques asymétriques avec oscillations
+(mais des arrivées exactes sur les bons partenaires), petites dispersions de départ,
+mini-billes en rendu additif et quatre taches de peinture par passe.
 Le mode Battle augmente la cadence sans abandonner de passes.
 Le seuil de qualification est calculé globalement sur la carrière **accessible** de Messi ;
 les filtres de saison affichent seulement les événements de ces mêmes partenaires.
@@ -238,3 +241,21 @@ les compteurs de la période ; pendant une lecture continue, chaque passe retenu
 
 Les tests `tests/pass-wars.test.mjs` vérifient la sélection de véritables
 événements, la file limitée, le filtrage joueur et la chronologie linéaire.
+
+
+### Photos Wikimedia fiabilisées et rafales « mitraillette »
+
+Les 11 joueurs ayant reçu plus de 500 passes de Messi (plus Messi) disposent de
+vignettes issues de fichiers libres Wikimedia Commons dont les liens ont été vérifiés.
+Le moteur charge en priorité ces fichiers via le CDN Wikimedia, puis tente
+les liens Commons alternatifs en cas d’erreur réseau. Les crédits et licences
+restent consultables. Les initiales ne servent qu’en dernier recours.
+
+Chaque événement de passe admissible produit sa propre mini-bille ; aucun
+échantillonnage ni création de fausses passes. La lecture normale augmente
+fortement le débit de tirs ; le mode Battle peut montrer jusqu’à 2 600 billes
+en vol et augmente le nombre de départs par image. Les billes empruntent
+des chemins en S ou en zigzag déterminés par leur identifiant StatsBomb,
+avec micro-dispersion initiale et une extrémité toujours exacte.
+Les simulations du moteur ont lancé les **33 886 billes** de l’ensemble
+actuellement qualifié dans les deux modes, sans perte.
