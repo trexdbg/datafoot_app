@@ -1,4 +1,4 @@
-import { MESSI_ID, displayPlayerName, playerInitials, photoFor, photoCredits } from './messi-player-profiles.mjs';
+import { MESSI_ID, displayPlayerName, playerInitials, photoFor, photoSourcesFor, photoCredits } from './messi-player-profiles.mjs';
 
 /** Messi Pass Wars — Canvas 2D, événements StatsBomb réels seulement. */
 // Critère : PLUS de 500 passes envoyées PAR MESSI VERS chaque partenaire.
@@ -121,15 +121,28 @@ export function passEventSeed(event){
 }
 export function curvedPassPoint(from,to,progress,seed){
   const p=Math.max(0,Math.min(1,Number(progress)||0));
+  // Les extrémités restent EXACTES, malgré les zigzags et les oscillations.
+  if(p===0)return {x:from.x,y:from.y};
+  if(p===1)return {x:to.x,y:to.y};
   const dx=to.x-from.x,dy=to.y-from.y,length=Math.hypot(dx,dy)||1;
-  // Point de contrôle de Bézier : amplitude et côté pseudo-aléatoires.
-  const magnitude=Math.min(72,length*.21)*(0.35+((seed>>>8)&255)/255*.65);
-  const side=(seed&1)?1:-1;
-  const cx=(from.x+to.x)/2+(-dy/length)*magnitude*side;
-  const cy=(from.y+to.y)/2+(dx/length)*magnitude*side;
-  const inv=1-p;
-  return {x:inv*inv*from.x+2*inv*p*cx+p*p*to.x,
-          y:inv*inv*from.y+2*inv*p*cy+p*p*to.y};
+  const nx=-dy/length,ny=dx/length;
+  // Deux poignées asymétriques pour des courbes en S, des arcs ou des crochets.
+  const t1=.18+((seed>>>2)&31)/31*.17;
+  const t2=.64+((seed>>>7)&31)/31*.18;
+  const spread1=Math.min(158,length*.36)*(.52+((seed>>>12)&255)/255*.92);
+  const spread2=Math.min(172,length*.38)*(.53+((seed>>>20)&255)/255*.96);
+  const side1=(seed&1)?1:-1,side2=(seed&2)?1:-1;
+  const c1x=from.x+dx*t1+nx*spread1*side1;
+  const c1y=from.y+dy*t1+ny*spread1*side1;
+  const c2x=from.x+dx*t2+nx*spread2*side2;
+  const c2y=from.y+dy*t2+ny*spread2*side2;
+  const q=1-p,qq=q*q,pp=p*p;
+  const wave=(9+((seed>>>28)&15))*.85*
+    Math.sin(Math.PI*p)*Math.sin(Math.PI*p*(2+((seed>>>24)&3)));
+  return {
+    x:qq*q*from.x+3*qq*p*c1x+3*q*pp*c2x+pp*p*to.x+nx*wave,
+    y:qq*q*from.y+3*qq*p*c1y+3*q*pp*c2y+pp*p*to.y+ny*wave
+  };
 }
 
 export function eventsThroughMonth(events,ordinal){
@@ -169,22 +182,24 @@ export function bootPassWars(){
   // Pas de tableau de doublons ni d'échantillonnage : events est LA file.
   // releaseCursor n'avance qu'après le lancement réel de chaque mini-bille.
   let balls=[],releaseCursor=0,emitted=0,flightCredit=0;
-  const MAX_ACTIVE_BALLS=1200;
-  const PARTICLE_RADIUS=1.4;
+  const MAX_ACTIVE_BALLS=2600;
+  const PARTICLE_RADIUS=1.06;
   // Photos Commons préchargées une seule fois par joueur ; si erreur réseau,
   // le Canvas et le classement conservent un monogramme coloré.
   const portraits=new Map();
   function preloadPortrait(id){
     if(portraits.has(id))return;
-    const url=photoFor(id,180);
-    if(!url){portraits.set(id,null);return;}
-    const img=new Image();
-    const state={image:img,ready:false};
+    const sources=photoSourcesFor(id,220);
+    if(!sources.length){portraits.set(id,null);return;}
+    const img=new Image(),state={image:img,ready:false,attempt:0};
     portraits.set(id,state);
     img.onload=()=>{state.ready=img.naturalWidth>0&&img.naturalHeight>0;};
-    img.onerror=()=>{state.ready=false;};
+    img.onerror=()=>{
+      state.ready=false;
+      if(++state.attempt<sources.length)img.src=sources[state.attempt];
+    };
     img.decoding='async';
-    img.src=url;
+    img.src=sources[0];
   }
   function drawPortrait(id,x,y,r){
     const entry=portraits.get(id);
@@ -325,26 +340,25 @@ export function bootPassWars(){
   function launchDuePasses(dt,t){
     if(releaseCursor>=cursor)return;
     const monthSpan=Math.max(1,(timelineLast??timelineFirst??0)-(timelineFirst??0)+1);
-    const rate=Math.min(1850,Math.max(70,
-      events.length*(battle?24:speed)/monthSpan*1.22));
-    // Crédit d'animation : débit constant, indépendant des paquets de dates.
-    // On ne saute jamais une passe pour rattraper le calendrier.
-    flightCredit=Math.min(160,flightCredit+dt*rate);
-    let budget=Math.min(battle?70:40,Math.floor(flightCredit),
+    const rate=Math.min(4400,Math.max(battle?2600:980,
+      events.length*(battle?24:speed)/monthSpan*(battle?3.6:2.15)));
+    // MITRAILLETTE : plusieurs dizaines de VRAIES passes par image,
+    // mais jamais d'événement jeté, inventé ou tronqué.
+    flightCredit=Math.min(260,flightCredit+dt*rate);
+    let budget=Math.min(battle?150:92,Math.floor(flightCredit),
       MAX_ACTIVE_BALLS-balls.length);
     while(budget>0&&releaseCursor<cursor){
       const event=events[releaseCursor++];
-      // Le focus est un filtre visuel volontaire, sans perte de statistiques.
       if(focus!==null&&event.partner_id!==focus)continue;
       const seed=passEventSeed(event);
       const target=positions.get(event.partner_id);
       if(!target)continue;
       balls.push({id:event.partner_id,direction:event.direction,
-        index:event.index,seed,start:t,duration:430+(seed%210),
-        radius:PARTICLE_RADIUS+((seed>>>16)%12)/12,hit:false});
+        index:event.index,seed,start:t,duration:410+(seed%230),
+        radius:PARTICLE_RADIUS+((seed>>>16)%13)/12,hit:false});
       emitted++;flightCredit--;budget--;
     }
-    // En focus : ignorer rapidement les autres événements sans surcharger la file.
+    // En focus, sauter les autres partenaires sans les dessiner.
     if(focus!==null&&budget===0){
       while(releaseCursor<cursor&&events[releaseCursor].partner_id!==focus)
         releaseCursor++;
@@ -429,18 +443,21 @@ export function bootPassWars(){
       const fallback=document.createElement('span');
       fallback.className='pw-rank-initials';fallback.textContent=playerInitials(p.id,p.name);
       portrait.append(fallback);
-      const url=photoFor(p.id,112);
-      if(url){
+      const sources=photoSourcesFor(p.id,180);
+      if(sources.length){
         const photo=document.createElement('img');
         photo.alt='Portrait de '+displayPlayerName(p.id,p.name);
         photo.width=44;photo.height=44;photo.loading='lazy';
-        photo.style.objectPosition='50% 20%';
-        photo.referrerPolicy='no-referrer';
+        photo.decoding='async';photo.style.objectPosition='50% 20%';
+        let attempt=0;
         photo.addEventListener('load',()=>{
           if(photo.naturalWidth>0){photo.classList.add('loaded');fallback.hidden=true;}
         });
-        photo.addEventListener('error',()=>{photo.remove();fallback.hidden=false;});
-        photo.src=url;portrait.append(photo);
+        photo.addEventListener('error',()=>{
+          if(++attempt<sources.length)photo.src=sources[attempt];
+          else{photo.remove();fallback.hidden=false;}
+        });
+        photo.src=sources[0];portrait.append(photo);
       }
       button.append(n,portrait,content,total);
       button.addEventListener('click',()=>selectPlayer(p.id));list.append(button);
@@ -496,40 +513,52 @@ export function bootPassWars(){
     paint.restore();
   }
   function stampMiniImpact(ball,destination){
-    // Une petite trace discrète par passe : pas d'explosion coûteuse à 600/s.
-    const offsetX=((ball.seed>>>5)&31)-15;
-    const offsetY=((ball.seed>>>12)&31)-15;
-    paint.globalAlpha=.10;
-    paint.fillStyle=colorOf(ball.id);
-    paint.beginPath();
-    paint.arc(destination.x+offsetX,destination.y+offsetY,
-      1+((ball.seed>>>21)&7)*.32,0,Math.PI*2);
-    paint.fill();
+    // Chaque passe dépose un éclat irrégulier près de sa VRAIE destination.
+    const seed=ball.seed>>>0,color=colorOf(ball.id);
+    paint.fillStyle=color;
+    for(let i=0;i<4;i++){
+      const angle=((seed>>>((i*7)%24))&255)/255*Math.PI*2;
+      const length=6+((seed>>>((i*5+3)%24))&31);
+      const x=destination.x+Math.cos(angle)*length;
+      const y=destination.y+Math.sin(angle)*length;
+      const radius=.65+((seed>>>((i*4+7)%24))&15)/15*2;
+      paint.globalAlpha=.11+i*.025;
+      paint.beginPath();paint.arc(x,y,radius,0,Math.PI*2);paint.fill();
+    }
     paint.globalAlpha=1;
   }
   function drawParticles(t){
     const survivors=[];
+    ctx.globalCompositeOperation='lighter';
     for(const p of balls){
       const destination=positions.get(p.id);
       if(!destination)continue;
       const age=(t-p.start)/p.duration;
-      const from=p.direction==='given'?{x:CX,y:CY}:destination;
+      const seed=p.seed>>>0;
+      const mx=((seed>>>3)&31)-15,my=((seed>>>9)&31)-15;
+      const from=p.direction==='given'
+        ?{x:CX+mx*.85,y:CY+my*.85}
+        :{x:destination.x+mx*.55,y:destination.y+my*.55};
       const to=p.direction==='given'?destination:{x:CX,y:CY};
       if(age>=1){
-        // Chaque projectile atteint sa destination avant d'être éliminé.
         if(!p.hit){p.hit=true;stampMiniImpact(p,to);}
         continue;
       }
       survivors.push(p);
       if(age<0||(focus!==null&&focus!==p.id))continue;
-      const point=curvedPassPoint(from,to,age,p.seed);
-      ctx.globalAlpha=.60+Math.sin(Math.PI*age)*.35;
-      ctx.fillStyle=colorOf(p.id);
-      ctx.beginPath();
-      ctx.arc(point.x,point.y,p.radius,0,Math.PI*2);
-      ctx.fill();
+      const point=curvedPassPoint(from,to,age,seed);
+      const color=colorOf(p.id);
+      ctx.globalAlpha=.53+Math.sin(Math.PI*age)*.39;
+      ctx.fillStyle=color;
+      ctx.beginPath();ctx.arc(point.x,point.y,p.radius,0,Math.PI*2);ctx.fill();
+      // Noyau chaud : aucune ligne, ni sillage graphique fixe.
+      if((seed&3)===0){
+        ctx.globalAlpha=.40;
+        ctx.fillStyle='#fff';
+        ctx.beginPath();ctx.arc(point.x,point.y,.62,0,Math.PI*2);ctx.fill();
+      }
     }
-    ctx.globalAlpha=1;
+    ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';
     balls=survivors;
   }
   function drawNodes(){
