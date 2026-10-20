@@ -291,6 +291,42 @@ test('les courbes pseudo-aléatoires ont des chemins variés et les bonnes extr�
   }
 });
 
+test('portraits : les onze receveurs majeurs disposent de CDN vérifiés et de secours',async()=>{
+  const {photoSourcesFor,profileFor,photoCredits}=await import('../src/lib/messi-player-profiles.mjs');
+  const {readFileSync}=await import('node:fs');
+  const summary=JSON.parse(readFileSync(new URL('../src/data/players/messi-pass-wars.json',import.meta.url),'utf8'));
+  const players=summary.partners.filter(p=>p.given>=501);
+  assert.ok(players.length>=11);
+  for(const p of players){
+    assert.ok(profileFor(p.id),'Profil manquant : '+p.name);
+    const urls=photoSourcesFor(p.id);
+    assert.ok(urls.length>=2,'Portrait sans secours : '+p.name);
+    assert.ok(urls[0].startsWith('https://thumb.wikimedia.org/')||
+      urls[0].startsWith('https://upload.wikimedia.org/'),'Lien CDN manquant : '+p.name);
+    assert.ok(urls.some(u=>u.includes('Special:FilePath/')),'Lien de repli absent : '+p.name);
+    assert.ok(photoCredits(p.id)?.source?.includes('commons.wikimedia.org'));
+  }
+  assert.deepEqual(photoSourcesFor(123456),[]);
+  const core=readFileSync(new URL('../src/lib/pass-wars-engine.mjs',import.meta.url),'utf8');
+  assert.ok(core.includes('photoSourcesFor(id,220)'),'CDN utilisé pour le Canvas');
+  assert.ok(core.includes('photoSourcesFor(p.id,180)'),'CDN utilisé dans le classement');
+  assert.ok(core.includes('++state.attempt<sources.length'),'Secours automatique pour le Canvas');
+  assert.ok(core.includes('++attempt<sources.length'),'Secours automatique pour le classement');
+});
+
+test('trajectoires mitraillette : beaucoup de chemins qui ne sont pas de simples lignes',()=>{
+  const from={x:600,y:385},to={x:220,y:165},mid={x:410,y:275};
+  const offsets=Array.from({length:120},(_,i)=>{
+    const seed=passEventSeed({id:'messi-statsbomb-'+i});
+    const pt=curvedPassPoint(from,to,.5,seed);
+    assert.deepEqual(curvedPassPoint(from,to,0,seed),from);
+    assert.deepEqual(curvedPassPoint(from,to,1,seed),to);
+    return Math.hypot(pt.x-mid.x,pt.y-mid.y);
+  });
+  assert.ok(offsets.filter(x=>x>25).length>55,'Trop de trajectoires quasi droites');
+  assert.ok(Math.max(...offsets)>70,'Manque de chaos dans les arcs');
+});
+
 test('une mini-bille par passe et aucune coupe de file : garde les événements StatsBomb',async()=>{
   const {readFileSync}=await import('node:fs');
   const engine=readFileSync(new URL('../src/lib/pass-wars-engine.mjs',import.meta.url),'utf8');
@@ -300,12 +336,17 @@ test('une mini-bille par passe et aucune coupe de file : garde les événements 
   assert.ok(engine.includes('const event=events[releaseCursor++]'));
   assert.ok(engine.includes('balls.push({id:event.partner_id'));
   assert.ok(engine.includes('releaseCursor>=cursor'));
-  assert.ok(engine.includes('const MAX_ACTIVE_BALLS=1200'));
+  assert.ok(engine.includes('const MAX_ACTIVE_BALLS=2600'));
   assert.ok(engine.includes('flightCredit'));
   assert.ok(engine.includes('emitted++'));
   assert.ok(engine.includes('curvedPassPoint(from,to,age,p.seed)'));
   assert.ok(engine.includes('stampMiniImpact(p,to)'));
   assert.ok(engine.includes('radius:PARTICLE_RADIUS'));
+  assert.ok(engine.includes('battle?150:92'), 'Le mode mitraillette tire des rafales denses');
+  assert.ok(engine.includes('ctx.globalCompositeOperation=\'lighter\''));
+  assert.ok(engine.includes('Math.min(158,length*.36)'));
+  assert.ok(engine.includes('const mx=((seed>>>3)&31)-15'));
+  assert.ok(engine.includes('for(let i=0;i<4;i++)'), 'Chaque impact crée plusieurs gouttelettes');
   assert.ok(!engine.includes('sampleVisualPasses('));
   assert.ok(!engine.includes('thinVisualQueue('));
   assert.ok(!engine.includes('visualQueue='));
@@ -325,7 +366,7 @@ test('simulation haute densité : chacune des 10 000 passes lance une bille sans
   const scheduler=source.slice(start,end);
   const runner=new Function('events','passEventSeed',`
     const ids=[11,22,33,44],positions=new Map(ids.map((id,i)=>[id,{x:130+i*200,y:230}]));
-    const MAX_ACTIVE_BALLS=1200,PARTICLE_RADIUS=1.4;
+    const MAX_ACTIVE_BALLS=2600,PARTICLE_RADIUS=1.06;
     const timelineFirst=24050,timelineLast=24289,speed=4,battle=false,focus=null;
     let balls=[],cursor=events.length,releaseCursor=0,emitted=0,flightCredit=0;
     let peak=0,t=0,steps=0;
@@ -344,7 +385,7 @@ test('simulation haute densité : chacune des 10 000 passes lance une bille sans
   const simulated=runner(events,passEventSeed);
   assert.equal(simulated.emitted,10000,'Chaque vraie passe doit produire une bille');
   assert.equal(simulated.releaseCursor,10000,'Aucune passe perdue par découpage de la file');
-  assert.ok(simulated.peak<=1200,'Aucun freeze par surcharge de Canvas');
+  assert.ok(simulated.peak<=2600,'Aucun freeze par surcharge de Canvas');
   assert.equal(simulated.done,true,'La lecture doit finir après la dernière bille');
 });
 
