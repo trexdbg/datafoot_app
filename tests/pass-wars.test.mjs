@@ -80,7 +80,7 @@ test('le réseau paintball ne dessine plus de connexions fixes',async()=>{
   assert.ok(!engine.includes('function line('));
   assert.ok(engine.includes('const color=colorOf(p.id)'));
   assert.ok(engine.includes('const color=colorOf(id)'));
-  assert.ok(engine.includes('stampPaint(p.id,p.direction,p.index)'));
+  assert.ok(engine.includes('stampMiniImpact(p,to)'));
 });
 
 
@@ -113,7 +113,7 @@ test('aucune des deux visualisations Messi ne trace de traits (ni liens, ni gril
   }
   assert.ok(!newer.includes('for(let dot=1;dot<=5;dot++)'),'Pas de pointillés formant une trajectoire');
   assert.ok(!old.includes('function line('),'Pas de traceur de segments dans la vue de la finale');
-  assert.ok(newer.includes('stampPaint(p.id,p.direction,p.index)'));
+  assert.ok(newer.includes('stampMiniImpact(p,to)'));
   assert.ok(old.includes('splatter(p.partner_id,p.direction,p.index)'));
 });
 
