@@ -1,0 +1,48 @@
+/* Identité commune : navigation éditoriale, accessible et compacte */
+.site-header{background:rgba(7,21,32,.96)!important;border-bottom:1px solid #294656!important;backdrop-filter:blur(18px);box-shadow:0 4px 24px rgba(2,11,19,.18)}
+.site-header .nav{min-height:76px;height:auto;padding-block:11px;gap:22px;flex-wrap:nowrap;justify-content:space-between}
+.site-header .brand{flex-shrink:0;gap:11px}
+.site-header .brand-mark{display:grid;place-items:center;width:42px;height:42px;border-radius:9px;background:#c9ff78;color:#132820;clip-path:none;font:950 .75rem var(--mono);box-shadow:0 0 0 4px #baff6f12}
+.site-header .brand-copy strong{font-size:1.13rem;font-weight:850;color:#f4f9f9;letter-spacing:-.065em}
+.site-header .brand-copy small{color:#a5c7d1;font-size:.59rem;line-height:1.2;letter-spacing:.035em;text-transform:none}
+.site-header .site-links{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:6px 9px;font-family:Inter,ui-sans-serif,system-ui,sans-serif;font-size:.78rem;font-weight:760;letter-spacing:.005em}
+.site-header .site-links>a,.site-header .nav-more>summary{display:inline-flex;align-items:center;justify-content:center;min-height:37px;padding:9px 12px;border:1px solid transparent;border-radius:5px;color:#c4d5de;white-space:nowrap;cursor:pointer;transition:color .2s,background .2s,border-color .2s}
+.site-header .site-links>a:hover,.site-header .nav-more>summary:hover{color:white;background:#1a3749}
+.site-header .site-links>a[aria-current="page"]{background:#193747;color:#e9fafc;border-color:#2e5262}
+.site-header .site-links>.nav-showcase{color:#15291d;background:#c9ff78;border:1px solid #c9ff78;font-weight:900}
+.site-header .site-links>.nav-showcase:hover{background:#e5ffb7;color:#15291d}
+.site-header .nav-more{position:relative}
+.site-header .nav-more>summary{list-style:none;gap:6px}
+.site-header .nav-more>summary::-webkit-details-marker{display:none}
+.site-header .nav-more>summary span{font-size:1rem;line-height:.9;color:#b1d2e1}
+.site-header .nav-more[open]>summary{background:#1d3c4c;color:#f0fafb}
+.site-header .nav-more-panel{position:absolute;z-index:100;top:calc(100% + 9px);right:0;display:grid;min-width:205px;gap:2px;padding:8px;background:#102634;border:1px solid #416477;box-shadow:0 20px 55px rgba(0,0,0,.36);border-radius:6px}
+.site-header .nav-more-panel>a{display:block;padding:11px 13px;color:#d6e7ed;white-space:nowrap;font-size:.76rem;font-weight:700;border-radius:3px;letter-spacing:0}
+.site-header .nav-more-panel>a:hover{background:#234557;color:#d5ff9c}
+.site-header a:focus-visible,.site-header summary:focus-visible{outline:2px solid #c9ff78;outline-offset:3px}
+footer{background:#07141e;border-top:1px solid #294655;color:#acc3ce}
+footer .footer-grid{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:40px;padding-top:60px;padding-bottom:55px}
+footer .footer-grid>div:first-child p{color:#a6bdc9;max-width:390px;font-size:.93rem;line-height:1.65}
+footer .footer-grid strong{color:#ecf5fa;font-size:.72rem}
+footer .footer-grid a{color:#bdced6;font-size:.87rem}
+footer .footer-grid a:hover{color:#c9ff78}
+footer .footer-brand{font-size:1.35rem;font-weight:850;color:#fff!important;letter-spacing:-.06em}
+footer .footer-brand .brand-mark{background:#c9ff78;color:#152824;border-radius:8px;clip-path:none;font-size:.73rem}
+footer .footer-bottom{color:#87a2b0;border-top:1px solid #263d4c;padding-top:19px;font-size:.62rem}
+@media(max-width:960px){
+ .site-header .nav{align-items:flex-start;flex-direction:column;gap:9px;padding:11px 0 10px}
+ .site-header .site-links{width:100%;justify-content:flex-start;gap:6px}
+ .site-header .site-links>a,.site-header .nav-more>summary{padding:7px 11px;min-height:33px}
+ .site-header .nav-more-panel{right:auto;left:0}
+}
+@media(max-width:600px){
+ .site-header .nav{gap:9px}
+ .site-header .brand-mark{width:33px;height:33px;font-size:.65rem}
+ .site-header .brand-copy strong{font-size:1rem}
+ .site-header .brand-copy small{display:block;font-size:.54rem}
+ .site-header .site-links{gap:4px 5px;font-size:.68rem}
+ .site-header .site-links>a,.site-header .nav-more>summary{padding:6px 8px;min-height:32px}
+ .site-header .nav-more-panel{min-width:182px;top:calc(100% + 5px)}
+ footer .footer-grid{grid-template-columns:1fr;padding-top:38px;padding-bottom:36px}
+ footer .footer-bottom{display:flex;flex-direction:column;align-items:flex-start;gap:9px}
+}
