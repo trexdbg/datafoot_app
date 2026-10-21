@@ -121,13 +121,13 @@ test('aucune des deux visualisations Messi ne trace de traits (ni liens, ni gril
 test('la vignette Messi de l’accueil ne contient AUCUN trait SVG',async()=>{
   const {readFileSync}=await import('node:fs');
   const html=readFileSync(new URL('../src/pages/index.astro',import.meta.url),'utf8');
-  const begin=html.indexOf('<section class="shell mw-home-feature" aria-labelledby="orbit-home-title">');
-  assert.ok(begin>=0,'La vignette Messi doit exister');
-  const end=html.indexOf('</section>',begin);
+  const begin=html.indexOf('<a class="home-lab-card home-lab-card-messi"');
+  assert.ok(begin>=0,'La vignette Messi doit exister dans la nouvelle galerie');
+  const end=html.indexOf('</a>',begin);
   const preview=html.slice(begin,end);
-  assert.ok(!/<path\b|<line\b|stroke=|stroke-width=|<polyline\b/.test(preview),'Il ne doit rester aucun segment sur la vignette Messi');
-  assert.ok(preview.includes('/joueurs/messi/paintball/'),'La vignette doit mener à la nouvelle version non mise en cache');
-  assert.ok(preview.includes('PAINTBALL V3 · ZÉRO TRAIT'));
+  assert.ok(!/<path\\b|<line\\b|stroke=|stroke-width=|<polyline\\b/.test(preview),'Il ne doit rester aucun segment sur la vignette Messi');
+  assert.ok(preview.includes('/joueurs/messi/paintball/'),'La vignette doit mener à Paintball');
+  assert.ok(preview.includes('MESSI / PAINTBALL'));
 });
 
 test('la route paintball v3 neuve est cohérente avec le réseau sans traits',async()=>{
@@ -339,7 +339,8 @@ test('une mini-bille par passe et aucune coupe de file : garde les événements 
   assert.ok(engine.includes('const MAX_ACTIVE_BALLS=2600'));
   assert.ok(engine.includes('flightCredit'));
   assert.ok(engine.includes('emitted++'));
-  assert.ok(engine.includes('curvedPassPoint(from,to,age,p.seed)'));
+  assert.ok(engine.includes('const seed=p.seed>>>0'));
+  assert.ok(engine.includes('curvedPassPoint(from,to,age,seed)'));
   assert.ok(engine.includes('stampMiniImpact(p,to)'));
   assert.ok(engine.includes('radius:PARTICLE_RADIUS'));
   assert.ok(engine.includes('battle?150:92'), 'Le mode mitraillette tire des rafales denses');
