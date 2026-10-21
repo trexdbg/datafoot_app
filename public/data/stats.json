@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-20T11:35:25+00:00",
+  "generated_at": "2026-10-21T11:46:35+00:00",
   "season": 2026,
   "leagues": [
     "EPL",
@@ -25,102 +25,118 @@
     "Sorare": {
       "configured": true,
       "status": "active",
-      "items": 23,
+      "items": 25,
       "mode": "player_game_stats"
     }
   },
   "player_count": 2210,
   "match_count": 30,
-  "player_profile_count": 23,
-  "sorare_player_count": 23,
+  "player_profile_count": 25,
+  "sorare_player_count": 25,
   "sorare_card_count": 0,
   "candidate_count": 30,
-  "previous_article_count": 38,
-  "blocked_repeat_candidate_count": 37,
-  "eligible_candidate_count": 53,
+  "previous_article_count": 41,
+  "blocked_repeat_candidate_count": 40,
+  "eligible_candidate_count": 50,
   "article_count": 3,
   "articles": [
-    "generated/articles/gustavo-varela-finishing-overperformance-2026.md",
-    "generated/articles/rayan-finishing-underperformance-2026.md",
-    "generated/articles/sheraldo-becker-attacking-involvement-2026.md"
+    "generated/articles/cristian-casseres-jr-creative-output-2026.md",
+    "generated/articles/ermedin-demirovic-finishing-underperformance-2026.md",
+    "generated/articles/alberto-moleiro-attacking-involvement-2026.md"
   ],
   "visual_count": 3,
   "article_visuals": {
-    "gustavo-varela-finishing-overperformance-2026": [
+    "cristian-casseres-jr-creative-output-2026": [
       {
         "kind": "player_profile",
-        "alt": "Profil offensif de Gustavo Varela en percentiles",
-        "caption": "Profil offensif de Gustavo Varela comparé aux joueurs de Serie A ayant au moins 300 minutes.",
-        "source": "Understat",
-        "peer_count": 215,
-        "src": "/charts/gustavo-varela-finishing-overperformance-2026/player-profile.svg"
-      }
-    ],
-    "rayan-finishing-underperformance-2026": [
-      {
-        "kind": "player_profile",
-        "alt": "Profil offensif de Rayan en percentiles",
-        "caption": "Profil offensif de Rayan comparé aux joueurs de EPL ayant au moins 300 minutes.",
-        "source": "Understat",
-        "peer_count": 221,
-        "src": "/charts/rayan-finishing-underperformance-2026/player-profile.svg"
-      }
-    ],
-    "sheraldo-becker-attacking-involvement-2026": [
-      {
-        "kind": "player_profile",
-        "alt": "Profil statistique de Sheraldo Becker avec percentiles de tirs, passes, dribbles et duels",
-        "caption": "Sheraldo Becker comparé à 18 joueurs de référence. Les percentiles indiquent un rang relatif : P90 signifie que la valeur est supérieure à environ 90 % du groupe comparé.",
+        "alt": "Profil statistique de Cristian Cásseres Jr. avec percentiles de tirs, passes, dribbles et duels",
+        "caption": "Cristian Cásseres Jr. comparé à 6 joueurs de référence. Les percentiles indiquent un rang relatif : P90 signifie que la valeur est supérieure à environ 90 % du groupe comparé.",
         "source": "Understat + Sorare",
-        "peer_count": 18,
+        "peer_count": 6,
         "percentiles": {
-          "TIRS": 56,
-          "CADRÉS": 94,
-          "DRIBBLES": 61,
-          "DUELS": 28,
-          "DERNIER TIERS": 83,
-          "ENTRÉES SURFACE": 89
+          "PASSES": 100,
+          "DERNIER TIERS": 67,
+          "DRIBBLES": 67,
+          "DUELS": 100,
+          "INTERCEPTIONS": 100,
+          "OCCASIONS": 100
         },
-        "src": "/charts/sheraldo-becker-attacking-involvement-2026/player-profile.svg"
+        "src": "/charts/cristian-casseres-jr-creative-output-2026/player-profile.svg"
+      }
+    ],
+    "ermedin-demirovic-finishing-underperformance-2026": [
+      {
+        "kind": "player_profile",
+        "alt": "Profil statistique de Ermedin Demirovic avec percentiles de tirs, passes, dribbles et duels",
+        "caption": "Ermedin Demirovic comparé à 19 joueurs de référence. Les percentiles indiquent un rang relatif : P90 signifie que la valeur est supérieure à environ 90 % du groupe comparé.",
+        "source": "Understat + Sorare",
+        "peer_count": 19,
+        "percentiles": {
+          "TIRS": 37,
+          "CADRÉS": 42,
+          "DRIBBLES": 16,
+          "DUELS": 11,
+          "DERNIER TIERS": 37,
+          "ENTRÉES SURFACE": 63
+        },
+        "src": "/charts/ermedin-demirovic-finishing-underperformance-2026/player-profile.svg"
+      }
+    ],
+    "alberto-moleiro-attacking-involvement-2026": [
+      {
+        "kind": "player_profile",
+        "alt": "Profil statistique de Alberto Moleiro avec percentiles de tirs, passes, dribbles et duels",
+        "caption": "Alberto Moleiro comparé à 6 joueurs de référence. Les percentiles indiquent un rang relatif : P90 signifie que la valeur est supérieure à environ 90 % du groupe comparé.",
+        "source": "Understat + Sorare",
+        "peer_count": 6,
+        "percentiles": {
+          "PASSES": 83,
+          "DERNIER TIERS": 100,
+          "DRIBBLES": 17,
+          "DUELS": 17,
+          "INTERCEPTIONS": 33,
+          "OCCASIONS": 83
+        },
+        "src": "/charts/alberto-moleiro-attacking-involvement-2026/player-profile.svg"
       }
     ]
   },
   "editorial_plan": [
     {
-      "kind": "finishing_overperformance",
-      "title": "Gustavo Varela surperforme nettement ses xG avec Monza",
-      "rationale": "L'attaquant de Monza affiche un écart statistique très fort entre ses buts inscrits (6) et sa production d'occasions (3.14 xG) sur un échantillon significatif de 513 minutes.",
-      "editorial_score": 88.0,
-      "selector": "gemini:gemini-3.5-flash-lite",
-      "player": "Gustavo Varela",
-      "team": "Monza",
-      "league": "Serie_A",
+      "kind": "creative_output",
+      "title": "Cristian Cásseres Jr., métronome de la création toulousaine",
+      "rationale": "Le milieu de Toulouse totalise 5 passes décisives et 3,64 xA en 630 minutes (0,52 xA par 90 minutes), illustrant une distribution d'occasions régulée et qualitative.",
+      "editorial_score": 86.0,
+      "selector": "gemini:gemini-3.8-flash",
+      "player": "Cristian Cásseres Jr.",
+      "team": "Toulouse",
+      "league": "Ligue_1",
       "source": "Understat",
-      "source_url": "https://understat.com/league/Serie_A/2026"
+      "source_url": "https://understat.com/league/Ligue_1/2026"
     },
     {
       "kind": "finishing_underperformance",
-      "title": "Rayan en difficulté dans la finition avec Bournemouth",
-      "rationale": "Rayan présente un volume d'occasions notables (2.73 xG) mais n'a toujours pas trouvé le chemin des filets en 626 minutes de jeu.",
-      "editorial_score": 82.0,
-      "selector": "gemini:gemini-3.5-flash-lite",
-      "player": "Rayan",
-      "team": "Bournemouth",
-      "league": "EPL",
-      "source": "Understat",
-      "source_url": "https://understat.com/league/EPL/2026"
-    },
-    {
-      "kind": "attacking_involvement",
-      "title": "Sheraldo Becker, le dynamiteur de Mayence",
-      "rationale": "L'attaquant de Mayence combine une forte présence dans la création et la finition avec près d'un xG+xA par 90 minutes (0.98) sur 455 minutes.",
-      "editorial_score": 79.0,
-      "selector": "gemini:gemini-3.5-flash-lite",
-      "player": "Sheraldo Becker",
-      "team": "Mainz 05",
+      "title": "VfB Stuttgart : le déficit d'efficacité d'Ermedin Demirović à l'épreuve des chiffres",
+      "rationale": "Avec seulement 1 but marqué pour 3,29 xG et 17 tirs tentés en 362 minutes de Bundesliga, l'attaquant affiche un net retard de conversion face aux opportunités générées.",
+      "editorial_score": 84.0,
+      "selector": "gemini:gemini-3.8-flash",
+      "player": "Ermedin Demirovic",
+      "team": "VfB Stuttgart",
       "league": "Bundesliga",
       "source": "Understat",
       "source_url": "https://understat.com/league/Bundesliga/2026"
+    },
+    {
+      "kind": "attacking_involvement",
+      "title": "Alberto Moleiro, moteur de la production offensive de Villarreal",
+      "rationale": "Sur un échantillon solide de 664 minutes réparties en 10 matchs, l'Espagnol équilibre danger direct et altruisme avec 3,42 xG et 3,03 xA (0,87 xG+xA par 90 minutes).",
+      "editorial_score": 82.0,
+      "selector": "gemini:gemini-3.8-flash",
+      "player": "Alberto Moleiro",
+      "team": "Villarreal",
+      "league": "La_Liga",
+      "source": "Understat",
+      "source_url": "https://understat.com/league/La_Liga/2026"
     }
   ],
   "top_players": [
@@ -139,7 +155,7 @@
       "shots": 1,
       "source": "Understat",
       "source_url": "https://understat.com/league/Serie_A/2026",
-      "fetched_at": "2026-10-20T11:32:38+00:00",
+      "fetched_at": "2026-10-21T11:45:10+00:00",
       "xg_delta": 0.55,
       "xa_delta": 0.0,
       "xg_per90": 40.526,
@@ -162,7 +178,7 @@
       "shots": 1,
       "source": "Understat",
       "source_url": "https://understat.com/league/EPL/2026",
-      "fetched_at": "2026-10-20T11:32:38+00:00",
+      "fetched_at": "2026-10-21T11:45:10+00:00",
       "xg_delta": 0.451,
       "xa_delta": 0.0,
       "xg_per90": 24.702,
@@ -185,7 +201,7 @@
       "shots": 1,
       "source": "Understat",
       "source_url": "https://understat.com/league/EPL/2026",
-      "fetched_at": "2026-10-20T11:32:38+00:00",
+      "fetched_at": "2026-10-21T11:45:10+00:00",
       "xg_delta": -0.263,
       "xa_delta": 0.0,
       "xg_per90": 23.713,
@@ -208,7 +224,7 @@
       "shots": 2,
       "source": "Understat",
       "source_url": "https://understat.com/league/Ligue_1/2026",
-      "fetched_at": "2026-10-20T11:32:38+00:00",
+      "fetched_at": "2026-10-21T11:45:10+00:00",
       "xg_delta": 0.481,
       "xa_delta": 0.0,
       "xg_per90": 9.336,
@@ -231,7 +247,7 @@
       "shots": 4,
       "source": "Understat",
       "source_url": "https://understat.com/league/La_Liga/2026",
-      "fetched_at": "2026-10-20T11:32:38+00:00",
+      "fetched_at": "2026-10-21T11:45:10+00:00",
       "xg_delta": 0.618,
       "xa_delta": -0.079,
       "xg_per90": 8.884,
@@ -254,7 +270,7 @@
       "shots": 3,
       "source": "Understat",
       "source_url": "https://understat.com/league/Bundesliga/2026",
-      "fetched_at": "2026-10-20T11:32:38+00:00",
+      "fetched_at": "2026-10-21T11:45:10+00:00",
       "xg_delta": -0.238,
       "xa_delta": -0.05,
       "xg_per90": 7.138,
@@ -277,7 +293,7 @@
       "shots": 1,
       "source": "Understat",
       "source_url": "https://understat.com/league/EPL/2026",
-      "fetched_at": "2026-10-20T11:32:38+00:00",
+      "fetched_at": "2026-10-21T11:45:10+00:00",
       "xg_delta": -0.579,
       "xa_delta": -0.029,
       "xg_per90": 6.509,
@@ -300,7 +316,7 @@
       "shots": 1,
       "source": "Understat",
       "source_url": "https://understat.com/league/La_Liga/2026",
-      "fetched_at": "2026-10-20T11:32:38+00:00",
+      "fetched_at": "2026-10-21T11:45:10+00:00",
       "xg_delta": -0.474,
       "xa_delta": 0.0,
       "xg_per90": 6.093,
@@ -323,7 +339,7 @@
       "shots": 2,
       "source": "Understat",
       "source_url": "https://understat.com/league/Ligue_1/2026",
-      "fetched_at": "2026-10-20T11:32:38+00:00",
+      "fetched_at": "2026-10-21T11:45:10+00:00",
       "xg_delta": -0.671,
       "xa_delta": -0.498,
       "xg_per90": 6.043,
@@ -346,7 +362,7 @@
       "shots": 3,
       "source": "Understat",
       "source_url": "https://understat.com/league/EPL/2026",
-      "fetched_at": "2026-10-20T11:32:38+00:00",
+      "fetched_at": "2026-10-21T11:45:10+00:00",
       "xg_delta": -0.154,
       "xa_delta": 0.0,
       "xg_per90": 4.625,
@@ -369,7 +385,7 @@
       "shots": 3,
       "source": "Understat",
       "source_url": "https://understat.com/league/Bundesliga/2026",
-      "fetched_at": "2026-10-20T11:32:38+00:00",
+      "fetched_at": "2026-10-21T11:45:10+00:00",
       "xg_delta": -0.052,
       "xa_delta": 0.0,
       "xg_per90": 4.116,
@@ -392,7 +408,7 @@
       "shots": 1,
       "source": "Understat",
       "source_url": "https://understat.com/league/EPL/2026",
-      "fetched_at": "2026-10-20T11:32:38+00:00",
+      "fetched_at": "2026-10-21T11:45:10+00:00",
       "xg_delta": 0.649,
       "xa_delta": 0.0,
       "xg_per90": 3.951,
@@ -415,7 +431,7 @@
       "shots": 1,
       "source": "Understat",
       "source_url": "https://understat.com/league/Bundesliga/2026",
-      "fetched_at": "2026-10-20T11:32:38+00:00",
+      "fetched_at": "2026-10-21T11:45:10+00:00",
       "xg_delta": -0.123,
       "xa_delta": 0.0,
       "xg_per90": 3.689,
@@ -438,7 +454,7 @@
       "shots": 1,
       "source": "Understat",
       "source_url": "https://understat.com/league/La_Liga/2026",
-      "fetched_at": "2026-10-20T11:32:38+00:00",
+      "fetched_at": "2026-10-21T11:45:10+00:00",
       "xg_delta": 0.96,
       "xa_delta": 0.0,
       "xg_per90": 3.592,
@@ -461,7 +477,7 @@
       "shots": 1,
       "source": "Understat",
       "source_url": "https://understat.com/league/Ligue_1/2026",
-      "fetched_at": "2026-10-20T11:32:38+00:00",
+      "fetched_at": "2026-10-21T11:45:10+00:00",
       "xg_delta": -0.137,
       "xa_delta": 0.0,
       "xg_per90": 3.092,
@@ -484,7 +500,7 @@
       "shots": 2,
       "source": "Understat",
       "source_url": "https://understat.com/league/Ligue_1/2026",
-      "fetched_at": "2026-10-20T11:32:38+00:00",
+      "fetched_at": "2026-10-21T11:45:10+00:00",
       "xg_delta": -0.659,
       "xa_delta": 0.0,
       "xg_per90": 2.966,
@@ -507,7 +523,7 @@
       "shots": 3,
       "source": "Understat",
       "source_url": "https://understat.com/league/Ligue_1/2026",
-      "fetched_at": "2026-10-20T11:32:38+00:00",
+      "fetched_at": "2026-10-21T11:45:10+00:00",
       "xg_delta": -0.426,
       "xa_delta": -0.055,
       "xg_per90": 2.95,
@@ -530,7 +546,7 @@
       "shots": 5,
       "source": "Understat",
       "source_url": "https://understat.com/league/Bundesliga/2026",
-      "fetched_at": "2026-10-20T11:32:38+00:00",
+      "fetched_at": "2026-10-21T11:45:10+00:00",
       "xg_delta": -1.68,
       "xa_delta": -0.524,
       "xg_per90": 2.563,
@@ -553,7 +569,7 @@
       "shots": 1,
       "source": "Understat",
       "source_url": "https://understat.com/league/EPL/2026",
-      "fetched_at": "2026-10-20T11:32:38+00:00",
+      "fetched_at": "2026-10-21T11:45:10+00:00",
       "xg_delta": -0.14,
       "xa_delta": 0.0,
       "xg_per90": 2.517,
@@ -576,7 +592,7 @@
       "shots": 2,
       "source": "Understat",
       "source_url": "https://understat.com/league/Ligue_1/2026",
-      "fetched_at": "2026-10-20T11:32:38+00:00",
+      "fetched_at": "2026-10-21T11:45:10+00:00",
       "xg_delta": -0.327,
       "xa_delta": 0.0,
       "xg_per90": 2.451,
@@ -599,7 +615,7 @@
       "shots": 1,
       "source": "Understat",
       "source_url": "https://understat.com/league/EPL/2026",
-      "fetched_at": "2026-10-20T11:32:38+00:00",
+      "fetched_at": "2026-10-21T11:45:10+00:00",
       "xg_delta": -0.52,
       "xa_delta": 0.0,
       "xg_per90": 2.341,
@@ -622,7 +638,7 @@
       "shots": 2,
       "source": "Understat",
       "source_url": "https://understat.com/league/Bundesliga/2026",
-      "fetched_at": "2026-10-20T11:32:38+00:00",
+      "fetched_at": "2026-10-21T11:45:10+00:00",
       "xg_delta": -0.154,
       "xa_delta": -0.077,
       "xg_per90": 2.315,
@@ -645,7 +661,7 @@
       "shots": 4,
       "source": "Understat",
       "source_url": "https://understat.com/league/EPL/2026",
-      "fetched_at": "2026-10-20T11:32:38+00:00",
+      "fetched_at": "2026-10-21T11:45:10+00:00",
       "xg_delta": 0.815,
       "xa_delta": -0.101,
       "xg_per90": 2.287,
@@ -668,7 +684,7 @@
       "shots": 9,
       "source": "Understat",
       "source_url": "https://understat.com/league/Ligue_1/2026",
-      "fetched_at": "2026-10-20T11:32:38+00:00",
+      "fetched_at": "2026-10-21T11:45:10+00:00",
       "xg_delta": -1.257,
       "xa_delta": -0.034,
       "xg_per90": 2.134,
@@ -691,7 +707,7 @@
       "shots": 2,
       "source": "Understat",
       "source_url": "https://understat.com/league/EPL/2026",
-      "fetched_at": "2026-10-20T11:32:38+00:00",
+      "fetched_at": "2026-10-21T11:45:10+00:00",
       "xg_delta": 0.544,
       "xa_delta": 0.0,
       "xg_per90": 2.052,
@@ -714,7 +730,7 @@
       "shots": 7,
       "source": "Understat",
       "source_url": "https://understat.com/league/EPL/2026",
-      "fetched_at": "2026-10-20T11:32:38+00:00",
+      "fetched_at": "2026-10-21T11:45:10+00:00",
       "xg_delta": 0.345,
       "xa_delta": -0.019,
       "xg_per90": 1.862,
@@ -737,7 +753,7 @@
       "shots": 1,
       "source": "Understat",
       "source_url": "https://understat.com/league/EPL/2026",
-      "fetched_at": "2026-10-20T11:32:38+00:00",
+      "fetched_at": "2026-10-21T11:45:10+00:00",
       "xg_delta": -0.181,
       "xa_delta": 0.0,
       "xg_per90": 1.81,
@@ -760,7 +776,7 @@
       "shots": 2,
       "source": "Understat",
       "source_url": "https://understat.com/league/Ligue_1/2026",
-      "fetched_at": "2026-10-20T11:32:38+00:00",
+      "fetched_at": "2026-10-21T11:45:10+00:00",
       "xg_delta": -1.203,
       "xa_delta": 0.48,
       "xg_per90": 1.775,
@@ -783,7 +799,7 @@
       "shots": 8,
       "source": "Understat",
       "source_url": "https://understat.com/league/Serie_A/2026",
-      "fetched_at": "2026-10-20T11:32:38+00:00",
+      "fetched_at": "2026-10-21T11:45:10+00:00",
       "xg_delta": -0.241,
       "xa_delta": 0.0,
       "xg_per90": 1.695,
@@ -806,7 +822,7 @@
       "shots": 1,
       "source": "Understat",
       "source_url": "https://understat.com/league/Serie_A/2026",
-      "fetched_at": "2026-10-20T11:32:38+00:00",
+      "fetched_at": "2026-10-21T11:45:10+00:00",
       "xg_delta": -0.261,
       "xa_delta": 0.0,
       "xg_per90": 1.676,
@@ -829,7 +845,7 @@
       "shots": 3,
       "source": "Understat",
       "source_url": "https://understat.com/league/EPL/2026",
-      "fetched_at": "2026-10-20T11:32:38+00:00",
+      "fetched_at": "2026-10-21T11:45:10+00:00",
       "xg_delta": -1.716,
       "xa_delta": -0.025,
       "xg_per90": 1.643,
@@ -852,7 +868,7 @@
       "shots": 1,
       "source": "Understat",
       "source_url": "https://understat.com/league/La_Liga/2026",
-      "fetched_at": "2026-10-20T11:32:38+00:00",
+      "fetched_at": "2026-10-21T11:45:10+00:00",
       "xg_delta": -0.07,
       "xa_delta": 0.0,
       "xg_per90": 1.575,
@@ -875,7 +891,7 @@
       "shots": 2,
       "source": "Understat",
       "source_url": "https://understat.com/league/EPL/2026",
-      "fetched_at": "2026-10-20T11:32:38+00:00",
+      "fetched_at": "2026-10-21T11:45:10+00:00",
       "xg_delta": -0.151,
       "xa_delta": -0.144,
       "xg_per90": 1.513,
@@ -898,7 +914,7 @@
       "shots": 2,
       "source": "Understat",
       "source_url": "https://understat.com/league/La_Liga/2026",
-      "fetched_at": "2026-10-20T11:32:38+00:00",
+      "fetched_at": "2026-10-21T11:45:10+00:00",
       "xg_delta": -0.146,
       "xa_delta": 0.0,
       "xg_per90": 1.464,
@@ -921,7 +937,7 @@
       "shots": 19,
       "source": "Understat",
       "source_url": "https://understat.com/league/Ligue_1/2026",
-      "fetched_at": "2026-10-20T11:32:38+00:00",
+      "fetched_at": "2026-10-21T11:45:10+00:00",
       "xg_delta": 0.033,
       "xa_delta": 0.361,
       "xg_per90": 1.433,
@@ -944,7 +960,7 @@
       "shots": 22,
       "source": "Understat",
       "source_url": "https://understat.com/league/Serie_A/2026",
-      "fetched_at": "2026-10-20T11:32:38+00:00",
+      "fetched_at": "2026-10-21T11:45:10+00:00",
       "xg_delta": -0.409,
       "xa_delta": -0.885,
       "xg_per90": 1.417,
@@ -967,7 +983,7 @@
       "shots": 26,
       "source": "Understat",
       "source_url": "https://understat.com/league/La_Liga/2026",
-      "fetched_at": "2026-10-20T11:32:38+00:00",
+      "fetched_at": "2026-10-21T11:45:10+00:00",
       "xg_delta": 2.816,
       "xa_delta": 0.205,
       "xg_per90": 1.401,
@@ -990,7 +1006,7 @@
       "shots": 25,
       "source": "Understat",
       "source_url": "https://understat.com/league/Serie_A/2026",
-      "fetched_at": "2026-10-20T11:32:38+00:00",
+      "fetched_at": "2026-10-21T11:45:10+00:00",
       "xg_delta": -1.352,
       "xa_delta": -0.991,
       "xg_per90": 1.368,
@@ -1013,7 +1029,7 @@
       "shots": 1,
       "source": "Understat",
       "source_url": "https://understat.com/league/Bundesliga/2026",
-      "fetched_at": "2026-10-20T11:32:38+00:00",
+      "fetched_at": "2026-10-21T11:45:10+00:00",
       "xg_delta": -0.073,
       "xa_delta": 0.0,
       "xg_per90": 1.312,
@@ -1036,7 +1052,7 @@
       "shots": 9,
       "source": "Understat",
       "source_url": "https://understat.com/league/Bundesliga/2026",
-      "fetched_at": "2026-10-20T11:32:38+00:00",
+      "fetched_at": "2026-10-21T11:45:10+00:00",
       "xg_delta": -0.26,
       "xa_delta": -0.418,
       "xg_per90": 1.304,
@@ -1059,7 +1075,7 @@
       "shots": 3,
       "source": "Understat",
       "source_url": "https://understat.com/league/Serie_A/2026",
-      "fetched_at": "2026-10-20T11:32:38+00:00",
+      "fetched_at": "2026-10-21T11:45:10+00:00",
       "xg_delta": -0.29,
       "xa_delta": -0.122,
       "xg_per90": 1.262,
@@ -1082,7 +1098,7 @@
       "shots": 16,
       "source": "Understat",
       "source_url": "https://understat.com/league/La_Liga/2026",
-      "fetched_at": "2026-10-20T11:32:38+00:00",
+      "fetched_at": "2026-10-21T11:45:10+00:00",
       "xg_delta": -2.288,
       "xa_delta": 0.459,
       "xg_per90": 1.261,
@@ -1105,7 +1121,7 @@
       "shots": 1,
       "source": "Understat",
       "source_url": "https://understat.com/league/Serie_A/2026",
-      "fetched_at": "2026-10-20T11:32:38+00:00",
+      "fetched_at": "2026-10-21T11:45:10+00:00",
       "xg_delta": -0.084,
       "xa_delta": 0.0,
       "xg_per90": 1.253,
@@ -1128,7 +1144,7 @@
       "shots": 1,
       "source": "Understat",
       "source_url": "https://understat.com/league/La_Liga/2026",
-      "fetched_at": "2026-10-20T11:32:38+00:00",
+      "fetched_at": "2026-10-21T11:45:10+00:00",
       "xg_delta": -0.149,
       "xa_delta": 0.0,
       "xg_per90": 1.222,
@@ -1151,7 +1167,7 @@
       "shots": 49,
       "source": "Understat",
       "source_url": "https://understat.com/league/La_Liga/2026",
-      "fetched_at": "2026-10-20T11:32:38+00:00",
+      "fetched_at": "2026-10-21T11:45:10+00:00",
       "xg_delta": -1.915,
       "xa_delta": 0.062,
       "xg_per90": 1.216,
@@ -1174,7 +1190,7 @@
       "shots": 14,
       "source": "Understat",
       "source_url": "https://understat.com/league/La_Liga/2026",
-      "fetched_at": "2026-10-20T11:32:38+00:00",
+      "fetched_at": "2026-10-21T11:45:10+00:00",
       "xg_delta": -1.046,
       "xa_delta": 0.569,
       "xg_per90": 1.194,
@@ -1197,7 +1213,7 @@
       "shots": 9,
       "source": "Understat",
       "source_url": "https://understat.com/league/Ligue_1/2026",
-      "fetched_at": "2026-10-20T11:32:38+00:00",
+      "fetched_at": "2026-10-21T11:45:10+00:00",
       "xg_delta": -0.159,
       "xa_delta": 0.0,
       "xg_per90": 1.192,
@@ -1220,7 +1236,7 @@
       "shots": 7,
       "source": "Understat",
       "source_url": "https://understat.com/league/Bundesliga/2026",
-      "fetched_at": "2026-10-20T11:32:38+00:00",
+      "fetched_at": "2026-10-21T11:45:10+00:00",
       "xg_delta": -0.972,
       "xa_delta": 0.02,
       "xg_per90": 1.191,
@@ -1243,7 +1259,7 @@
       "shots": 1,
       "source": "Understat",
       "source_url": "https://understat.com/league/Bundesliga/2026",
-      "fetched_at": "2026-10-20T11:32:38+00:00",
+      "fetched_at": "2026-10-21T11:45:10+00:00",
       "xg_delta": -0.077,
       "xa_delta": 0.0,
       "xg_per90": 1.148,
@@ -1266,7 +1282,7 @@
       "shots": 4,
       "source": "Understat",
       "source_url": "https://understat.com/league/EPL/2026",
-      "fetched_at": "2026-10-20T11:32:38+00:00",
+      "fetched_at": "2026-10-21T11:45:10+00:00",
       "xg_delta": 0.214,
       "xa_delta": -0.097,
       "xg_per90": 1.141,
@@ -1288,7 +1304,7 @@
       "finished": true,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-10-20T11:32:41+00:00"
+      "fetched_at": "2026-10-21T11:45:13+00:00"
     },
     {
       "match_id": 83196,
@@ -1302,7 +1318,7 @@
       "finished": true,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-10-20T11:32:41+00:00"
+      "fetched_at": "2026-10-21T11:45:13+00:00"
     },
     {
       "match_id": 83194,
@@ -1316,7 +1332,7 @@
       "finished": true,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-10-20T11:32:41+00:00"
+      "fetched_at": "2026-10-21T11:45:13+00:00"
     },
     {
       "match_id": 83193,
@@ -1330,7 +1346,7 @@
       "finished": true,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-10-20T11:32:41+00:00"
+      "fetched_at": "2026-10-21T11:45:13+00:00"
     },
     {
       "match_id": 83199,
@@ -1344,7 +1360,7 @@
       "finished": true,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-10-20T11:32:41+00:00"
+      "fetched_at": "2026-10-21T11:45:13+00:00"
     },
     {
       "match_id": 83195,
@@ -1358,7 +1374,7 @@
       "finished": true,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-10-20T11:32:41+00:00"
+      "fetched_at": "2026-10-21T11:45:13+00:00"
     },
     {
       "match_id": 83203,
@@ -1372,7 +1388,7 @@
       "finished": true,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-10-20T11:32:41+00:00"
+      "fetched_at": "2026-10-21T11:45:13+00:00"
     },
     {
       "match_id": 83209,
@@ -1386,7 +1402,7 @@
       "finished": true,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-10-20T11:32:41+00:00"
+      "fetched_at": "2026-10-21T11:45:13+00:00"
     },
     {
       "match_id": 83208,
@@ -1400,7 +1416,7 @@
       "finished": true,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-10-20T11:32:41+00:00"
+      "fetched_at": "2026-10-21T11:45:13+00:00"
     },
     {
       "match_id": 83207,
@@ -1414,7 +1430,7 @@
       "finished": true,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-10-20T11:32:41+00:00"
+      "fetched_at": "2026-10-21T11:45:13+00:00"
     },
     {
       "match_id": 83206,
@@ -1428,7 +1444,7 @@
       "finished": true,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-10-20T11:32:41+00:00"
+      "fetched_at": "2026-10-21T11:45:13+00:00"
     },
     {
       "match_id": 83204,
@@ -1442,7 +1458,7 @@
       "finished": true,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-10-20T11:32:41+00:00"
+      "fetched_at": "2026-10-21T11:45:13+00:00"
     },
     {
       "match_id": 83201,
@@ -1456,7 +1472,7 @@
       "finished": true,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-10-20T11:32:41+00:00"
+      "fetched_at": "2026-10-21T11:45:13+00:00"
     },
     {
       "match_id": 83202,
@@ -1470,7 +1486,7 @@
       "finished": true,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-10-20T11:32:41+00:00"
+      "fetched_at": "2026-10-21T11:45:13+00:00"
     },
     {
       "match_id": 83205,
@@ -1484,7 +1500,7 @@
       "finished": true,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-10-20T11:32:41+00:00"
+      "fetched_at": "2026-10-21T11:45:13+00:00"
     },
     {
       "match_id": 83212,
@@ -1498,7 +1514,7 @@
       "finished": false,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-10-20T11:32:41+00:00"
+      "fetched_at": "2026-10-21T11:45:13+00:00"
     },
     {
       "match_id": 83211,
@@ -1512,7 +1528,7 @@
       "finished": false,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-10-20T11:32:41+00:00"
+      "fetched_at": "2026-10-21T11:45:13+00:00"
     },
     {
       "match_id": 83215,
@@ -1526,7 +1542,7 @@
       "finished": false,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-10-20T11:32:41+00:00"
+      "fetched_at": "2026-10-21T11:45:13+00:00"
     },
     {
       "match_id": 83216,
@@ -1540,7 +1556,7 @@
       "finished": false,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-10-20T11:32:41+00:00"
+      "fetched_at": "2026-10-21T11:45:13+00:00"
     },
     {
       "match_id": 83217,
@@ -1554,7 +1570,7 @@
       "finished": false,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-10-20T11:32:41+00:00"
+      "fetched_at": "2026-10-21T11:45:13+00:00"
     },
     {
       "match_id": 83218,
@@ -1568,7 +1584,7 @@
       "finished": false,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-10-20T11:32:41+00:00"
+      "fetched_at": "2026-10-21T11:45:13+00:00"
     },
     {
       "match_id": 83210,
@@ -1582,7 +1598,7 @@
       "finished": false,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-10-20T11:32:41+00:00"
+      "fetched_at": "2026-10-21T11:45:13+00:00"
     },
     {
       "match_id": 83213,
@@ -1596,7 +1612,7 @@
       "finished": false,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-10-20T11:32:41+00:00"
+      "fetched_at": "2026-10-21T11:45:13+00:00"
     },
     {
       "match_id": 83214,
@@ -1610,7 +1626,7 @@
       "finished": false,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-10-20T11:32:41+00:00"
+      "fetched_at": "2026-10-21T11:45:13+00:00"
     },
     {
       "match_id": 83227,
@@ -1624,7 +1640,7 @@
       "finished": false,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-10-20T11:32:41+00:00"
+      "fetched_at": "2026-10-21T11:45:13+00:00"
     },
     {
       "match_id": 83220,
@@ -1638,7 +1654,7 @@
       "finished": false,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-10-20T11:32:41+00:00"
+      "fetched_at": "2026-10-21T11:45:13+00:00"
     },
     {
       "match_id": 83222,
@@ -1652,7 +1668,7 @@
       "finished": false,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-10-20T11:32:41+00:00"
+      "fetched_at": "2026-10-21T11:45:13+00:00"
     },
     {
       "match_id": 83224,
@@ -1666,7 +1682,7 @@
       "finished": false,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-10-20T11:32:41+00:00"
+      "fetched_at": "2026-10-21T11:45:13+00:00"
     },
     {
       "match_id": 83225,
@@ -1680,7 +1696,7 @@
       "finished": false,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-10-20T11:32:41+00:00"
+      "fetched_at": "2026-10-21T11:45:13+00:00"
     },
     {
       "match_id": 83226,
@@ -1694,7 +1710,7 @@
       "finished": false,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-10-20T11:32:41+00:00"
+      "fetched_at": "2026-10-21T11:45:13+00:00"
     }
   ],
   "player_profiles": [
@@ -1709,26 +1725,26 @@
       "position": "Forward",
       "football_metrics": {
         "appearances": 10,
-        "minutes": 639,
-        "pass_accuracy": 71.3,
-        "accurate_pass_per90": 12.25,
-        "final_third_passes_per90": 5.21,
+        "minutes": 595,
+        "pass_accuracy": 69.2,
+        "accurate_pass_per90": 10.89,
+        "final_third_passes_per90": 5.29,
         "dribbles_won_per90": 0.0,
-        "duels_won_per90": 2.68,
-        "interceptions_per90": 0.56,
-        "tackles_won_per90": 0.14,
-        "possession_won_per90": 2.82,
-        "shots_per90": 3.24,
-        "shots_on_target_per90": 1.55,
+        "duels_won_per90": 2.42,
+        "interceptions_per90": 0.61,
+        "tackles_won_per90": 0.15,
+        "possession_won_per90": 2.57,
+        "shots_per90": 2.87,
+        "shots_on_target_per90": 1.21,
         "big_chances_created_per90": 0.0,
-        "penalty_area_entries_per90": 1.27,
-        "goals_per90": 0.56,
+        "penalty_area_entries_per90": 1.36,
+        "goals_per90": 0.15,
         "assists_per90": 0.0
       },
       "source": "Sorare",
       "referral_url": "https://sorare.com/r/BGCZRUB",
       "source_url": "https://sorare.com/football/players/ermedin-demirovic",
-      "fetched_at": "2026-10-20T11:32:41+00:00"
+      "fetched_at": "2026-10-21T11:45:13+00:00"
     },
     {
       "player": "Toni Martínez",
@@ -1760,7 +1776,7 @@
       "source": "Sorare",
       "referral_url": "https://sorare.com/r/BGCZRUB",
       "source_url": "https://sorare.com/football/players/antonio-martinez-lopez",
-      "fetched_at": "2026-10-20T11:32:42+00:00"
+      "fetched_at": "2026-10-21T11:45:14+00:00"
     },
     {
       "player": "Orri Óskarsson",
@@ -1792,7 +1808,7 @@
       "source": "Sorare",
       "referral_url": "https://sorare.com/r/BGCZRUB",
       "source_url": "https://sorare.com/football/players/orri-steinn-oskarsson",
-      "fetched_at": "2026-10-20T11:32:42+00:00"
+      "fetched_at": "2026-10-21T11:45:14+00:00"
     },
     {
       "player": "Chupe",
@@ -1824,7 +1840,7 @@
       "source": "Sorare",
       "referral_url": "https://sorare.com/r/BGCZRUB",
       "source_url": "https://sorare.com/football/players/carlos-ruiz-rubio",
-      "fetched_at": "2026-10-20T11:32:43+00:00"
+      "fetched_at": "2026-10-21T11:45:14+00:00"
     },
     {
       "player": "Yoane Wissa",
@@ -1856,7 +1872,7 @@
       "source": "Sorare",
       "referral_url": "https://sorare.com/r/BGCZRUB",
       "source_url": "https://sorare.com/football/players/yoane-wissa",
-      "fetched_at": "2026-10-20T11:32:43+00:00"
+      "fetched_at": "2026-10-21T11:45:15+00:00"
     },
     {
       "player": "Bukayo Saka",
@@ -1888,7 +1904,7 @@
       "source": "Sorare",
       "referral_url": "https://sorare.com/r/BGCZRUB",
       "source_url": "https://sorare.com/football/players/bukayo-saka",
-      "fetched_at": "2026-10-20T11:32:43+00:00"
+      "fetched_at": "2026-10-21T11:45:15+00:00"
     },
     {
       "player": "Esteban Lepaul",
@@ -1920,7 +1936,7 @@
       "source": "Sorare",
       "referral_url": "https://sorare.com/r/BGCZRUB",
       "source_url": "https://sorare.com/football/players/esteban-lepaul",
-      "fetched_at": "2026-10-20T11:32:44+00:00"
+      "fetched_at": "2026-10-21T11:45:15+00:00"
     },
     {
       "player": "Oihan Sancet",
@@ -1952,7 +1968,7 @@
       "source": "Sorare",
       "referral_url": "https://sorare.com/r/BGCZRUB",
       "source_url": "https://sorare.com/football/players/oihan-sancet-tirapu",
-      "fetched_at": "2026-10-20T11:32:44+00:00"
+      "fetched_at": "2026-10-21T11:45:15+00:00"
     },
     {
       "player": "Randal Kolo Muani",
@@ -1984,7 +2000,7 @@
       "source": "Sorare",
       "referral_url": "https://sorare.com/r/BGCZRUB",
       "source_url": "https://sorare.com/football/players/randal-kolo-muani",
-      "fetched_at": "2026-10-20T11:32:45+00:00"
+      "fetched_at": "2026-10-21T11:45:16+00:00"
     },
     {
       "player": "Lassine Sinayoko",
@@ -2016,7 +2032,7 @@
       "source": "Sorare",
       "referral_url": "https://sorare.com/r/BGCZRUB",
       "source_url": "https://sorare.com/football/players/lassine-sinayoko",
-      "fetched_at": "2026-10-20T11:32:45+00:00"
+      "fetched_at": "2026-10-21T11:45:16+00:00"
     },
     {
       "player": "Phillip Tietz",
@@ -2048,7 +2064,7 @@
       "source": "Sorare",
       "referral_url": "https://sorare.com/r/BGCZRUB",
       "source_url": "https://sorare.com/football/players/phillip-tietz",
-      "fetched_at": "2026-10-20T11:32:46+00:00"
+      "fetched_at": "2026-10-21T11:45:16+00:00"
     },
     {
       "player": "Franco Mastantuono",
@@ -2080,7 +2096,7 @@
       "source": "Sorare",
       "referral_url": "https://sorare.com/r/BGCZRUB",
       "source_url": "https://sorare.com/football/players/franco-mastantuono",
-      "fetched_at": "2026-10-20T11:32:46+00:00"
+      "fetched_at": "2026-10-21T11:45:17+00:00"
     },
     {
       "player": "Mbwana Samatta",
@@ -2112,7 +2128,7 @@
       "source": "Sorare",
       "referral_url": "https://sorare.com/r/BGCZRUB",
       "source_url": "https://sorare.com/football/players/mbwana-ally-samatta",
-      "fetched_at": "2026-10-20T11:32:46+00:00"
+      "fetched_at": "2026-10-21T11:45:17+00:00"
     },
     {
       "player": "Akor Adams",
@@ -2144,7 +2160,7 @@
       "source": "Sorare",
       "referral_url": "https://sorare.com/r/BGCZRUB",
       "source_url": "https://sorare.com/football/players/akor-jerome-adams",
-      "fetched_at": "2026-10-20T11:32:47+00:00"
+      "fetched_at": "2026-10-21T11:45:17+00:00"
     },
     {
       "player": "Igor Matanović",
@@ -2176,39 +2192,7 @@
       "source": "Sorare",
       "referral_url": "https://sorare.com/r/BGCZRUB",
       "source_url": "https://sorare.com/football/players/igor-matanovic",
-      "fetched_at": "2026-10-20T11:32:47+00:00"
-    },
-    {
-      "player": "Sheraldo Becker",
-      "player_slug": "sheraldo-becker",
-      "matched_from": "Sheraldo Becker",
-      "match_confidence": 0.945,
-      "club": "1. FSV Mainz 05",
-      "club_slug": "mainz-05-mainz",
-      "age": 31,
-      "position": "Forward",
-      "football_metrics": {
-        "appearances": 10,
-        "minutes": 740,
-        "pass_accuracy": 76.9,
-        "accurate_pass_per90": 14.59,
-        "final_third_passes_per90": 9.61,
-        "dribbles_won_per90": 0.85,
-        "duels_won_per90": 3.04,
-        "interceptions_per90": 0.0,
-        "tackles_won_per90": 0.12,
-        "possession_won_per90": 2.68,
-        "shots_per90": 3.28,
-        "shots_on_target_per90": 1.95,
-        "big_chances_created_per90": 0.73,
-        "penalty_area_entries_per90": 4.01,
-        "goals_per90": 0.49,
-        "assists_per90": 0.49
-      },
-      "source": "Sorare",
-      "referral_url": "https://sorare.com/r/BGCZRUB",
-      "source_url": "https://sorare.com/football/players/sheraldo-becker",
-      "fetched_at": "2026-10-20T11:32:47+00:00"
+      "fetched_at": "2026-10-21T11:45:17+00:00"
     },
     {
       "player": "Alberto Moleiro",
@@ -2221,26 +2205,26 @@
       "position": "Midfielder",
       "football_metrics": {
         "appearances": 10,
-        "minutes": 629,
-        "pass_accuracy": 84.8,
-        "accurate_pass_per90": 38.35,
-        "final_third_passes_per90": 20.17,
-        "dribbles_won_per90": 1.29,
-        "duels_won_per90": 3.15,
+        "minutes": 623,
+        "pass_accuracy": 85.2,
+        "accurate_pass_per90": 38.14,
+        "final_third_passes_per90": 19.65,
+        "dribbles_won_per90": 1.01,
+        "duels_won_per90": 2.31,
         "interceptions_per90": 0.29,
-        "tackles_won_per90": 0.72,
-        "possession_won_per90": 2.43,
-        "shots_per90": 2.58,
-        "shots_on_target_per90": 1.14,
-        "big_chances_created_per90": 0.57,
-        "penalty_area_entries_per90": 7.15,
+        "tackles_won_per90": 0.43,
+        "possession_won_per90": 2.6,
+        "shots_per90": 2.74,
+        "shots_on_target_per90": 1.16,
+        "big_chances_created_per90": 0.58,
+        "penalty_area_entries_per90": 6.93,
         "goals_per90": 0.29,
         "assists_per90": 0.29
       },
       "source": "Sorare",
       "referral_url": "https://sorare.com/r/BGCZRUB",
       "source_url": "https://sorare.com/football/players/alberto-moleiro-gonzalez",
-      "fetched_at": "2026-10-20T11:32:48+00:00"
+      "fetched_at": "2026-10-21T11:45:18+00:00"
     },
     {
       "player": "Dan Ndoye",
@@ -2272,7 +2256,7 @@
       "source": "Sorare",
       "referral_url": "https://sorare.com/r/BGCZRUB",
       "source_url": "https://sorare.com/football/players/dan-ndoye",
-      "fetched_at": "2026-10-20T11:32:48+00:00"
+      "fetched_at": "2026-10-21T11:45:18+00:00"
     },
     {
       "player": "Amine Gouiri",
@@ -2304,7 +2288,7 @@
       "source": "Sorare",
       "referral_url": "https://sorare.com/r/BGCZRUB",
       "source_url": "https://sorare.com/football/players/amine-gouiri",
-      "fetched_at": "2026-10-20T11:32:48+00:00"
+      "fetched_at": "2026-10-21T11:45:18+00:00"
     },
     {
       "player": "Ibrahim Maza",
@@ -2336,7 +2320,7 @@
       "source": "Sorare",
       "referral_url": "https://sorare.com/r/BGCZRUB",
       "source_url": "https://sorare.com/football/players/ibrahim-maza",
-      "fetched_at": "2026-10-20T11:32:49+00:00"
+      "fetched_at": "2026-10-21T11:45:19+00:00"
     },
     {
       "player": "Serhou Guirassy",
@@ -2349,26 +2333,26 @@
       "position": "Forward",
       "football_metrics": {
         "appearances": 10,
-        "minutes": 802,
-        "pass_accuracy": 75.9,
-        "accurate_pass_per90": 17.28,
-        "final_third_passes_per90": 6.73,
+        "minutes": 814,
+        "pass_accuracy": 76.1,
+        "accurate_pass_per90": 18.35,
+        "final_third_passes_per90": 7.63,
         "dribbles_won_per90": 0.22,
-        "duels_won_per90": 4.83,
+        "duels_won_per90": 4.64,
         "interceptions_per90": 0.0,
         "tackles_won_per90": 0.0,
-        "possession_won_per90": 1.46,
-        "shots_per90": 3.82,
-        "shots_on_target_per90": 2.02,
-        "big_chances_created_per90": 0.45,
-        "penalty_area_entries_per90": 0.67,
-        "goals_per90": 0.67,
+        "possession_won_per90": 1.66,
+        "shots_per90": 4.53,
+        "shots_on_target_per90": 2.32,
+        "big_chances_created_per90": 0.55,
+        "penalty_area_entries_per90": 0.88,
+        "goals_per90": 0.77,
         "assists_per90": 0.22
       },
       "source": "Sorare",
       "referral_url": "https://sorare.com/r/BGCZRUB",
       "source_url": "https://sorare.com/football/players/serhou-guirassy",
-      "fetched_at": "2026-10-20T11:32:49+00:00"
+      "fetched_at": "2026-10-21T11:45:19+00:00"
     },
     {
       "player": "Bryan Mbeumo",
@@ -2400,7 +2384,7 @@
       "source": "Sorare",
       "referral_url": "https://sorare.com/r/BGCZRUB",
       "source_url": "https://sorare.com/football/players/bryan-mbeumo",
-      "fetched_at": "2026-10-20T11:32:49+00:00"
+      "fetched_at": "2026-10-21T11:45:19+00:00"
     },
     {
       "player": "Kamory Doumbia",
@@ -2432,7 +2416,103 @@
       "source": "Sorare",
       "referral_url": "https://sorare.com/r/BGCZRUB",
       "source_url": "https://sorare.com/football/players/kamory-doumbia",
-      "fetched_at": "2026-10-20T11:32:50+00:00"
+      "fetched_at": "2026-10-21T11:45:20+00:00"
+    },
+    {
+      "player": "Alexander Isak",
+      "player_slug": "alexander-isak",
+      "matched_from": "Alexander Isak",
+      "match_confidence": 0.974,
+      "club": "Liverpool FC",
+      "club_slug": "liverpool-liverpool",
+      "age": 27,
+      "position": "Forward",
+      "football_metrics": {
+        "appearances": 7,
+        "minutes": 516,
+        "pass_accuracy": 73.6,
+        "accurate_pass_per90": 13.6,
+        "final_third_passes_per90": 8.55,
+        "dribbles_won_per90": 1.22,
+        "duels_won_per90": 2.62,
+        "interceptions_per90": 0.17,
+        "tackles_won_per90": 0.17,
+        "possession_won_per90": 1.22,
+        "shots_per90": 2.97,
+        "shots_on_target_per90": 1.05,
+        "big_chances_created_per90": 0.0,
+        "penalty_area_entries_per90": 0.87,
+        "goals_per90": 0.87,
+        "assists_per90": 0.17
+      },
+      "source": "Sorare",
+      "referral_url": "https://sorare.com/r/BGCZRUB",
+      "source_url": "https://sorare.com/football/players/alexander-isak",
+      "fetched_at": "2026-10-21T11:45:20+00:00"
+    },
+    {
+      "player": "Roberto Fernández",
+      "player_slug": "roberto-fernandez-jaen",
+      "matched_from": "Roberto Fernández",
+      "match_confidence": 0.907,
+      "club": "RCD Espanyol de Barcelona",
+      "club_slug": "espanyol-barcelona",
+      "age": 24,
+      "position": "Forward",
+      "football_metrics": {
+        "appearances": 7,
+        "minutes": 604,
+        "pass_accuracy": 64.7,
+        "accurate_pass_per90": 6.56,
+        "final_third_passes_per90": 2.09,
+        "dribbles_won_per90": 0.3,
+        "duels_won_per90": 4.17,
+        "interceptions_per90": 0.15,
+        "tackles_won_per90": 0.6,
+        "possession_won_per90": 1.19,
+        "shots_per90": 2.53,
+        "shots_on_target_per90": 1.04,
+        "big_chances_created_per90": 0.15,
+        "penalty_area_entries_per90": 0.3,
+        "goals_per90": 0.45,
+        "assists_per90": 0.0
+      },
+      "source": "Sorare",
+      "referral_url": "https://sorare.com/r/BGCZRUB",
+      "source_url": "https://sorare.com/football/players/roberto-fernandez-jaen",
+      "fetched_at": "2026-10-21T11:45:20+00:00"
+    },
+    {
+      "player": "Cristian Cásseres Jr.",
+      "player_slug": "cristian-sleiker-casseres-yepes",
+      "matched_from": "Cristian Cásseres Jr.",
+      "match_confidence": 0.972,
+      "club": "Toulouse FC",
+      "club_slug": "toulouse-toulouse",
+      "age": 26,
+      "position": "Midfielder",
+      "football_metrics": {
+        "appearances": 10,
+        "minutes": 827,
+        "pass_accuracy": 84.3,
+        "accurate_pass_per90": 60.73,
+        "final_third_passes_per90": 15.45,
+        "dribbles_won_per90": 1.31,
+        "duels_won_per90": 7.51,
+        "interceptions_per90": 0.98,
+        "tackles_won_per90": 2.72,
+        "possession_won_per90": 7.4,
+        "shots_per90": 0.65,
+        "shots_on_target_per90": 0.11,
+        "big_chances_created_per90": 0.87,
+        "penalty_area_entries_per90": 5.88,
+        "goals_per90": 0.11,
+        "assists_per90": 0.65
+      },
+      "source": "Sorare",
+      "referral_url": "https://sorare.com/r/BGCZRUB",
+      "source_url": "https://sorare.com/football/players/cristian-sleiker-casseres-yepes",
+      "fetched_at": "2026-10-21T11:45:21+00:00"
     }
   ],
   "sorare_players": [
@@ -2447,26 +2527,26 @@
       "position": "Forward",
       "football_metrics": {
         "appearances": 10,
-        "minutes": 639,
-        "pass_accuracy": 71.3,
-        "accurate_pass_per90": 12.25,
-        "final_third_passes_per90": 5.21,
+        "minutes": 595,
+        "pass_accuracy": 69.2,
+        "accurate_pass_per90": 10.89,
+        "final_third_passes_per90": 5.29,
         "dribbles_won_per90": 0.0,
-        "duels_won_per90": 2.68,
-        "interceptions_per90": 0.56,
-        "tackles_won_per90": 0.14,
-        "possession_won_per90": 2.82,
-        "shots_per90": 3.24,
-        "shots_on_target_per90": 1.55,
+        "duels_won_per90": 2.42,
+        "interceptions_per90": 0.61,
+        "tackles_won_per90": 0.15,
+        "possession_won_per90": 2.57,
+        "shots_per90": 2.87,
+        "shots_on_target_per90": 1.21,
         "big_chances_created_per90": 0.0,
-        "penalty_area_entries_per90": 1.27,
-        "goals_per90": 0.56,
+        "penalty_area_entries_per90": 1.36,
+        "goals_per90": 0.15,
         "assists_per90": 0.0
       },
       "source": "Sorare",
       "referral_url": "https://sorare.com/r/BGCZRUB",
       "source_url": "https://sorare.com/football/players/ermedin-demirovic",
-      "fetched_at": "2026-10-20T11:32:41+00:00"
+      "fetched_at": "2026-10-21T11:45:13+00:00"
     },
     {
       "player": "Toni Martínez",
@@ -2498,7 +2578,7 @@
       "source": "Sorare",
       "referral_url": "https://sorare.com/r/BGCZRUB",
       "source_url": "https://sorare.com/football/players/antonio-martinez-lopez",
-      "fetched_at": "2026-10-20T11:32:42+00:00"
+      "fetched_at": "2026-10-21T11:45:14+00:00"
     },
     {
       "player": "Orri Óskarsson",
@@ -2530,7 +2610,7 @@
       "source": "Sorare",
       "referral_url": "https://sorare.com/r/BGCZRUB",
       "source_url": "https://sorare.com/football/players/orri-steinn-oskarsson",
-      "fetched_at": "2026-10-20T11:32:42+00:00"
+      "fetched_at": "2026-10-21T11:45:14+00:00"
     },
     {
       "player": "Chupe",
@@ -2562,7 +2642,7 @@
       "source": "Sorare",
       "referral_url": "https://sorare.com/r/BGCZRUB",
       "source_url": "https://sorare.com/football/players/carlos-ruiz-rubio",
-      "fetched_at": "2026-10-20T11:32:43+00:00"
+      "fetched_at": "2026-10-21T11:45:14+00:00"
     },
     {
       "player": "Yoane Wissa",
@@ -2594,7 +2674,7 @@
       "source": "Sorare",
       "referral_url": "https://sorare.com/r/BGCZRUB",
       "source_url": "https://sorare.com/football/players/yoane-wissa",
-      "fetched_at": "2026-10-20T11:32:43+00:00"
+      "fetched_at": "2026-10-21T11:45:15+00:00"
     },
     {
       "player": "Bukayo Saka",
@@ -2626,7 +2706,7 @@
       "source": "Sorare",
       "referral_url": "https://sorare.com/r/BGCZRUB",
       "source_url": "https://sorare.com/football/players/bukayo-saka",
-      "fetched_at": "2026-10-20T11:32:43+00:00"
+      "fetched_at": "2026-10-21T11:45:15+00:00"
     },
     {
       "player": "Esteban Lepaul",
@@ -2658,7 +2738,7 @@
       "source": "Sorare",
       "referral_url": "https://sorare.com/r/BGCZRUB",
       "source_url": "https://sorare.com/football/players/esteban-lepaul",
-      "fetched_at": "2026-10-20T11:32:44+00:00"
+      "fetched_at": "2026-10-21T11:45:15+00:00"
     },
     {
       "player": "Oihan Sancet",
@@ -2690,7 +2770,7 @@
       "source": "Sorare",
       "referral_url": "https://sorare.com/r/BGCZRUB",
       "source_url": "https://sorare.com/football/players/oihan-sancet-tirapu",
-      "fetched_at": "2026-10-20T11:32:44+00:00"
+      "fetched_at": "2026-10-21T11:45:15+00:00"
     },
     {
       "player": "Randal Kolo Muani",
@@ -2722,7 +2802,7 @@
       "source": "Sorare",
       "referral_url": "https://sorare.com/r/BGCZRUB",
       "source_url": "https://sorare.com/football/players/randal-kolo-muani",
-      "fetched_at": "2026-10-20T11:32:45+00:00"
+      "fetched_at": "2026-10-21T11:45:16+00:00"
     },
     {
       "player": "Lassine Sinayoko",
@@ -2754,7 +2834,7 @@
       "source": "Sorare",
       "referral_url": "https://sorare.com/r/BGCZRUB",
       "source_url": "https://sorare.com/football/players/lassine-sinayoko",
-      "fetched_at": "2026-10-20T11:32:45+00:00"
+      "fetched_at": "2026-10-21T11:45:16+00:00"
     },
     {
       "player": "Phillip Tietz",
@@ -2786,7 +2866,7 @@
       "source": "Sorare",
       "referral_url": "https://sorare.com/r/BGCZRUB",
       "source_url": "https://sorare.com/football/players/phillip-tietz",
-      "fetched_at": "2026-10-20T11:32:46+00:00"
+      "fetched_at": "2026-10-21T11:45:16+00:00"
     },
     {
       "player": "Franco Mastantuono",
@@ -2818,7 +2898,7 @@
       "source": "Sorare",
       "referral_url": "https://sorare.com/r/BGCZRUB",
       "source_url": "https://sorare.com/football/players/franco-mastantuono",
-      "fetched_at": "2026-10-20T11:32:46+00:00"
+      "fetched_at": "2026-10-21T11:45:17+00:00"
     },
     {
       "player": "Mbwana Samatta",
@@ -2850,7 +2930,7 @@
       "source": "Sorare",
       "referral_url": "https://sorare.com/r/BGCZRUB",
       "source_url": "https://sorare.com/football/players/mbwana-ally-samatta",
-      "fetched_at": "2026-10-20T11:32:46+00:00"
+      "fetched_at": "2026-10-21T11:45:17+00:00"
     },
     {
       "player": "Akor Adams",
@@ -2882,7 +2962,7 @@
       "source": "Sorare",
       "referral_url": "https://sorare.com/r/BGCZRUB",
       "source_url": "https://sorare.com/football/players/akor-jerome-adams",
-      "fetched_at": "2026-10-20T11:32:47+00:00"
+      "fetched_at": "2026-10-21T11:45:17+00:00"
     },
     {
       "player": "Igor Matanović",
@@ -2914,39 +2994,7 @@
       "source": "Sorare",
       "referral_url": "https://sorare.com/r/BGCZRUB",
       "source_url": "https://sorare.com/football/players/igor-matanovic",
-      "fetched_at": "2026-10-20T11:32:47+00:00"
-    },
-    {
-      "player": "Sheraldo Becker",
-      "player_slug": "sheraldo-becker",
-      "matched_from": "Sheraldo Becker",
-      "match_confidence": 0.945,
-      "club": "1. FSV Mainz 05",
-      "club_slug": "mainz-05-mainz",
-      "age": 31,
-      "position": "Forward",
-      "football_metrics": {
-        "appearances": 10,
-        "minutes": 740,
-        "pass_accuracy": 76.9,
-        "accurate_pass_per90": 14.59,
-        "final_third_passes_per90": 9.61,
-        "dribbles_won_per90": 0.85,
-        "duels_won_per90": 3.04,
-        "interceptions_per90": 0.0,
-        "tackles_won_per90": 0.12,
-        "possession_won_per90": 2.68,
-        "shots_per90": 3.28,
-        "shots_on_target_per90": 1.95,
-        "big_chances_created_per90": 0.73,
-        "penalty_area_entries_per90": 4.01,
-        "goals_per90": 0.49,
-        "assists_per90": 0.49
-      },
-      "source": "Sorare",
-      "referral_url": "https://sorare.com/r/BGCZRUB",
-      "source_url": "https://sorare.com/football/players/sheraldo-becker",
-      "fetched_at": "2026-10-20T11:32:47+00:00"
+      "fetched_at": "2026-10-21T11:45:17+00:00"
     },
     {
       "player": "Alberto Moleiro",
@@ -2959,26 +3007,26 @@
       "position": "Midfielder",
       "football_metrics": {
         "appearances": 10,
-        "minutes": 629,
-        "pass_accuracy": 84.8,
-        "accurate_pass_per90": 38.35,
-        "final_third_passes_per90": 20.17,
-        "dribbles_won_per90": 1.29,
-        "duels_won_per90": 3.15,
+        "minutes": 623,
+        "pass_accuracy": 85.2,
+        "accurate_pass_per90": 38.14,
+        "final_third_passes_per90": 19.65,
+        "dribbles_won_per90": 1.01,
+        "duels_won_per90": 2.31,
         "interceptions_per90": 0.29,
-        "tackles_won_per90": 0.72,
-        "possession_won_per90": 2.43,
-        "shots_per90": 2.58,
-        "shots_on_target_per90": 1.14,
-        "big_chances_created_per90": 0.57,
-        "penalty_area_entries_per90": 7.15,
+        "tackles_won_per90": 0.43,
+        "possession_won_per90": 2.6,
+        "shots_per90": 2.74,
+        "shots_on_target_per90": 1.16,
+        "big_chances_created_per90": 0.58,
+        "penalty_area_entries_per90": 6.93,
         "goals_per90": 0.29,
         "assists_per90": 0.29
       },
       "source": "Sorare",
       "referral_url": "https://sorare.com/r/BGCZRUB",
       "source_url": "https://sorare.com/football/players/alberto-moleiro-gonzalez",
-      "fetched_at": "2026-10-20T11:32:48+00:00"
+      "fetched_at": "2026-10-21T11:45:18+00:00"
     },
     {
       "player": "Dan Ndoye",
@@ -3010,7 +3058,7 @@
       "source": "Sorare",
       "referral_url": "https://sorare.com/r/BGCZRUB",
       "source_url": "https://sorare.com/football/players/dan-ndoye",
-      "fetched_at": "2026-10-20T11:32:48+00:00"
+      "fetched_at": "2026-10-21T11:45:18+00:00"
     },
     {
       "player": "Amine Gouiri",
@@ -3042,7 +3090,7 @@
       "source": "Sorare",
       "referral_url": "https://sorare.com/r/BGCZRUB",
       "source_url": "https://sorare.com/football/players/amine-gouiri",
-      "fetched_at": "2026-10-20T11:32:48+00:00"
+      "fetched_at": "2026-10-21T11:45:18+00:00"
     },
     {
       "player": "Ibrahim Maza",
@@ -3074,7 +3122,7 @@
       "source": "Sorare",
       "referral_url": "https://sorare.com/r/BGCZRUB",
       "source_url": "https://sorare.com/football/players/ibrahim-maza",
-      "fetched_at": "2026-10-20T11:32:49+00:00"
+      "fetched_at": "2026-10-21T11:45:19+00:00"
     },
     {
       "player": "Serhou Guirassy",
@@ -3087,26 +3135,26 @@
       "position": "Forward",
       "football_metrics": {
         "appearances": 10,
-        "minutes": 802,
-        "pass_accuracy": 75.9,
-        "accurate_pass_per90": 17.28,
-        "final_third_passes_per90": 6.73,
+        "minutes": 814,
+        "pass_accuracy": 76.1,
+        "accurate_pass_per90": 18.35,
+        "final_third_passes_per90": 7.63,
         "dribbles_won_per90": 0.22,
-        "duels_won_per90": 4.83,
+        "duels_won_per90": 4.64,
         "interceptions_per90": 0.0,
         "tackles_won_per90": 0.0,
-        "possession_won_per90": 1.46,
-        "shots_per90": 3.82,
-        "shots_on_target_per90": 2.02,
-        "big_chances_created_per90": 0.45,
-        "penalty_area_entries_per90": 0.67,
-        "goals_per90": 0.67,
+        "possession_won_per90": 1.66,
+        "shots_per90": 4.53,
+        "shots_on_target_per90": 2.32,
+        "big_chances_created_per90": 0.55,
+        "penalty_area_entries_per90": 0.88,
+        "goals_per90": 0.77,
         "assists_per90": 0.22
       },
       "source": "Sorare",
       "referral_url": "https://sorare.com/r/BGCZRUB",
       "source_url": "https://sorare.com/football/players/serhou-guirassy",
-      "fetched_at": "2026-10-20T11:32:49+00:00"
+      "fetched_at": "2026-10-21T11:45:19+00:00"
     },
     {
       "player": "Bryan Mbeumo",
@@ -3138,7 +3186,7 @@
       "source": "Sorare",
       "referral_url": "https://sorare.com/r/BGCZRUB",
       "source_url": "https://sorare.com/football/players/bryan-mbeumo",
-      "fetched_at": "2026-10-20T11:32:49+00:00"
+      "fetched_at": "2026-10-21T11:45:19+00:00"
     },
     {
       "player": "Kamory Doumbia",
@@ -3170,7 +3218,103 @@
       "source": "Sorare",
       "referral_url": "https://sorare.com/r/BGCZRUB",
       "source_url": "https://sorare.com/football/players/kamory-doumbia",
-      "fetched_at": "2026-10-20T11:32:50+00:00"
+      "fetched_at": "2026-10-21T11:45:20+00:00"
+    },
+    {
+      "player": "Alexander Isak",
+      "player_slug": "alexander-isak",
+      "matched_from": "Alexander Isak",
+      "match_confidence": 0.974,
+      "club": "Liverpool FC",
+      "club_slug": "liverpool-liverpool",
+      "age": 27,
+      "position": "Forward",
+      "football_metrics": {
+        "appearances": 7,
+        "minutes": 516,
+        "pass_accuracy": 73.6,
+        "accurate_pass_per90": 13.6,
+        "final_third_passes_per90": 8.55,
+        "dribbles_won_per90": 1.22,
+        "duels_won_per90": 2.62,
+        "interceptions_per90": 0.17,
+        "tackles_won_per90": 0.17,
+        "possession_won_per90": 1.22,
+        "shots_per90": 2.97,
+        "shots_on_target_per90": 1.05,
+        "big_chances_created_per90": 0.0,
+        "penalty_area_entries_per90": 0.87,
+        "goals_per90": 0.87,
+        "assists_per90": 0.17
+      },
+      "source": "Sorare",
+      "referral_url": "https://sorare.com/r/BGCZRUB",
+      "source_url": "https://sorare.com/football/players/alexander-isak",
+      "fetched_at": "2026-10-21T11:45:20+00:00"
+    },
+    {
+      "player": "Roberto Fernández",
+      "player_slug": "roberto-fernandez-jaen",
+      "matched_from": "Roberto Fernández",
+      "match_confidence": 0.907,
+      "club": "RCD Espanyol de Barcelona",
+      "club_slug": "espanyol-barcelona",
+      "age": 24,
+      "position": "Forward",
+      "football_metrics": {
+        "appearances": 7,
+        "minutes": 604,
+        "pass_accuracy": 64.7,
+        "accurate_pass_per90": 6.56,
+        "final_third_passes_per90": 2.09,
+        "dribbles_won_per90": 0.3,
+        "duels_won_per90": 4.17,
+        "interceptions_per90": 0.15,
+        "tackles_won_per90": 0.6,
+        "possession_won_per90": 1.19,
+        "shots_per90": 2.53,
+        "shots_on_target_per90": 1.04,
+        "big_chances_created_per90": 0.15,
+        "penalty_area_entries_per90": 0.3,
+        "goals_per90": 0.45,
+        "assists_per90": 0.0
+      },
+      "source": "Sorare",
+      "referral_url": "https://sorare.com/r/BGCZRUB",
+      "source_url": "https://sorare.com/football/players/roberto-fernandez-jaen",
+      "fetched_at": "2026-10-21T11:45:20+00:00"
+    },
+    {
+      "player": "Cristian Cásseres Jr.",
+      "player_slug": "cristian-sleiker-casseres-yepes",
+      "matched_from": "Cristian Cásseres Jr.",
+      "match_confidence": 0.972,
+      "club": "Toulouse FC",
+      "club_slug": "toulouse-toulouse",
+      "age": 26,
+      "position": "Midfielder",
+      "football_metrics": {
+        "appearances": 10,
+        "minutes": 827,
+        "pass_accuracy": 84.3,
+        "accurate_pass_per90": 60.73,
+        "final_third_passes_per90": 15.45,
+        "dribbles_won_per90": 1.31,
+        "duels_won_per90": 7.51,
+        "interceptions_per90": 0.98,
+        "tackles_won_per90": 2.72,
+        "possession_won_per90": 7.4,
+        "shots_per90": 0.65,
+        "shots_on_target_per90": 0.11,
+        "big_chances_created_per90": 0.87,
+        "penalty_area_entries_per90": 5.88,
+        "goals_per90": 0.11,
+        "assists_per90": 0.65
+      },
+      "source": "Sorare",
+      "referral_url": "https://sorare.com/r/BGCZRUB",
+      "source_url": "https://sorare.com/football/players/cristian-sleiker-casseres-yepes",
+      "fetched_at": "2026-10-21T11:45:21+00:00"
     }
   ],
   "sorare_cards": []
