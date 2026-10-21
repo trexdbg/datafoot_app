@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import '../styles/site-refresh.css';
 import { SORARE_REFERRAL_URL } from '../lib/referrals';
 
 interface Props {
@@ -22,6 +23,8 @@ const {
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const url = (path: string) => `${base}${path}`;
+const pathNow = Astro.url.pathname;
+const isSection = (path: string) => pathNow.startsWith(url(path));
 const siteOrigin = Astro.site ?? new URL('https://trexdbg.github.io');
 const canonical = new URL(canonicalPath ?? Astro.url.pathname, siteOrigin).toString();
 const methodologyUrl = new URL(`${base}/methodologie/`, siteOrigin).toString();
@@ -120,18 +123,25 @@ const schemaBlocks = [baseSchema, ...(Array.isArray(jsonLd) ? jsonLd : jsonLd ? 
       <div class="shell nav">
         <a class="brand" href={url('/')} aria-label="DataFoot — accueil">
           <span class="brand-mark">DF</span>
-          <span class="brand-copy"><strong>DataFoot</strong><small>Analyses & statistiques</small></span>
+          <span class="brand-copy"><strong>DataFoot</strong><small>Le football en courbes</small></span>
         </a>
-        <nav aria-label="Navigation principale">
-          <a href={url('/mondial-2022/')}>Matchs 2022</a>
-          <a href={url('/mondial-2022/pays/')}>Pays</a>
-          <a href={url('/mondial-2022/joueurs/')}>Joueurs</a>
-          <a href={url('/pulse-bareme/')}>Barème Pulse</a>
-          <a href={url('/joueurs/messi/paintball/')}>Messi Paintball</a>
-          <a href={url('/joueurs/messi/affrontements/')}>Messi Rival Wars</a>
-          <a href={url('/articles/')}>Analyses</a>
-          <a href={url('/stats/')}>Data</a>
-          <a href={url('/methodologie/')}>Méthode</a>
+        <nav class="site-links" aria-label="Navigation principale">
+          <a class="nav-showcase" href={url('/#visualisations')}>Graphiques</a>
+          <a href={url('/mondial-2022/')} aria-current={isSection('/mondial-2022/') && !isSection('/mondial-2022/joueurs/') ? 'page' : undefined}>Matchs</a>
+          <a href={url('/mondial-2022/joueurs/')} aria-current={isSection('/mondial-2022/joueurs/') ? 'page' : undefined}>Joueurs</a>
+          <a href={url('/articles/')} aria-current={isSection('/articles/') ? 'page' : undefined}>Analyses</a>
+          <a href={url('/stats/')} aria-current={isSection('/stats/') ? 'page' : undefined}>Données</a>
+          <details class="nav-more">
+            <summary>Plus <span aria-hidden="true">⌄</span></summary>
+            <div class="nav-more-panel">
+              <a href={url('/joueurs/messi/paintball/')}>Messi Paintball</a>
+              <a href={url('/joueurs/messi/pass-wars/')}>Messi Pass Wars</a>
+              <a href={url('/joueurs/messi/affrontements/')}>Messi Rival Wars</a>
+              <a href={url('/mondial-2022/pays/')}>Tous les pays</a>
+              <a href={url('/pulse-bareme/')}>Barème Pulse</a>
+              <a href={url('/methodologie/')}>Méthode</a>
+            </div>
+          </details>
         </nav>
       </div>
     </header>
@@ -198,6 +208,7 @@ const schemaBlocks = [baseSchema, ...(Array.isArray(jsonLd) ? jsonLd : jsonLd ? 
         </div>
         <div>
           <strong>Explorer</strong>
+          <a href={url('/#visualisations')}>Les graphiques</a>
           <a href={url('/articles/')}>Analyses</a>
           <a href={url('/mondial-2022/')}>Mondial 2022 · explorer</a>
           <a href={url('/mondial-2022/pays/')}>32 pays</a>
