@@ -74,7 +74,10 @@ test('player dropdown, graph modes, minute slider and actions respond to clicks'
    events:[{minute:18,second:22,kind:'Shot',outcome:'Goal',penalty:0}]},
   {id:202,name:'Deuxième Joueur',team:'Argentina',entry:60,exit:null,presence:{share:73,above:22,played:31,longest:15,longestStart:63,longestEnd:77,strong:9},
    timeline:timeline(60,75,94),
-   events:[{minute:75,second:18,kind:'Pass',outcome:'Complete',goalAssist:true,penalty:0}]}
+   events:[
+    {minute:75,second:18,kind:'Pass',outcome:'Complete',goalAssist:true,penalty:0},
+    ...Array.from({length:13},(_,i)=>({minute:75,second:i+1,kind:'Pass',outcome:'Complete',penalty:0}))
+   ]}
  ];
  const location={href:'https://example.test/datafoot_app/mondial-2022/matchs/1/profil/?joueur=101',search:'?joueur=101'};
  const history={replaceState(_state,_title,url){location.href=String(url);location.search=new URL(String(url)).search;}};
@@ -97,6 +100,7 @@ test('player dropdown, graph modes, minute slider and actions respond to clicks'
  assert.notEqual(thermalLine.attributes.d,priorPath);
  assert.equal(node('wc-presence-ribbon').children[75].style.backgroundColor,thermalColor(94),'intensity values determine ribbon colors');
  assert.equal(new URL(location.href).searchParams.get('joueur'),'202');
+ assert.equal(node('wc-event-markers').children.length,14,'every recorded action has its own small clickable dot, even beyond 10 per minute');
  assert.ok(node('wc-minute-actions').children.some(chip=>String(chip.textContent).includes('PASSE DÉCISIVE')));
  modes[1].emit('click');
  assert.match(node('wc-mode-title').textContent,/Impact/,'changing mode updates the title');
