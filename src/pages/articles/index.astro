@@ -1,29 +1,91 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-const articles = (await getCollection('articles')).sort((a,b)=>b.data.publishedAt.valueOf()-a.data.publishedAt.valueOf());
+import stats from '../../data/stats.json';
+import '../../styles/archive.css';
+
+const articles = (await getCollection('articles'))
+  .sort((a,b) => b.data.publishedAt.valueOf() - a.data.publishedAt.valueOf());
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
-const url = (path:string)=>`${base}${path}`;
+const url = (path: string) => `${base}${path}`;
+const visuals = (stats as any).article_visuals ?? {};
+const showcases = articles.filter(article => (visuals[article.id] ?? []).some((item: any) => item.src)).slice(0, 3);
+const leagues = [...new Set(articles.map(article => article.data.league))].sort();
+const niceLeague = (name: string) => name.replaceAll('_', ' ');
 ---
 <BaseLayout
-  title="Analyses football xG, forme et signaux | DataFoot"
-  description="DataFoot : analyses de joueurs basées sur xG, xA, tirs, forme Sorare et signaux statistiques sourcés."
+  title="Analyses et graphiques football | DataFoot"
+  description="Parcourez les analyses DataFoot : profils de joueurs visualisés, xG, buts, tirs et signaux statistiques sourcés."
 >
-  <section class="shell archive-head">
-    <div class="edition-line"><span>DATAFOOT / ANALYSIS ARCHIVE</span><span>{articles.length} REPORTS</span></div>
-    <h1>Analysis<br/><span>Archive.</span></h1>
-    <p>Les rapports publiés par DataFoot, triés du plus récent au plus ancien. Chaque ligne conserve la source, le signal et le joueur analysé.</p>
-  </section>
-  <section class="shell archive-list">
-    {articles.map((article,index)=>(
-      <a class="archive-row" href={url(`/articles/${article.id}/`)}>
-        <span class="archive-no">{String(index+1).padStart(2,'0')}</span>
-        <div class="archive-meta"><span>{article.data.league.replaceAll('_',' ')}</span><small>{article.data.publishedAt.toLocaleDateString('fr-FR')}</small></div>
-        <div class="archive-title"><h2>{article.data.title}</h2><p>{article.data.player} · {article.data.team}</p></div>
-        <span class="archive-source">{article.data.source}</span>
-        <div class="archive-score"><small>SIGNAL</small><b>{Math.round(article.data.storyScore)}</b></div>
-        <span class="archive-arrow">↗</span>
-      </a>
-    ))}
-  </section>
+  <div class="df-archive">
+    <header class="shell analysis-cover">
+      <div class="analysis-topline"><span>DATAFOOT / LE JOURNAL DES DONNÉES</span><span>{articles.length} ANALYSES PUBLIÉES</span></div>
+      <p class="analysis-overline">VISUALISER / COMPRENDRE / QUESTIONNER</p>
+      <h1>Chaque chiffre<br/>a une <em>histoire.</em></h1>
+      <p class="analysis-intro">Des visualisations d’abord, le contexte ensuite. Découvrez ce que les données racontent sur les joueurs, leurs performances et leurs limites.</p>
+    </header>
+
+    {showcases.length > 0 && <section class="shell analysis-feature" aria-labelledby="analysis-feature-title">
+      <div class="analysis-section-heading"><div><p>VISUALISATIONS À LA UNE</p><h2 id="analysis-feature-title">Voir avant de lire.</h2></div><span>PROFILS STATISTIQUES</span></div>
+      <div class="analysis-feature-grid">
+        {showcases.map(article => {
+          const image = visuals[article.id].find((item: any) => item.src);
+          return <a class="analysis-feature-card" href={url(`/articles/${article.id}/`)}>
+            <div class="analysis-feature-top"><span>{niceLeague(article.data.league)}</span><span>{article.data.player}</span></div>
+            <img src={url(image.src)} alt={image.alt ?? `Visualisation statistique de ${article.data.player}`} loading="lazy" decoding="async" />
+            <div class="analysis-feature-bottom"><h3>{article.data.title}</h3><b aria-hidden="true">↗</b></div>
+          </a>;
+        })}
+      </div>
+    </section>}
+
+    <section class="shell analysis-catalogue" aria-labelledby="analysis-catalogue-title">
+      <div class="analysis-section-heading"><div><p>ARCHIVES / SOURCES & CONTEXTE</p><h2 id="analysis-catalogue-title">Toutes les analyses.</h2></div><span id="analysis-count" aria-live="polite">{articles.length} articles</span></div>
+      <div class="analysis-filters">
+        <label for="analysis-search">RECHERCHER UN JOUEUR OU UN SUJET
+          <input id="analysis-search" type="search" placeholder="Ex. Mbappé, xG, finition..." autocomplete="off" />
+        </label>
+        <label for="analysis-league">CHAMPIONNAT
+          <select id="analysis-league">
+            <option value="">Tous les championnats</option>
+            {leagues.map(league => <option value={league}>{niceLeague(league)}</option>)}
+          </select>
+        </label>
+      </div>
+      <div class="analysis-rows" id="analysis-rows">
+        {articles.map((article,index) => <a class="analysis-row" href={url(`/articles/${article.id}/`)} data-league={article.data.league} data-search={`${article.data.title} ${article.data.player} ${article.data.team} ${article.data.description} ${article.data.league}`.toLowerCase()}>
+          <span class="analysis-row-index">{String(index+1).padStart(2,'0')}</span>
+          <div class="analysis-row-title"><span>{niceLeague(article.data.league)} / {article.data.player}</span><h3>{article.data.title}</h3><p>{article.data.description}</p></div>
+          <div class="analysis-row-meta"><span>{article.data.team}</span><time datetime={article.data.publishedAt.toISOString()}>{article.data.publishedAt.toLocaleDateString('fr-FR')}</time></div>
+          <span class="analysis-row-arrow" aria-hidden="true">↗</span>
+        </a>)}
+      </div>
+      <p class="analysis-no-results" id="analysis-empty" hidden>Aucun article ne correspond à ces filtres.</p>
+    </section>
+  </div>
+  <script is:inline>
+    (() => {
+      const search = document.getElementById('analysis-search');
+      const league = document.getElementById('analysis-league');
+      const rows = [...document.querySelectorAll('.analysis-row')];
+      const count = document.getElementById('analysis-count');
+      const empty = document.getElementById('analysis-empty');
+      if (!search || !league || !count || !empty) return;
+      const normalize = value => String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+      const filter = () => {
+        const query = normalize(search.value.trim());
+        const currentLeague = league.value;
+        let visible = 0;
+        rows.forEach(row => {
+          const show = (!query || normalize(row.dataset.search).includes(query)) && (!currentLeague || row.dataset.league === currentLeague);
+          row.hidden = !show;
+          if (show) visible++;
+        });
+        count.textContent = visible + ' article' + (visible === 1 ? '' : 's');
+        empty.hidden = visible !== 0;
+      };
+      search.addEventListener('input', filter);
+      league.addEventListener('change', filter);
+    })();
+  </script>
 </BaseLayout>
