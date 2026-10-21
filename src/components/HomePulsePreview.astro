@@ -1,0 +1,72 @@
+---
+import finalMbappe from '../data/matches/2022-final-mbappe.json';
+import { monotonePath } from '../lib/match-activity.mjs';
+import { THERMAL_STOPS } from '../lib/pulse-temperature.mjs';
+
+const { match, player, summary, timeline, goals } = finalMbappe;
+const duration = match.duration_minutes;
+const left = 47, right = 853, top = 32, bottom = 273;
+const x = (minute: number) => left + minute / duration * (right - left);
+const y = (value: number) => bottom - Math.min(100, Math.max(0, value)) / 100 * (bottom - top);
+const line = monotonePath(timeline.map(point => ({ x: x(point.minute), y: y(point.activity) })));
+const area = line + ' L ' + x(timeline.at(-1)!.minute) + ' ' + bottom + ' L ' + x(timeline[0].minute) + ' ' + bottom + ' Z';
+const ownGoals = goals.filter(goal => goal.for_player).map(goal => ({
+  ...goal, point: timeline.find(point => point.minute === goal.minute)
+})).filter(goal => goal.point);
+const minutes = [0, 20, 40, 60, 80, 100, 120];
+---
+<div class="home-pulse" aria-label="Visualisation des événements de Kylian Mbappé en finale du Mondial 2022">
+  <div class="home-pulse-top">
+    <div>
+      <p class="home-kicker"><span class="home-kicker-light"></span> DATAFOOT PULSE / ÉTUDE DE MATCH</p>
+      <h2>{player.name} <span>· finale 2022</span></h2>
+    </div>
+    <span class="home-pulse-match">ARG <strong>{match.score}</strong> FRA</span>
+  </div>
+  <div class="home-pulse-stats" aria-label="Statistiques de Mbappé pour cette rencontre">
+    <div><strong>{summary.goals}</strong><span>BUTS</span></div>
+    <div><strong>{summary.shots}</strong><span>TIRS</span></div>
+    <div><strong>{summary.events}</strong><span>ÉVÉNEMENTS</span></div>
+    <div class="home-pulse-stats-note">Le rythme du joueur, minute par minute.</div>
+  </div>
+  <svg class="home-pulse-svg" viewBox="0 0 900 342" role="img" aria-labelledby="home-pulse-title home-pulse-desc">
+    <title id="home-pulse-title">Courbe de l'activité de Kylian Mbappé en finale de la Coupe du monde 2022</title>
+    <desc id="home-pulse-desc">Indice d'activité compris entre 0 et 100 pendant les 125 minutes de la finale. Les buts de Mbappé sont signalés à la 80e, 81e et 118e minute.</desc>
+    <defs>
+      <linearGradient id="home-pulse-temperature" x1="0" y1={bottom} x2="0" y2={top} gradientUnits="userSpaceOnUse">
+        {THERMAL_STOPS.map(stop => <stop offset={stop.at + '%'} stop-color={stop.color} />)}
+      </linearGradient>
+      <linearGradient id="home-pulse-area" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#de72f5" stop-opacity=".30" />
+        <stop offset=".52" stop-color="#ff6f67" stop-opacity=".11" />
+        <stop offset="1" stop-color="#53b7e7" stop-opacity=".01" />
+      </linearGradient>
+    </defs>
+    {[0,25,50,75,100].map(value => <g>
+      <line x1={left} x2={right} y1={y(value)} y2={y(value)} class:list={['home-pulse-grid',value===50&&'mid']}/>
+      <text x={left-12} y={y(value)+4} text-anchor="end" class="home-pulse-tick">{value}</text>
+    </g>)}
+    {minutes.map(minute => <g><line x1={x(minute)} x2={x(minute)} y1={top} y2={bottom} class="home-pulse-grid home-pulse-vgrid" /><text x={x(minute)} y="299" text-anchor="middle" class="home-pulse-tick">{minute}′</text></g>)}
+    <text x={left} y="18" class="home-pulse-axis-label">ACTIVITÉ / 100</text>
+    <text x={right} y="18" text-anchor="end" class="home-pulse-axis-label">PLUS CHAUD = PLUS ACTIF</text>
+    <path d={area} fill="url(#home-pulse-area)"/>
+    <path d={line} fill="none" stroke="#080f1a" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" />
+    <path d={line} fill="none" stroke="url(#home-pulse-temperature)" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round" class="home-pulse-mainline"/>
+    {ownGoals.map((goal,index) => <g>
+      <line x1={x(goal.minute)} x2={x(goal.minute)} y1={y(goal.point!.activity)} y2={bottom} stroke="#ff8a6b" stroke-width="1" stroke-dasharray="4 5" opacity=".85" />
+      <circle cx={x(goal.minute)} cy={y(goal.point!.activity)} r="8" fill="#ffb86a" stroke="#102134" stroke-width="3"/>
+      <circle cx={x(goal.minute)} cy={y(goal.point!.activity)} r="2.7" fill="#102134"/>
+      <title>But de Mbappé · {goal.minute}′</title>
+    </g>)}
+    <line x1={left} x2={right} y1="325" y2="325" class="home-pulse-bottomline"/>
+    {timeline.filter(point => point.actions > 0).map(point => <circle cx={x(point.minute)} cy="325" r={point.actions > 2 ? 2.4 : 1.55} fill="#76aeca" fill-opacity={Math.min(.85, .23 + point.actions * .09)}>
+      <title>{point.minute}′ : {point.actions} action(s)</title>
+    </circle>)}
+    <text x={left} y="315" class="home-pulse-axis-label">ÉVÉNEMENTS</text>
+  </svg>
+  <div class="home-pulse-foot">
+    <span><i class="home-pulse-key"></i> COURBE PULSE</span>
+    <span><i class="home-pulse-key goal"></i> BUTS DE MBAPPÉ</span>
+    <span class="home-pulse-source">StatsBomb Open Data · indice éditorial, non officiel</span>
+  </div>
+</div>
