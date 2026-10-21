@@ -1,0 +1,178 @@
+/* DataFoot Pulse / Édition : richesse de l'inspecteur, sobriété du graphique vitrine.
+   Isolé aux profils de match, sans modifier les scores ni les comparatifs d'équipe. */
+.wc-profile-root {
+  --pulse-canvas:#091c2b;
+  --pulse-rule:#29485b;
+}
+.wc-profile-root .wc-inspector {
+  background:#0a2030;
+  border:1px solid #345267;
+  border-radius:10px;
+  box-shadow:0 12px 35px rgba(0,0,0,.18);
+}
+.wc-profile-root .wc-inspector-head {
+  background:#112f43;
+  border-bottom-color:#2f5266;
+}
+.wc-profile-root .wc-current-stats {
+  background:#0a2335;
+}
+.wc-profile-root .wc-current-stats>div {
+  border-color:#2d4a60;
+}
+.wc-profile-root .wc-current-stats strong {
+  letter-spacing:-.06em;
+}
+.wc-profile-root .wc-presence {
+  background:linear-gradient(105deg,#282638,#18293a 57%,#112d40);
+  border-bottom:1px solid #435165;
+}
+.wc-profile-root .wc-mode-head {
+  background:#0a2233;
+  border-bottom:0;
+  padding-bottom:17px;
+}
+.wc-profile-root .wc-mode-tabs {
+  border-radius:6px;
+  background:#071c2b;
+  border:1px solid #37556a;
+}
+.wc-profile-root .wc-mode-tabs button {
+  border-radius:4px;
+  box-shadow:none;
+}
+.wc-profile-root .wc-mode-tabs button.active {
+  background:#244a64;
+  box-shadow:none;
+}
+.wc-profile-root .wc-mode-tabs button[data-mode=impact].active {
+  background:#564935;
+}
+.wc-profile-root .wc-profile-chart-scroll {
+  background:var(--pulse-canvas);
+  border-top:1px solid #244254;
+  border-bottom:1px solid #25475a;
+}
+.wc-profile-root #wc-profile-chart {
+  width:100%;
+  min-width:760px;
+  height:auto;
+}
+.wc-profile-root .wc-profile-grid {
+  stroke:#85a9bb;
+  stroke-opacity:.105;
+  stroke-width:.9;
+}
+.wc-profile-root .wc-profile-grid.vertical {
+  stroke-opacity:.07;
+  stroke-dasharray:3 8;
+}
+.wc-profile-root .wc-profile-axis {
+  fill:#93b6c8;
+  font:650 12px ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+.wc-profile-root .wc-profile-chartlabel {
+  fill:#9bbdcd;
+  font:760 10px ui-monospace,SFMono-Regular,Menlo,monospace;
+  letter-spacing:1.3px;
+}
+.wc-profile-root .wc-profile-period {
+  fill:#9bbacb;
+  font-size:10px;
+  font-weight:760;
+}
+.wc-profile-root .wc-thermal-line {
+  filter:drop-shadow(0 0 2px rgba(95,176,213,.20));
+}
+.wc-profile-root .wc-impact-line {
+  filter:drop-shadow(0 0 2px rgba(121,188,229,.22));
+}
+.wc-profile-root #wc-line-underlay {
+  opacity:.95;
+}
+.wc-profile-root #wc-line-area {
+  opacity:1;
+  pointer-events:none;
+}
+.wc-profile-root #wc-sustained-area {
+  filter:none;
+  opacity:.75;
+  pointer-events:none;
+}
+.wc-profile-root .wc-band-line {
+  filter:none;
+}
+.wc-profile-root #wc-rhythm-reference {
+  opacity:.7;
+}
+.wc-profile-root #wc-inspect-cursor {
+  opacity:.38;
+}
+.wc-profile-root #wc-inspect-dot {
+  filter:none;
+}
+.wc-profile-root #wc-goal-marks g {
+  cursor:pointer;
+}
+.wc-profile-root #wc-goal-marks g:focus-visible {
+  outline:none;
+}
+.wc-profile-root #wc-goal-marks g:focus-visible circle:first-of-type {
+  stroke:#fff;
+  stroke-width:3.5px;
+}
+.wc-profile-root #wc-event-markers circle {
+  stroke:none;
+  opacity:.86;
+  cursor:pointer;
+}
+.wc-profile-root #wc-event-markers circle:hover,
+.wc-profile-root #wc-event-markers circle:focus-visible {
+  opacity:1;
+  fill:#fff;
+  stroke:#88dbff;
+  stroke-width:1.8;
+  outline:none;
+}
+.wc-profile-root .wc-profile-tooltip {
+  background:#102d40!important;
+  border-bottom:1px solid #355268!important;
+  border-left-width:3px!important;
+  padding:12px 22px!important;
+}
+.wc-profile-root .wc-pulse-scoring-link {
+  background:#102e40;
+  border-top:0;
+  border-bottom-color:#315268;
+}
+.wc-profile-root .wc-highlights {
+  background:#0d293d;
+  border-bottom-color:#2b4b60;
+}
+.wc-profile-root .wc-highlights button {
+  border-radius:5px;
+  background:#173a52;
+  border-color:#416779;
+}
+.wc-profile-root .wc-minute-reader {
+  background:linear-gradient(120deg,#102e43,#0c2538);
+}
+.wc-profile-root .wc-readout-numbers>span,
+.wc-profile-root .wc-event-chip,
+.wc-profile-root .wc-minute-controls button {
+  border-radius:5px;
+}
+.wc-profile-root .wc-action-log,
+.wc-profile-root .wc-profile-note {
+  background:#0c2538;
+  border-color:#34546b;
+}
+@media(max-width:760px){
+  .wc-profile-root .wc-inspector {border-radius:8px}
+  .wc-profile-root #wc-profile-chart {min-width:740px}
+  .wc-profile-root .wc-mode-head {gap:13px}
+  .wc-profile-root .wc-profile-tooltip {padding:11px 14px!important}
+}
+@media(prefers-reduced-motion:reduce){
+  .wc-profile-root .wc-thermal-line,.wc-profile-root .wc-impact-line {filter:none}
+}
