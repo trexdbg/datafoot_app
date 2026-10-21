@@ -1,170 +1,139 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import HomePulsePreview from '../components/HomePulsePreview.astro';
 import stats from '../data/stats.json';
+import '../styles/home.css';
 
 const allArticles = (await getCollection('articles'))
   .sort((a, b) => b.data.publishedAt.valueOf() - a.data.publishedAt.valueOf());
-const featured = allArticles[0];
-const secondary = allArticles.slice(1, 4);
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const url = (path: string) => `${base}${path}`;
 const updated = new Date(stats.generated_at);
-
-type Pick = {
-  kind:string; title:string; rationale:string; editorial_score:number; selector:string;
-  player:string; team:string; league:string;
-};
-
-const picks = (((stats as any).editorial_plan ?? []) as Pick[]).slice(0, 3);
-
-const signalLabel = (kind: string) => ({
-  finishing_overperformance: 'FINITION +',
-  finishing_underperformance: 'FINITION −',
-  shot_volume: 'VOLUME DE TIRS',
-  high_xg_rate: 'RYTHME xG',
-  creative_output: 'CRÉATION',
-  attacking_involvement: 'IMPLICATION',
-}[kind] ?? kind.replaceAll('_', ' ').toUpperCase());
-
-const articleForPlayer = (player: string) =>
-  allArticles.find((article) => article.data.player.toLowerCase() === player.toLowerCase());
+const dateLabel = updated.toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' });
+const visuals = (stats as any).article_visuals ?? {};
+const visualArticles = allArticles
+  .filter(article => (visuals[article.id] ?? []).some((visual: any) => visual.src))
+  .slice(0, 3);
+const latest = allArticles.slice(0, 4);
+const league = (name: string) => name.replaceAll('_', ' ');
 ---
 <BaseLayout
-  title="DataFoot — Le football en chiffres"
-  description="Analyses football fondées sur les xG, les volumes de jeu et des statistiques de match comparées."
+  title="DataFoot — Les graphiques racontent le football"
+  description="Les matchs en courbes, les joueurs en chiffres et les histoires derrière les données : explorez les visualisations DataFoot Pulse, le Mondial 2022 et nos analyses."
 >
-  <section class="desk-hero shell">
-    <div class="desk-mast">
-      <div class="edition-line">
-        <span>DATAFOOT / ANALYSES & STATISTIQUES</span>
-        <span>{updated.toLocaleDateString('fr-FR', { day:'2-digit', month:'short', year:'numeric' }).toUpperCase()}</span>
+  <div class="df-home">
+    <section class="shell home-cover" aria-labelledby="home-title">
+      <div class="home-edition">
+        <span><i></i> DATAFOOT / LE LABORATOIRE DU JEU</span>
+        <span>DONNÉES ACTUALISÉES LE <time datetime={updated.toISOString()}>{dateLabel.toUpperCase()}</time></span>
       </div>
-      <h1>Football<br/><span>en chiffres.</span></h1>
-      <div class="desk-intro">
-        <p>Les signaux qui ressortent vraiment : xG, tirs, création et profils joueurs comparés.</p>
-        <div class="desk-actions">
-          <a class="cut-button" href={url('/articles/')}>VOIR LES ANALYSES <b>↗</b></a>
-          <a class="plain-link" href={url('/stats/')}>DATA →</a>
+      <div class="home-hero">
+        <div class="home-hero-copy">
+          <p class="home-eyebrow"><span>01</span> VOIR CE QUE LE SCORE NE DIT PAS</p>
+          <h1 id="home-title">Le football<br/>se <em>voit.</em></h1>
+          <p class="home-hero-lead">Derrière chaque match, il y a un rythme. Derrière chaque joueur, une courbe. DataFoot transforme les actions du terrain en histoires à explorer.</p>
+          <div class="home-actions">
+            <a class="home-button home-button-primary" href={url('/mondial-2022/')}>EXPLORER LES MATCHS <span aria-hidden="true">↗</span></a>
+            <a class="home-button home-button-secondary" href="#visualisations">DÉCOUVRIR LES GRAPHIQUES <span aria-hidden="true">↓</span></a>
+          </div>
+          <div class="home-hero-foot"><span>STATSBOMB OPEN DATA</span><span>UNDERSTAT</span><span>PULSE / DATAFOOT</span></div>
+        </div>
+        <div class="home-hero-chart">
+          <div class="home-chart-overline"><span>LE GRAPHIQUE À LA UNE</span><span>18.12.2022 <span class="home-spark">✳</span></span></div>
+          <HomePulsePreview />
+          <a class="home-chart-open" href={url('/mondial-2022/matchs/3869685/profil/')}>
+            <span>Explorer chaque joueur de cette finale</span><b aria-hidden="true">↗</b>
+          </a>
         </div>
       </div>
-    </div>
+    </section>
 
-    <div class="radar-panel">
-      <div class="radar-grid" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
-      <div class="radar-head">
-        <span><b class="live-beacon"></b> SIGNAUX</span>
-        <span>{picks.length} RETENUS</span>
+    <section class="home-number-band" aria-label="Périmètre de DataFoot">
+      <div class="shell home-number-inner">
+        <div><strong>64</strong><span>matchs du Mondial 2022</span></div>
+        <div><strong>32</strong><span>sélections à explorer</span></div>
+        <div><strong>{stats.player_count.toLocaleString('fr-FR')}</strong><span>joueurs dans le dataset {stats.season}</span></div>
+        <a href={url('/methodologie/')}>COMMENT SONT CONSTRUITES NOS ANALYSES <span aria-hidden="true">↗</span></a>
       </div>
-      <div class="radar-list">
-        {picks.map((pick, index) => {
-          const linked = articleForPlayer(pick.player);
-          return (
-            <a class="radar-row" href={linked ? url(`/articles/${linked.id}/`) : url('/articles/')}>
-              <span class="radar-rank">{String(index + 1).padStart(2,'0')}</span>
-              <div>
-                <span class="signal-tag">{signalLabel(pick.kind)}</span>
-                <strong>{pick.player}</strong>
-                <small>{pick.team} · {pick.league.replaceAll('_',' ')}</small>
-              </div>
-              <b>↗</b>
-            </a>
-          );
+    </section>
+
+    <section class="shell home-section home-visuals" id="visualisations" aria-labelledby="home-visuals-title">
+      <div class="home-section-header">
+        <div>
+          <p class="home-eyebrow"><span>02</span> VISUALISATIONS / À LA UNE</p>
+          <h2 id="home-visuals-title">La donnée, <em>en grand.</em></h2>
+        </div>
+        <p>Des profils lisibles avant même de lire l'article. Compare les volumes, repère les écarts et ouvre l'analyse complète.</p>
+      </div>
+      <div class="home-viz-grid">
+        {visualArticles.map((article, index) => {
+          const image = visuals[article.id].find((visual: any) => visual.src);
+          return <a class:list={['home-viz-card', index === 0 && 'home-viz-card-featured']} href={url(`/articles/${article.id}/`)}>
+            <div class="home-viz-topline"><span>PROFIL / {String(index + 1).padStart(2,'0')}</span><span>{league(article.data.league)}</span></div>
+            <div class="home-viz-image"><img src={url(image.src)} alt={image.alt ?? `Visualisation du profil de ${article.data.player}`} loading="lazy" decoding="async" /></div>
+            <div class="home-viz-text"><div><span>{article.data.player} · {article.data.team}</span><h3>{article.data.title}</h3></div><span class="home-viz-arrow" aria-hidden="true">↗</span></div>
+          </a>;
         })}
       </div>
-      <div class="radar-foot">
-        <span>DONNÉES SOURCÉES</span><span>MISE À JOUR CONTINUE</span>
-      </div>
-    </div>
-  </section>
-
-  <section class="shell mw-home-feature" aria-labelledby="mw-home-title">
-    <div class="mw-home-weather" aria-hidden="true">〽</div>
-    <div>
-      <p class="mw-home-eyebrow">MODULE PHARE / DATAFOOT ATLAS · COUPE DU MONDE 2022</p>
-      <h2 id="mw-home-title">64 matchs. <em>32 pays.</em></h2>
-      <p>Explore tous les matchs de la Coupe du monde 2022, retrouve n’importe quel pays et suis chaque joueur. Une courbe par profil, et toutes les actions à portée de clic.</p>
-      <a href={url('/mondial-2022/')}>EXPLORER TOUT LE MONDIAL ↗</a>
-    </div>
-    <div class="mw-home-signal" aria-hidden="true">
-      <svg viewBox="0 0 280 100" preserveAspectRatio="none"><defs><linearGradient id="mw-home-line" x1="0" x2="1"><stop stop-color="#59baf9"/><stop offset=".7" stop-color="#f9528e"/><stop offset="1" stop-color="#63c4ef"/></linearGradient></defs><path d="M0 78 Q16 69 27 81 T51 71 T75 80 T100 74 T129 80 T155 70 T173 67 T196 9 T210 67 T241 81 T268 40 T280 71" fill="none" stroke="url(#mw-home-line)" stroke-width="4"/></svg>
-      <span>64 MATCHS · 32 PAYS · PROFILS PULSE</span>
-    </div>
-  </section>
-
-  <section class="shell mw-home-feature" aria-labelledby="orbit-home-title">
-    <div class="mw-home-weather" aria-hidden="true">🎨</div>
-    <div>
-      <p class="mw-home-eyebrow">MESSI PASS WARS · PAINTBALL V3 · ZÉRO TRAIT</p>
-      <h2 id="orbit-home-title">Messi <em>Pass Wars.</em></h2>
-      <p>Une couleur par joueur. Des billes en mouvement, des éclaboussures, aucun trait. Seuls les partenaires avec au moins 80 passes apparaissent.</p>
-      <a href={url('/joueurs/messi/paintball/')}>EXPLORER LA VERSION PAINTBALL SANS TRAITS ↗</a>
-    </div>
-    <div class="mw-home-signal" aria-hidden="true">
-      <svg viewBox="0 0 280 100" xmlns="http://www.w3.org/2000/svg">
-        <g opacity=".92">
-          <circle cx="39" cy="26" r="11" fill="#ffb335"/><circle cx="35" cy="14" r="3" fill="#ffb335"/><circle cx="53" cy="31" r="4" fill="#ffb335"/>
-          <circle cx="102" cy="18" r="9" fill="#52d9bc"/><circle cx="91" cy="11" r="3" fill="#52d9bc"/><circle cx="115" cy="25" r="3" fill="#52d9bc"/>
-          <circle cx="181" cy="19" r="11" fill="#cc79f8"/><circle cx="196" cy="12" r="3" fill="#cc79f8"/><circle cx="176" cy="33" r="4" fill="#cc79f8"/>
-          <circle cx="249" cy="32" r="10" fill="#e67a82"/><circle cx="265" cy="27" r="4" fill="#e67a82"/><circle cx="241" cy="15" r="3" fill="#e67a82"/>
-          <circle cx="48" cy="77" r="10" fill="#7eabff"/><circle cx="32" cy="83" r="3" fill="#7eabff"/><circle cx="57" cy="91" r="4" fill="#7eabff"/>
-          <circle cx="108" cy="83" r="9" fill="#e5e563"/><circle cx="95" cy="90" r="4" fill="#e5e563"/><circle cx="117" cy="68" r="3" fill="#e5e563"/>
-          <circle cx="187" cy="83" r="10" fill="#e78ed8"/><circle cx="202" cy="89" r="4" fill="#e78ed8"/><circle cx="180" cy="67" r="3" fill="#e78ed8"/>
-          <circle cx="250" cy="76" r="9" fill="#7de17e"/><circle cx="266" cy="83" r="3" fill="#7de17e"/><circle cx="245" cy="91" r="3" fill="#7de17e"/>
-        </g>
-        <circle cx="142" cy="51" r="21" fill="#63e8f7" opacity=".3"/>
-        <circle cx="142" cy="51" r="17" fill="#b2f7fd"/>
-        <circle cx="142" cy="51" r="14" fill="#143144"/>
-        <text x="142" y="56" text-anchor="middle" font-size="12" font-weight="900" fill="#fff">10</text>
-        <circle cx="156" cy="40" r="2.5" fill="#e78ed8"/><circle cx="160" cy="31" r="2" fill="#e78ed8"/>
-        <circle cx="127" cy="67" r="3" fill="#ffb335"/><circle cx="118" cy="71" r="2" fill="#ffb335"/>
-      </svg>
-      <span>0 CONNEXION · 100 % PAINTBALL</span>
-    </div>
-  </section>>
-
-  {featured && (
-    <section class="shell lead-story">
-      <div class="lead-label"><span>ANALYSE PRINCIPALE</span><span>{featured.data.league.replaceAll('_',' ')}</span></div>
-      <a class="lead-link" href={url(`/articles/${featured.id}/`)}>
-        <div class="lead-copy">
-          <p class="signal-tag">À LIRE</p>
-          <h2>{featured.data.title}</h2>
-          <p>{featured.data.description}</p>
-          <div class="lead-meta">
-            <span>{featured.data.player}</span>
-            <span>{featured.data.team}</span>
-          </div>
-        </div>
-      </a>
+      <a class="home-section-more" href={url('/articles/')}>TOUTES LES ANALYSES <span aria-hidden="true">↗</span></a>
     </section>
-  )}
 
-  <section class="shell latest-desk">
-    <div class="module-head horizontal">
-      <div><span>DERNIÈRES ANALYSES</span><h2>À suivre.</h2></div>
-      <a href={url('/articles/')}>TOUT VOIR ↗</a>
-    </div>
-    <div class="story-stack">
-      {secondary.map((article, index) => (
-        <a class="story-row" href={url(`/articles/${article.id}/`)}>
-          <span class="story-code">{String(index + 2).padStart(2,'0')}</span>
-          <div class="story-title"><small>{article.data.league.replaceAll('_',' ')}</small><h3>{article.data.title}</h3></div>
-          <p>{article.data.description}</p>
-          <span class="story-arrow">↗</span>
-        </a>
-      ))}
-    </div>
-  </section>
-
-  <section class="method-band">
-    <div class="shell method-band-inner">
-      <span class="huge-index">03</span>
-      <div><p class="signal-tag">MÉTHODE</p><h2>Pas de donnée,<br/>pas d’histoire.</h2></div>
-      <div class="method-copy">
-        <p>Les angles sont retenus à partir de signaux mesurables et de sources vérifiables.</p>
-        <a href={url('/methodologie/')}>VOIR LA MÉTHODE →</a>
+    <section class="home-lab" aria-labelledby="home-lab-title">
+      <div class="shell">
+        <div class="home-section-header home-section-header-light">
+          <div>
+            <p class="home-eyebrow"><span>03</span> LES EXPLORATEURS</p>
+            <h2 id="home-lab-title">Entre dans <em>les données.</em></h2>
+          </div>
+          <p>Pas de graphiques figés : choisis ton match, ton pays ou ton joueur. Et découvre le football sous un nouvel angle.</p>
+        </div>
+        <div class="home-lab-grid">
+          <a class="home-lab-card home-lab-card-atlas" href={url('/mondial-2022/')}>
+            <div class="home-lab-card-top"><span>01 / L’ATLAS</span><span>64 MATCHS</span></div>
+            <div class="home-lab-illustration home-lab-waves" aria-hidden="true">
+              <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+            </div>
+            <div class="home-lab-card-copy"><p>MONDIAL 2022</p><h3>Un tournoi.<br/>Mille lectures.</h3><span>Des courbes pour les deux équipes et chaque joueur.</span><b>EXPLORER L’ATLAS ↗</b></div>
+          </a>
+          <a class="home-lab-card home-lab-card-messi" href={url('/joueurs/messi/paintball/')}>
+            <div class="home-lab-card-top"><span>02 / L’EXPÉRIENCE</span><span>MESSI</span></div>
+            <div class="home-lab-illustration home-lab-paint" aria-hidden="true">
+              <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+              <strong>10</strong>
+            </div>
+            <div class="home-lab-card-copy"><p>MESSI / PAINTBALL</p><h3>Les passes<br/>prennent vie.</h3><span>Un réseau de coéquipiers raconté avec des billes en mouvement.</span><b>LANCER L’EXPÉRIENCE ↗</b></div>
+          </a>
+        </div>
+        <div class="home-lab-more">
+          <a href={url('/mondial-2022/joueurs/')}>RECHERCHER UN JOUEUR <span>↗</span></a>
+          <a href={url('/mondial-2022/pays/')}>EXPLORER UN PAYS <span>↗</span></a>
+          <a href={url('/joueurs/messi/affrontements/')}>MESSI RIVAL WARS <span>↗</span></a>
+          <a href={url('/pulse-bareme/')}>COMPRENDRE PULSE <span>↗</span></a>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
+
+    <section class="shell home-section home-reading" aria-labelledby="home-reading-title">
+      <div class="home-section-header">
+        <div>
+          <p class="home-eyebrow"><span>04</span> JOURNAL / ANALYSES RÉCENTES</p>
+          <h2 id="home-reading-title">Au-delà <em>des chiffres.</em></h2>
+        </div>
+        <p>Du signal statistique à son contexte : ce que disent les données, ce qu’elles ne disent pas, et pourquoi c’est intéressant.</p>
+      </div>
+      <div class="home-reading-list">
+        {latest.map((article, index) => <a class="home-reading-row" href={url(`/articles/${article.id}/`)}>
+          <span class="home-reading-number">{String(index + 1).padStart(2,'0')}</span>
+          <div><span class="home-reading-context">{league(article.data.league)} / {article.data.player}</span><h3>{article.data.title}</h3><p>{article.data.description}</p></div>
+          <span class="home-reading-date">{article.data.publishedAt.toLocaleDateString('fr-FR', {day:'2-digit',month:'short'})}</span>
+          <span class="home-reading-arrow" aria-hidden="true">↗</span>
+        </a>)}
+      </div>
+      <a class="home-section-more" href={url('/articles/')}>VOIR LE JOURNAL COMPLET <span aria-hidden="true">↗</span></a>
+    </section>
+    <section class="home-last-word">
+      <div class="shell home-last-word-inner"><div><p class="home-eyebrow">LA MÉTHODE DATAFOOT</p><h2>Une courbe n’est pas un verdict.</h2><p>Nos indices illustrent l’activité et les données disponibles. Les sources, limites et choix de calcul restent visibles.</p></div><a class="home-button home-button-secondary" href={url('/methodologie/')}>LIRE NOTRE MÉTHODE ↗</a></div>
+    </section>
+  </div>
 </BaseLayout>
