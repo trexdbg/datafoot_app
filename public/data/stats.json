@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-08T13:19:54+00:00",
+  "generated_at": "2026-11-09T16:12:51+00:00",
   "season": 2026,
   "leagues": [
     "EPL",
@@ -44,48 +44,6 @@
   "top_players": [],
   "recent_matches": [
     {
-      "match_id": 83227,
-      "league": "bl1",
-      "season": 2026,
-      "kickoff": "2026-10-30T19:30:00Z",
-      "home": "SV 07 Elversberg",
-      "away": "1. FSV Mainz 05",
-      "home_goals": 4,
-      "away_goals": 1,
-      "finished": true,
-      "source": "OpenLigaDB",
-      "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-11-08T13:19:54+00:00"
-    },
-    {
-      "match_id": 83226,
-      "league": "bl1",
-      "season": 2026,
-      "kickoff": "2026-10-31T14:30:00Z",
-      "home": "FC Schalke 04",
-      "away": "RB Leipzig",
-      "home_goals": 0,
-      "away_goals": 2,
-      "finished": true,
-      "source": "OpenLigaDB",
-      "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-11-08T13:19:54+00:00"
-    },
-    {
-      "match_id": 83225,
-      "league": "bl1",
-      "season": 2026,
-      "kickoff": "2026-10-31T14:30:00Z",
-      "home": "SV Werder Bremen",
-      "away": "TSG Hoffenheim",
-      "home_goals": 2,
-      "away_goals": 0,
-      "finished": true,
-      "source": "OpenLigaDB",
-      "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-11-08T13:19:54+00:00"
-    },
-    {
       "match_id": 83224,
       "league": "bl1",
       "season": 2026,
@@ -97,7 +55,7 @@
       "finished": true,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-11-08T13:19:54+00:00"
+      "fetched_at": "2026-11-09T16:12:51+00:00"
     },
     {
       "match_id": 83222,
@@ -111,7 +69,7 @@
       "finished": true,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-11-08T13:19:54+00:00"
+      "fetched_at": "2026-11-09T16:12:51+00:00"
     },
     {
       "match_id": 83220,
@@ -125,7 +83,7 @@
       "finished": true,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-11-08T13:19:54+00:00"
+      "fetched_at": "2026-11-09T16:12:51+00:00"
     },
     {
       "match_id": 83219,
@@ -139,7 +97,7 @@
       "finished": true,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-11-08T13:19:54+00:00"
+      "fetched_at": "2026-11-09T16:12:51+00:00"
     },
     {
       "match_id": 83223,
@@ -153,7 +111,7 @@
       "finished": true,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-11-08T13:19:54+00:00"
+      "fetched_at": "2026-11-09T16:12:51+00:00"
     },
     {
       "match_id": 83221,
@@ -167,7 +125,7 @@
       "finished": true,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-11-08T13:19:54+00:00"
+      "fetched_at": "2026-11-09T16:12:51+00:00"
     },
     {
       "match_id": 83234,
@@ -181,7 +139,7 @@
       "finished": true,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-11-08T13:19:54+00:00"
+      "fetched_at": "2026-11-09T16:12:51+00:00"
     },
     {
       "match_id": 83236,
@@ -195,7 +153,7 @@
       "finished": true,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-11-08T13:19:54+00:00"
+      "fetched_at": "2026-11-09T16:12:51+00:00"
     },
     {
       "match_id": 83233,
@@ -209,7 +167,7 @@
       "finished": true,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-11-08T13:19:54+00:00"
+      "fetched_at": "2026-11-09T16:12:51+00:00"
     },
     {
       "match_id": 83229,
@@ -223,7 +181,7 @@
       "finished": true,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-11-08T13:19:54+00:00"
+      "fetched_at": "2026-11-09T16:12:51+00:00"
     },
     {
       "match_id": 83228,
@@ -237,7 +195,7 @@
       "finished": true,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-11-08T13:19:54+00:00"
+      "fetched_at": "2026-11-09T16:12:51+00:00"
     },
     {
       "match_id": 83230,
@@ -251,7 +209,7 @@
       "finished": true,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-11-08T13:19:54+00:00"
+      "fetched_at": "2026-11-09T16:12:51+00:00"
     },
     {
       "match_id": 83235,
@@ -260,12 +218,12 @@
       "kickoff": "2026-11-08T14:30:00Z",
       "home": "1. FC Köln",
       "away": "Bayer 04 Leverkusen",
-      "home_goals": null,
-      "away_goals": null,
-      "finished": false,
+      "home_goals": 1,
+      "away_goals": 2,
+      "finished": true,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-11-08T13:19:54+00:00"
+      "fetched_at": "2026-11-09T16:12:51+00:00"
     },
     {
       "match_id": 83232,
@@ -274,12 +232,12 @@
       "kickoff": "2026-11-08T16:30:00Z",
       "home": "SC Freiburg",
       "away": "1. FC Union Berlin",
-      "home_goals": null,
-      "away_goals": null,
-      "finished": false,
+      "home_goals": 2,
+      "away_goals": 0,
+      "finished": true,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-11-08T13:19:54+00:00"
+      "fetched_at": "2026-11-09T16:12:51+00:00"
     },
     {
       "match_id": 83231,
@@ -288,12 +246,12 @@
       "kickoff": "2026-11-08T18:30:00Z",
       "home": "TSG Hoffenheim",
       "away": "FC Schalke 04",
-      "home_goals": null,
-      "away_goals": null,
-      "finished": false,
+      "home_goals": 2,
+      "away_goals": 1,
+      "finished": true,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-11-08T13:19:54+00:00"
+      "fetched_at": "2026-11-09T16:12:51+00:00"
     },
     {
       "match_id": 83237,
@@ -307,7 +265,7 @@
       "finished": false,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-11-08T13:19:54+00:00"
+      "fetched_at": "2026-11-09T16:12:51+00:00"
     },
     {
       "match_id": 83238,
@@ -321,7 +279,7 @@
       "finished": false,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-11-08T13:19:54+00:00"
+      "fetched_at": "2026-11-09T16:12:51+00:00"
     },
     {
       "match_id": 83239,
@@ -335,7 +293,7 @@
       "finished": false,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-11-08T13:19:54+00:00"
+      "fetched_at": "2026-11-09T16:12:51+00:00"
     },
     {
       "match_id": 83241,
@@ -349,7 +307,7 @@
       "finished": false,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-11-08T13:19:54+00:00"
+      "fetched_at": "2026-11-09T16:12:51+00:00"
     },
     {
       "match_id": 83242,
@@ -363,7 +321,7 @@
       "finished": false,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-11-08T13:19:54+00:00"
+      "fetched_at": "2026-11-09T16:12:51+00:00"
     },
     {
       "match_id": 83245,
@@ -377,7 +335,7 @@
       "finished": false,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-11-08T13:19:54+00:00"
+      "fetched_at": "2026-11-09T16:12:51+00:00"
     },
     {
       "match_id": 83244,
@@ -391,7 +349,7 @@
       "finished": false,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-11-08T13:19:54+00:00"
+      "fetched_at": "2026-11-09T16:12:51+00:00"
     },
     {
       "match_id": 83240,
@@ -405,7 +363,7 @@
       "finished": false,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-11-08T13:19:54+00:00"
+      "fetched_at": "2026-11-09T16:12:51+00:00"
     },
     {
       "match_id": 83243,
@@ -419,7 +377,7 @@
       "finished": false,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-11-08T13:19:54+00:00"
+      "fetched_at": "2026-11-09T16:12:51+00:00"
     },
     {
       "match_id": 83253,
@@ -433,7 +391,7 @@
       "finished": false,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-11-08T13:19:54+00:00"
+      "fetched_at": "2026-11-09T16:12:51+00:00"
     },
     {
       "match_id": 83250,
@@ -447,7 +405,7 @@
       "finished": false,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-11-08T13:19:54+00:00"
+      "fetched_at": "2026-11-09T16:12:51+00:00"
     },
     {
       "match_id": 83251,
@@ -461,7 +419,49 @@
       "finished": false,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-11-08T13:19:54+00:00"
+      "fetched_at": "2026-11-09T16:12:51+00:00"
+    },
+    {
+      "match_id": 83252,
+      "league": "bl1",
+      "season": 2026,
+      "kickoff": "2026-11-28T14:30:00Z",
+      "home": "1. FC Köln",
+      "away": "SV 07 Elversberg",
+      "home_goals": null,
+      "away_goals": null,
+      "finished": false,
+      "source": "OpenLigaDB",
+      "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
+      "fetched_at": "2026-11-09T16:12:51+00:00"
+    },
+    {
+      "match_id": 83254,
+      "league": "bl1",
+      "season": 2026,
+      "kickoff": "2026-11-28T14:30:00Z",
+      "home": "SC Paderborn 07",
+      "away": "FC Schalke 04",
+      "home_goals": null,
+      "away_goals": null,
+      "finished": false,
+      "source": "OpenLigaDB",
+      "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
+      "fetched_at": "2026-11-09T16:12:51+00:00"
+    },
+    {
+      "match_id": 83247,
+      "league": "bl1",
+      "season": 2026,
+      "kickoff": "2026-11-28T17:30:00Z",
+      "home": "VfB Stuttgart",
+      "away": "Eintracht Frankfurt",
+      "home_goals": null,
+      "away_goals": null,
+      "finished": false,
+      "source": "OpenLigaDB",
+      "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
+      "fetched_at": "2026-11-09T16:12:51+00:00"
     }
   ],
   "player_profiles": [],
