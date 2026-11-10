@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-09T16:12:51+00:00",
+  "generated_at": "2026-11-10T14:50:06+00:00",
   "season": 2026,
   "leagues": [
     "EPL",
@@ -55,7 +55,7 @@
       "finished": true,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-11-09T16:12:51+00:00"
+      "fetched_at": "2026-11-10T14:50:06+00:00"
     },
     {
       "match_id": 83222,
@@ -69,7 +69,7 @@
       "finished": true,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-11-09T16:12:51+00:00"
+      "fetched_at": "2026-11-10T14:50:06+00:00"
     },
     {
       "match_id": 83220,
@@ -83,7 +83,7 @@
       "finished": true,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-11-09T16:12:51+00:00"
+      "fetched_at": "2026-11-10T14:50:06+00:00"
     },
     {
       "match_id": 83219,
@@ -97,7 +97,7 @@
       "finished": true,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-11-09T16:12:51+00:00"
+      "fetched_at": "2026-11-10T14:50:06+00:00"
     },
     {
       "match_id": 83223,
@@ -111,7 +111,7 @@
       "finished": true,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-11-09T16:12:51+00:00"
+      "fetched_at": "2026-11-10T14:50:06+00:00"
     },
     {
       "match_id": 83221,
@@ -125,7 +125,7 @@
       "finished": true,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-11-09T16:12:51+00:00"
+      "fetched_at": "2026-11-10T14:50:06+00:00"
     },
     {
       "match_id": 83234,
@@ -139,7 +139,7 @@
       "finished": true,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-11-09T16:12:51+00:00"
+      "fetched_at": "2026-11-10T14:50:06+00:00"
     },
     {
       "match_id": 83236,
@@ -153,7 +153,7 @@
       "finished": true,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-11-09T16:12:51+00:00"
+      "fetched_at": "2026-11-10T14:50:06+00:00"
     },
     {
       "match_id": 83233,
@@ -167,7 +167,7 @@
       "finished": true,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-11-09T16:12:51+00:00"
+      "fetched_at": "2026-11-10T14:50:06+00:00"
     },
     {
       "match_id": 83229,
@@ -181,7 +181,7 @@
       "finished": true,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-11-09T16:12:51+00:00"
+      "fetched_at": "2026-11-10T14:50:06+00:00"
     },
     {
       "match_id": 83228,
@@ -195,7 +195,7 @@
       "finished": true,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-11-09T16:12:51+00:00"
+      "fetched_at": "2026-11-10T14:50:06+00:00"
     },
     {
       "match_id": 83230,
@@ -209,7 +209,7 @@
       "finished": true,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-11-09T16:12:51+00:00"
+      "fetched_at": "2026-11-10T14:50:06+00:00"
     },
     {
       "match_id": 83235,
@@ -223,7 +223,7 @@
       "finished": true,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-11-09T16:12:51+00:00"
+      "fetched_at": "2026-11-10T14:50:06+00:00"
     },
     {
       "match_id": 83232,
@@ -237,7 +237,7 @@
       "finished": true,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-11-09T16:12:51+00:00"
+      "fetched_at": "2026-11-10T14:50:06+00:00"
     },
     {
       "match_id": 83231,
@@ -251,7 +251,7 @@
       "finished": true,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-11-09T16:12:51+00:00"
+      "fetched_at": "2026-11-10T14:50:06+00:00"
     },
     {
       "match_id": 83237,
@@ -265,7 +265,7 @@
       "finished": false,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-11-09T16:12:51+00:00"
+      "fetched_at": "2026-11-10T14:50:06+00:00"
     },
     {
       "match_id": 83238,
@@ -279,7 +279,7 @@
       "finished": false,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-11-09T16:12:51+00:00"
+      "fetched_at": "2026-11-10T14:50:06+00:00"
     },
     {
       "match_id": 83239,
@@ -293,7 +293,7 @@
       "finished": false,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-11-09T16:12:51+00:00"
+      "fetched_at": "2026-11-10T14:50:06+00:00"
     },
     {
       "match_id": 83241,
@@ -307,7 +307,7 @@
       "finished": false,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-11-09T16:12:51+00:00"
+      "fetched_at": "2026-11-10T14:50:06+00:00"
     },
     {
       "match_id": 83242,
@@ -321,7 +321,7 @@
       "finished": false,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-11-09T16:12:51+00:00"
+      "fetched_at": "2026-11-10T14:50:06+00:00"
     },
     {
       "match_id": 83245,
@@ -335,7 +335,7 @@
       "finished": false,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-11-09T16:12:51+00:00"
+      "fetched_at": "2026-11-10T14:50:06+00:00"
     },
     {
       "match_id": 83244,
@@ -349,7 +349,7 @@
       "finished": false,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-11-09T16:12:51+00:00"
+      "fetched_at": "2026-11-10T14:50:06+00:00"
     },
     {
       "match_id": 83240,
@@ -363,7 +363,7 @@
       "finished": false,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-11-09T16:12:51+00:00"
+      "fetched_at": "2026-11-10T14:50:06+00:00"
     },
     {
       "match_id": 83243,
@@ -377,7 +377,7 @@
       "finished": false,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-11-09T16:12:51+00:00"
+      "fetched_at": "2026-11-10T14:50:06+00:00"
     },
     {
       "match_id": 83253,
@@ -391,7 +391,7 @@
       "finished": false,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-11-09T16:12:51+00:00"
+      "fetched_at": "2026-11-10T14:50:06+00:00"
     },
     {
       "match_id": 83250,
@@ -405,7 +405,7 @@
       "finished": false,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-11-09T16:12:51+00:00"
+      "fetched_at": "2026-11-10T14:50:06+00:00"
     },
     {
       "match_id": 83251,
@@ -419,7 +419,7 @@
       "finished": false,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-11-09T16:12:51+00:00"
+      "fetched_at": "2026-11-10T14:50:06+00:00"
     },
     {
       "match_id": 83252,
@@ -433,7 +433,7 @@
       "finished": false,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-11-09T16:12:51+00:00"
+      "fetched_at": "2026-11-10T14:50:06+00:00"
     },
     {
       "match_id": 83254,
@@ -447,7 +447,7 @@
       "finished": false,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-11-09T16:12:51+00:00"
+      "fetched_at": "2026-11-10T14:50:06+00:00"
     },
     {
       "match_id": 83247,
@@ -461,7 +461,7 @@
       "finished": false,
       "source": "OpenLigaDB",
       "source_url": "https://api.openligadb.de/getmatchdata/bl1/2026",
-      "fetched_at": "2026-11-09T16:12:51+00:00"
+      "fetched_at": "2026-11-10T14:50:06+00:00"
     }
   ],
   "player_profiles": [],
